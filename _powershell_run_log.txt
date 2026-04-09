@@ -1,0 +1,328 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260409234625
+Username: iPharmEGY\temp
+RunAs User: iPharmEGY\temp
+Configuration Name: 
+Machine: IPHARMEGY (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Process ID: 16736
+PSVersion: 5.1.26100.6899
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.6899
+BuildVersion: 10.0.26100.6899
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\_powershell_run_log.txt
+PS C:\WINDOWS\system32> try {
+    Write-Host "==================================================" -ForegroundColor Cyan
+    Write-Host "ALNOUR OFFERS - GITHUB SYNC / DEPLOY FIX SCRIPT" -ForegroundColor Cyan
+    Write-Host "==================================================" -ForegroundColor Cyan
+
+    if (-not (Test-Path $ProjectRoot)) {
+        throw "Project path not found: $ProjectRoot"
+    }
+
+    Set-Location $ProjectRoot
+
+    if (Test-Path $ReportFile) {
+        Remove-Item $ReportFile -Force -ErrorAction SilentlyContinue
+    }
+
+    function Add-Report($text) {
+        $text | Out-File $ReportFile -Append -Encoding utf8
+    }
+
+    function Check-File($path) {
+        $exists = Test-Path $path
+        $status = if ($exists) { "OK" } else { "MISSING" }
+        Write-Host ("[{0}] {1}" -f $status, $path) -ForegroundColor $(if ($exists) { "Green" } else { "Red" })
+        Add-Report ("[{0}] {1}" -f $status, $path)
+        return $exists
+    }
+
+    Write-Host ""
+    Write-Host "[1] CHECK IMPORTANT FILES" -ForegroundColor Yellow
+    Add-Report "=== IMPORTANT FILES CHECK ==="
+
+    $ImportantFiles = @(
+        ".\src\pages\HomePage.jsx",
+        ".\src\pages\OffersPage.jsx",
+        ".\src\pages\ProductDetailsPage.jsx",
+        ".\src\pages\OrderSuccessPage.jsx",
+
+        ".\src\components\home\HeroBanner.jsx",
+        ".\src\components\home\PromoStrip.jsx",
+        ".\src\components\home\CategoryGrid.jsx",
+        ".\src\components\home\AdSlots.jsx",
+        ".\src\components\home\FeaturedPreview.jsx",
+
+        ".\src\components\common\Header.jsx",
+        ".\src\components\common\Footer.jsx",
+        ".\src\components\common\SocialBar.jsx",
+        ".\src\components\common\RuntimeBadge.jsx",
+
+        ".\src\config\runtimeConfig.js",
+        ".\src\config\socialChannels.js",
+        ".\src\config\socialCampaigns.js",
+        ".\src\config\adminOrderStatuses.js",
+
+        ".\src\router\AppRouter.jsx",
+        ".\src\services\apiClient.js",
+        ".\src\services\productService.js",
+        ".\src\services\orderService.js",
+
+        ".\src\store\authStore.js",
+        ".\src\store\cartStore.js",
+        ".\src\store\accountStore.js",
+
+        ".\src\index.css",
+        ".\package.json",
+        ".\vite.config.js",
+        ".\README.md",
+        ".\.gitignore",
+        ".\public\_redirects",
+        ".\public\_headers"
+    )
+
+    $Missing = @()
+
+    foreach ($file in $ImportantFiles) {
+        if (-not (Check-File $file)) {
+            $Missing += $file
+        }
+    }
+
+    Write-Host ""
+    Write-Host "[2] CHECK HOME COMPONENT FOLDER CONTENTS" -ForegroundColor Yellow
+    Add-Report ""
+    Add-Report "=== HOME COMPONENTS DIRECTORY ==="
+    if (Test-Path ".\src\components\home") {
+        Get-ChildItem ".\src\components\home" -File |
+            Select-Object Name, Length, LastWriteTime |
+            Format-Table -AutoSize |
+            Out-String |
+            Tee-Object -FilePath $ReportFile -Append
+    } else {
+        Write-Host "Folder missing: .\src\components\home" -ForegroundColor Red
+        Add-Report "Folder missing: .\src\components\home"
+    }
+
+    Write-Host ""
+    Write-Host "[3] GIT STATUS" -ForegroundColor Yellow
+    Add-Report ""
+    Add-Report "=== GIT STATUS BEFORE ADD ==="
+    git status | Tee-Object -FilePath $ReportFile -Append
+
+    Write-Host ""
+    Write-Host "[4] GIT REMOTE" -ForegroundColor Yellow
+    Add-Report ""
+    Add-Report "=== GIT REMOTE ==="
+    git remote -v | Tee-Object -FilePath $ReportFile -Append
+
+    if ($Missing.Count -gt 0) {
+        Write-Host ""
+        Write-Host "==================================================" -ForegroundColor Red
+        Write-Host "THERE ARE MISSING CRITICAL FILES LOCALLY" -ForegroundColor Red
+        Write-Host "Fix them first before push." -ForegroundColor Red
+        Write-Host "Report: $ReportFile" -ForegroundColor Yellow
+        Write-Host "==================================================" -ForegroundColor Red
+    }
+    else {
+        Write-Host ""
+        Write-Host "[5] ADD ALL CURRENT FILES TO GIT" -ForegroundColor Yellow
+        git add .
+
+        Write-Host ""
+        Write-Host "[6] GIT STATUS AFTER ADD" -ForegroundColor Yellow
+        Add-Report ""
+        Add-Report "=== GIT STATUS AFTER ADD ==="
+        git status | Tee-Object -FilePath $ReportFile -Append
+
+        Write-Host ""
+        Write-Host "[7] COMMIT" -ForegroundColor Yellow
+        $CommitMessage = "Sync local frontend with GitHub for Cloudflare deploy fix"
+        git commit -m $CommitMessage 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "No new changes to commit, or commit already up to date." -ForegroundColor DarkYellow
+            Add-Report "No new changes to commit."
+        } else {
+            Write-Host "Commit created successfully." -ForegroundColor Green
+            Add-Report "Commit created: $CommitMessage"
+        }
+
+        Write-Host ""
+        Write-Host "[8] PUSH TO GITHUB" -ForegroundColor Yellow
+        git push origin main | Tee-Object -FilePath $ReportFile -Append
+
+        Write-Host ""
+        Write-Host "==================================================" -ForegroundColor Green
+        Write-Host "SYNC COMPLETED SUCCESSFULLY" -ForegroundColor Green
+        Write-Host "Report: $ReportFile" -ForegroundColor Green
+        Write-Host "Run Log: $RunLog" -ForegroundColor Green
+        Write-Host "==================================================" -ForegroundColor Green
+    }
+}
+catch {
+    Write-Host ""
+    Write-Host "==================================================" -ForegroundColor Red
+    Write-Host "SCRIPT FAILED" -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    Write-Host "Run Log: $RunLog" -ForegroundColor Yellow
+    Write-Host "==================================================" -ForegroundColor Red
+}
+==================================================
+ALNOUR OFFERS - GITHUB SYNC / DEPLOY FIX SCRIPT
+==================================================
+
+[1] CHECK IMPORTANT FILES
+[OK] .\src\pages\HomePage.jsx
+[OK] .\src\pages\OffersPage.jsx
+[OK] .\src\pages\ProductDetailsPage.jsx
+[OK] .\src\pages\OrderSuccessPage.jsx
+[MISSING] .\src\components\home\HeroBanner.jsx
+[MISSING] .\src\components\home\PromoStrip.jsx
+[MISSING] .\src\components\home\CategoryGrid.jsx
+[MISSING] .\src\components\home\AdSlots.jsx
+[MISSING] .\src\components\home\FeaturedPreview.jsx
+[OK] .\src\components\common\Header.jsx
+[OK] .\src\components\common\Footer.jsx
+[OK] .\src\components\common\SocialBar.jsx
+[OK] .\src\components\common\RuntimeBadge.jsx
+[OK] .\src\config\runtimeConfig.js
+[OK] .\src\config\socialChannels.js
+[OK] .\src\config\socialCampaigns.js
+[OK] .\src\config\adminOrderStatuses.js
+[OK] .\src\router\AppRouter.jsx
+[OK] .\src\services\apiClient.js
+[OK] .\src\services\productService.js
+[OK] .\src\services\orderService.js
+[OK] .\src\store\authStore.js
+[OK] .\src\store\cartStore.js
+[OK] .\src\store\accountStore.js
+[OK] .\src\index.css
+[OK] .\package.json
+[OK] .\vite.config.js
+[OK] .\README.md
+[OK] .\.gitignore
+[MISSING] .\public\_redirects
+[MISSING] .\public\_headers
+
+[2] CHECK HOME COMPONENT FOLDER CONTENTS
+Folder missing: .\src\components\home
+
+[3] GIT STATUS
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	_DEPLOY_SYNC_REPORT.txt
+	_powershell_run_log.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+[4] GIT REMOTE
+origin	https://github.com/iPharmEGYOfficial/alnour-offers-web.git (fetch)
+origin	https://github.com/iPharmEGYOfficial/alnour-offers-web.git (push)
+
+==================================================
+THERE ARE MISSING CRITICAL FILES LOCALLY
+Fix them first before push.
+Report: D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\_DEPLOY_SYNC_REPORT.txt
+==================================================
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> finally {
+    Stop-Transcript | Out-Null
+    Write-Host ""
+    Write-Host "Press Enter to close..." -ForegroundColor Yellow
+    Read-Host
+}
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> TerminatingError(): "The term 'finally' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."
+The term 'finally' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+finally : The term 'finally' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct
+and try again.
+At line:1 char:1
++ finally {
++ ~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (finally:String) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> $Root = "D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\components\home"
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> New-Item -ItemType Directory -Force -Path $Root
+
+
+    Directory: D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\components
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        09/04/2026     23:50                home
+
+
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> Set-Content "$Root\HeroBanner.jsx" @'
+export default function HeroBanner() {
+  return <div className="card">Hero Banner</div>;
+}
+'@
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> Set-Content "$Root\PromoStrip.jsx" @'
+export default function PromoStrip() {
+  return <div className="card">Promo Strip</div>;
+}
+'@
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> Set-Content "$Root\CategoryGrid.jsx" @'
+export default function CategoryGrid() {
+  return <div className="card">Category Grid</div>;
+}
+'@
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> Set-Content "$Root\AdSlots.jsx" @'
+export default function AdSlots() {
+  return <div className="card">Ad Slots</div>;
+}
+'@
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> Set-Content "$Root\FeaturedPreview.jsx" @'
+export default function FeaturedPreview() {
+  return <div className="card">Featured Products</div>;
+}
+'@
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> # Cloudflare required files
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> $Public = "D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\public"
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> Set-Content "$Public\_redirects" "/* /index.html 200"
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> Set-Content "$Public\_headers" @'
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+'@
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> Write-Host "FILES CREATED SUCCESSFULLY" -ForegroundColor Green
+FILES CREATED SUCCESSFULLY
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> git add .
+warning: in the working copy of 'public/_headers', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/home/AdSlots.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/home/CategoryGrid.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/home/FeaturedPreview.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/home/HeroBanner.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/home/PromoStrip.jsx', LF will be replaced by CRLF the next time Git touches it
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> git commit -m "Fix missing home components for deployment"
+[main 3d7fc5e] Fix missing home components for deployment
+ 9 files changed, 19 insertions(+)
+ create mode 100644 _DEPLOY_SYNC_REPORT.txt
+ create mode 100644 _powershell_run_log.txt
+ create mode 100644 public/_headers
+ create mode 100644 public/_redirects
+ create mode 100644 src/components/home/AdSlots.jsx
+ create mode 100644 src/components/home/CategoryGrid.jsx
+ create mode 100644 src/components/home/FeaturedPreview.jsx
+ create mode 100644 src/components/home/HeroBanner.jsx
+ create mode 100644 src/components/home/PromoStrip.jsx
+PS D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web> git push
+Enumerating objects: 19, done.
+Counting objects: 100% (19/19), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (13/13), done.
+Writing objects: 100% (15/15), 2.15 KiB | 734.00 KiB/s, done.
+Total 15 (delta 4), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (4/4), completed with 4 local objects.
+To https://github.com/iPharmEGYOfficial/alnour-offers-web.git
+   03666a7..3d7fc5e  main -> main
