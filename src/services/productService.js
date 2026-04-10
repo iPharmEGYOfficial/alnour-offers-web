@@ -1,46 +1,28 @@
 import apiClient from "./apiClient";
-import { getRuntimeMode } from "../config/runtimeConfig";
 
 function normalizeBridgeProduct(item) {
   return {
-    productID: item.productID ?? item.id ?? item.barcode,
-    productName: item.productName ?? item.name ?? "????",
+    productID: item.productID ?? item.id ?? item.barcode ?? "",
+    productName: item.productName ?? item.name ?? "Unnamed Product",
     barcode: item.barcode ?? "",
     price: Number(item.price ?? 0),
     originalPrice: Number(item.originalPrice ?? item.price ?? 0),
     stockQty: Number(item.stockQty ?? item.stock ?? 0),
-    categoryName: item.categoryName ?? item.category ?? "",
+    categoryName: item.categoryName ?? item.category ?? item.productType ?? "",
     brandName: item.brandName ?? item.brand ?? "",
     imageUrl: item.imageUrl ?? item.primaryImageUrl ?? item.image ?? "/no-image.svg",
     primaryImageUrl: item.primaryImageUrl ?? item.imageUrl ?? item.image ?? "/no-image.svg",
     description: item.description ?? "",
     averageRating: Number(item.averageRating ?? item.ratingAverage ?? 0),
-    reviewsCount: Number(item.reviewsCount ?? item.ratingCount ?? 0)
+    reviewsCount: Number(item.reviewsCount ?? item.ratingCount ?? 0),
+    productType: item.productType ?? ""
   };
 }
 
-function normalizeApiProduct(item) {
-  return {
-    productID: item.productID ?? item.id ?? item.barcode,
-    productName: item.productName ?? item.name ?? "????",
-    barcode: item.barcode ?? "",
-    price: Number(item.price ?? 0),
-    originalPrice: Number(item.originalPrice ?? item.price ?? 0),
-    stockQty: Number(item.stockQty ?? item.stock ?? 0),
-    categoryName: item.categoryName ?? item.category ?? "",
-    brandName: item.brandName ?? item.brand ?? "",
-    imageUrl: item.imageUrl ?? item.primaryImageUrl ?? item.image ?? "/no-image.svg",
-    primaryImageUrl: item.primaryImageUrl ?? item.imageUrl ?? item.image ?? "/no-image.svg",
-    description: item.description ?? "",
-    averageRating: Number(item.averageRating ?? item.ratingAverage ?? 0),
-    reviewsCount: Number(item.reviewsCount ?? item.ratingCount ?? 0)
-  };
-}
-
-function normalizeProductsPayload(raw, normalizer = normalizeApiProduct) {
+function normalizeProductsPayload(raw) {
   if (Array.isArray(raw)) {
     return {
-      items: raw.map(normalizer),
+      items: raw.map(normalizeBridgeProduct),
       totalPages: 1,
       totalCount: raw.length
     };
@@ -48,7 +30,7 @@ function normalizeProductsPayload(raw, normalizer = normalizeApiProduct) {
 
   if (raw && Array.isArray(raw.items)) {
     return {
-      items: raw.items.map(normalizer),
+      items: raw.items.map(normalizeBridgeProduct),
       totalPages: Number(raw.totalPages || 1),
       totalCount: Number(raw.totalCount || raw.items.length || 0)
     };
@@ -56,7 +38,7 @@ function normalizeProductsPayload(raw, normalizer = normalizeApiProduct) {
 
   if (raw && Array.isArray(raw.value)) {
     return {
-      items: raw.value.map(normalizer),
+      items: raw.value.map(normalizeBridgeProduct),
       totalPages: Number(raw.totalPages || 1),
       totalCount: Number(raw.totalCount || raw.count || raw.value.length || 0)
     };
@@ -72,7 +54,7 @@ function normalizeProductsPayload(raw, normalizer = normalizeApiProduct) {
 function normalizeReview(item) {
   return {
     id: item.id ?? item.ratingID ?? `review-${Math.random()}`,
-    customerName: item.customerName ?? item.authorName ?? "????",
+    customerName: item.customerName ?? item.authorName ?? "Customer",
     ratingValue: Number(item.ratingValue ?? item.stars ?? item.value ?? 0),
     title: item.title ?? "",
     comment: item.comment ?? item.reviewText ?? "",
@@ -88,95 +70,61 @@ export async function getProducts({
   search = "",
   offersOnly = false
 } = {}) {
-  const runtime = getRuntimeMode();
+  const response = await apiClient.get("/products");
+  const normalized = normalizeProductsPayload(response?.data);
 
-  if (runtime === "bridge") {
-    const response = await apiClient.get("/api/shamel/products", {
-      params: {
-        page,
-        pageSize,
-        q: search || undefined,
-        onlyInStock: true,
-        onlyPriced: true
-      }
-    });
+  let items = normalized.items;
 
-    return normalizeProductsPayload(response?.data, normalizeBridgeProduct);
+  if (search) {
+    const q = String(search).trim().toLowerCase();
+    items = items.filter(
+      (x) =>
+        String(x.productName ?? "").toLowerCase().includes(q) ||
+        String(x.barcode ?? "").toLowerCase().includes(q) ||
+        String(x.brandName ?? "").toLowerCase().includes(q) ||
+        String(x.categoryName ?? "").toLowerCase().includes(q)
+    );
   }
 
-  const response = await apiClient.get("/api/products", {
-    params: {
-      page,
-      pageSize,
-      search: search || undefined,
-      offersOnly: offersOnly || undefined
-    }
-  });
+  if (offersOnly) {
+    items = items.filter((x) =>
+      String(x.productType ?? x.categoryName ?? "").toLowerCase().includes("offer")
+    );
+  }
 
-  return normalizeProductsPayload(response?.data, normalizeApiProduct);
+  items = items.filter((x) => Number(x.stockQty ?? 0) > 0);
+  items = items.filter((x) => Number(x.price ?? 0) > 0);
+
+  const totalCount = items.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const start = (page - 1) * pageSize;
+  const pagedItems = items.slice(start, start + pageSize);
+
+  return {
+    items: pagedItems,
+    totalPages,
+    totalCount
+  };
 }
 
 export async function getProductById(id) {
-  const runtime = getRuntimeMode();
+  const result = await getProducts({
+    page: 1,
+    pageSize: 500,
+    search: String(id || "")
+  });
 
-  try {
-    if (runtime === "bridge") {
-      const result = await getProducts({
-        page: 1,
-        pageSize: 100,
-        search: String(id || "")
-      });
+  const exact = result.items.find(
+    (x) =>
+      String(x.productID).trim() === String(id).trim() ||
+      String(x.barcode).trim() === String(id).trim()
+  );
 
-      const exact = result.items.find(
-        (x) =>
-          String(x.productID).trim() === String(id).trim() ||
-          String(x.barcode).trim() === String(id).trim()
-      );
-
-      return exact || result.items[0] || null;
-    }
-
-    const response = await apiClient.get(`/api/products/${id}`);
-    const raw = response?.data;
-
-    if (raw?.product) return normalizeApiProduct(raw.product);
-    return normalizeApiProduct(raw);
-  } catch {
-    const result = await getProducts({
-      page: 1,
-      pageSize: 100,
-      search: String(id || "")
-    });
-
-    const exact = result.items.find(
-      (x) =>
-        String(x.productID).trim() === String(id).trim() ||
-        String(x.barcode).trim() === String(id).trim()
-    );
-
-    return exact || result.items[0] || null;
-  }
+  return exact || result.items[0] || null;
 }
 
 export async function getProductReviews(productId) {
-  const runtime = getRuntimeMode();
-
-  if (runtime === "bridge") {
-    return [];
-  }
-
-  try {
-    const response = await apiClient.get(`/api/products/${productId}/reviews`);
-    const raw = response?.data;
-
-    if (Array.isArray(raw)) return raw.map(normalizeReview);
-    if (Array.isArray(raw?.items)) return raw.items.map(normalizeReview);
-    if (Array.isArray(raw?.value)) return raw.value.map(normalizeReview);
-
-    return [];
-  } catch {
-    return [];
-  }
+  return [];
 }
 
 const productService = {
