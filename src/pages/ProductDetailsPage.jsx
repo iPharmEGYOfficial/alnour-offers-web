@@ -15,11 +15,11 @@ import {
 
 function fallbackSpecs(product) {
   return [
-    { label: "?????", value: product?.productName || product?.name || "-" },
-    { label: "????????", value: product?.barcode || "-" },
-    { label: "?????", value: product?.categoryName || product?.category || "???" },
-    { label: "???????", value: product?.brandName || product?.brand || "??? ????" },
-    { label: "??????", value: Number(product?.stockQty || product?.stock || 0) > 0 ? "?????" : "??? ?????" }
+    { label: "Product", value: product?.productName || product?.name || "-" },
+    { label: "Barcode", value: product?.barcode || "-" },
+    { label: "Category", value: product?.categoryName || product?.category || "General" },
+    { label: "Brand", value: product?.brandName || product?.brand || "No Brand" },
+    { label: "Availability", value: Number(product?.stockQty || product?.stock || 0) > 0 ? "In Stock" : "Out of Stock" }
   ];
 }
 
@@ -83,7 +83,7 @@ export default function ProductDetailsPage() {
       <div className="page">
         <Header />
         <main className="container">
-          <div className="status-box" style={{ marginTop: "20px" }}>???? ????? ?????? ??????...</div>
+          <div className="status-box" style={{ marginTop: "20px" }}>Loading product details...</div>
         </main>
       </div>
     );
@@ -94,7 +94,7 @@ export default function ProductDetailsPage() {
       <div className="page">
         <Header />
         <main className="container">
-          <div className="status-box" style={{ marginTop: "20px" }}>???? ????? ??????</div>
+          <div className="status-box" style={{ marginTop: "20px" }}>Product not found.</div>
         </main>
       </div>
     );
@@ -158,9 +158,9 @@ export default function ProductDetailsPage() {
           <section className="product-content-panel">
             <div className="product-content-top">
               <div className="product-path">
-                <Link to="/">????????</Link>
+                <Link to="/">Home</Link>
                 <span>/</span>
-                <Link to="/offers">????????</Link>
+                <Link to="/offers">Offers</Link>
                 <span>/</span>
                 <strong>{product.productName}</strong>
               </div>
@@ -169,54 +169,54 @@ export default function ProductDetailsPage() {
 
               <div className="product-rating-inline">
                 <span className="rating-stars large">
-                  {"".repeat(Math.round(averageRating || 0)) + "".repeat(5 - Math.round(averageRating || 0))}
+                  {"★".repeat(Math.round(averageRating || 0)) + "☆".repeat(5 - Math.round(averageRating || 0))}
                 </span>
                 <span className="rating-meta big">
-                  {averageRating > 0 ? averageRating.toFixed(1) : "0.0"}  {reviews.length} ??????
+                  {averageRating > 0 ? averageRating.toFixed(1) : "0.0"} · {reviews.length} reviews
                 </span>
               </div>
 
               <p className="product-long-desc">
                 {product.description ||
-                  "??? ?????? ??? ???? ???? ????????? ????? ????? ??? ?????? ?????? ????? ??????? ?????? ??????? ?????????? ?????????? ???? ?????? ???? ???????."}
+                  "This product page is connected to the live pharmacy feed. Detailed copy can be added later when product descriptions become available."}
               </p>
 
               <div className="product-meta-row">
                 <span className="meta-chip">Barcode: {product.barcode || "-"}</span>
                 <span className="meta-chip">Stock: {stock}</span>
-                <span className="meta-chip">{stock > 0 ? "?????" : "??? ?????"}</span>
+                <span className="meta-chip">{stock > 0 ? "Available" : "Out of stock"}</span>
               </div>
 
               <div className="product-price-panel">
                 <div className="price-stack">
-                  <strong className="price-now">{currentPrice.toFixed(2)} ?.?</strong>
+                  <strong className="price-now">{currentPrice.toFixed(2)} SAR</strong>
 
                   {originalPrice > currentPrice && (
                     <div className="price-old-wrap">
-                      <span className="price-old">{originalPrice.toFixed(2)} ?.?</span>
-                      <span className="discount-badge">??? {discountPercent}%</span>
+                      <span className="price-old">{originalPrice.toFixed(2)} SAR</span>
+                      <span className="discount-badge">Save {discountPercent}%</span>
                     </div>
                   )}
                 </div>
 
                 <div className="delivery-note">
-                   ???? ?????? ????? ???????? ??????? ????? ???????
+                  Fast local fulfillment from the connected pharmacy inventory.
                 </div>
               </div>
 
               <div className="product-action-row">
                 <button className="primary-btn" onClick={handleAdd} disabled={stock <= 0}>
-                  {stock > 0 ? "????? ??? ?????" : "??? ?????"}
+                  {stock > 0 ? "Add to Cart" : "Out of Stock"}
                 </button>
 
                 <Link className="secondary-btn" to="/cart">
-                  ??? ?????
+                  View Cart
                 </Link>
               </div>
             </div>
 
             <div className="product-specs-box">
-              <h3>????????? ????????</h3>
+              <h3>Product Information</h3>
 
               <div className="specs-grid">
                 {specs.map((spec, index) => (
@@ -233,19 +233,19 @@ export default function ProductDetailsPage() {
         <section className="home-section">
           <div className="section-head">
             <div>
-              <h2>????? ???????? ?? ??????</h2>
-              <p>???? ?????? ?????? ?????? ??????? ?????? ????? ???????</p>
+              <h2>Share this product</h2>
+              <p>Help customers discover this item through social and messaging channels.</p>
             </div>
           </div>
 
-          <SocialBar title="???? ?? ??? ?????? ??? ???????" compact />
+          <SocialBar title="Share this product with others" compact />
         </section>
 
         <section className="home-section">
           <div className="section-head">
             <div>
-              <h2>??????? ???????</h2>
-              <p>????????? ??????? ???? ????? ????? ?????? ????? ????? ??????? ???</p>
+              <h2>Customer Reviews</h2>
+              <p>Ratings and comments collected from previous customers.</p>
             </div>
           </div>
 
@@ -256,28 +256,16 @@ export default function ProductDetailsPage() {
         <section className="home-section">
           <div className="section-head">
             <div>
-              <h2>?????? ??????</h2>
-              <p>???? ????? ????? ???????? ??? ????? ????????? ??????</p>
+              <h2>Similar Products</h2>
+              <p>More products from the same category or brand.</p>
             </div>
           </div>
 
-          {similarProducts.length === 0 ? (
-            <div className="status-box">?? ???? ?????? ?????? ??????</div>
-          ) : (
-            <div
-              className="products-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(220px,1fr))",
-                gap: "16px",
-                marginTop: "16px"
-              }}
-            >
-              {similarProducts.map((p) => (
-                <ProductCard key={p.productID || p.id || p.barcode} product={p} />
-              ))}
-            </div>
-          )}
+          <div className="products-grid-inline">
+            {similarProducts.map((item) => (
+              <ProductCard key={item.productID || item.barcode} product={item} />
+            ))}
+          </div>
         </section>
       </main>
 

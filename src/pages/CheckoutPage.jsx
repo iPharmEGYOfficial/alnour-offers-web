@@ -94,9 +94,11 @@ export default function CheckoutPage() {
   const isInstaPay = paymentMethod === "InstaPayManual";
   const isCash = paymentMethod === "CashOnDelivery";
 
+  const currencyLabel = country === "Egypt" ? "EGP" : "SAR";
+
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
-      alert("???? ??? ????? ?????");
+      alert("Please enter a coupon code.");
       return;
     }
 
@@ -115,7 +117,7 @@ export default function CheckoutPage() {
       }));
     } catch (error) {
       console.error("applyCoupon error:", error);
-      alert(error?.response?.data?.message || "???? ????? ???????");
+      alert(error?.response?.data?.message || "Failed to apply coupon.");
     } finally {
       setLoadingCoupon(false);
     }
@@ -138,31 +140,31 @@ export default function CheckoutPage() {
       }));
     } catch (error) {
       console.error("applyPoints error:", error);
-      alert(error?.response?.data?.message || "???? ????? ??????");
+      alert(error?.response?.data?.message || "Failed to apply points.");
     } finally {
       setLoadingPoints(false);
     }
   };
 
   const handleScanCard = () => {
-    alert("???? ??? ??????? ????? ?????? ????? ?? SDK ?? provider ?????.");
+    alert("Card scanning is a placeholder and should be connected to a real payment SDK later.");
   };
 
   const handleConfirm = async () => {
     if (!items || items.length === 0) {
-      alert("????? ?????");
+      alert("Your cart is empty.");
       return;
     }
 
     if (requiresCard) {
       if (!cardNumber.trim() || !cardName.trim() || !expiry.trim() || !cvv.trim()) {
-        alert("???? ??????? ?????? ??????? ?????");
+        alert("Please complete all card payment fields.");
         return;
       }
     }
 
     if (isInstaPay && !transferReference.trim()) {
-      alert("???? ????? ???? ????? ????????");
+      alert("Please enter the transfer reference number.");
       return;
     }
 
@@ -198,14 +200,14 @@ export default function CheckoutPage() {
       clearCart();
 
       if (!newOrderId) {
-        alert("?? ????? ????? ???? ?? ??? ?????? ??? ??? ?????");
+        alert("The order was submitted, but no order number was returned.");
         return;
       }
 
       navigate(`/order-success/${newOrderId}`);
     } catch (error) {
       console.error("confirmOrder error:", error);
-      alert(error?.response?.data?.message || "??? ?? ????? ?????");
+      alert(error?.response?.data?.message || "Could not confirm the order.");
     } finally {
       setConfirming(false);
     }
@@ -217,23 +219,23 @@ export default function CheckoutPage() {
 
       <main className="container">
         <div className="hero-card">
-          <h2>?????</h2>
-          <p className="subtle">???? ??? ?????? ????? ?????? ????? ?????? ?? ????? ????? ?????????</p>
+          <h2>Checkout</h2>
+          <p className="subtle">Review your cart, select the payment method, and complete your order.</p>
         </div>
 
         {items.length === 0 ? (
           <div className="status-box" style={{ marginTop: "20px" }}>
-            ????? ?????
+            Your cart is empty.
           </div>
         ) : (
           <>
             <div className="hero-card" style={{ marginTop: "20px" }}>
-              <h3 style={{ marginTop: 0 }}>????? / ?????</h3>
+              <h3 style={{ marginTop: 0 }}>Country / Region</h3>
               <PaymentCountrySelector country={country} onChange={setCountry} />
             </div>
 
             <div className="hero-card" style={{ marginTop: "20px" }}>
-              <h3 style={{ marginTop: 0 }}>???? ????????</h3>
+              <h3 style={{ marginTop: 0 }}>Order Items</h3>
 
               <div style={{ display: "grid", gap: "10px" }}>
                 {items.map((item) => (
@@ -247,15 +249,15 @@ export default function CheckoutPage() {
                       paddingBottom: "8px"
                     }}
                   >
-                    <span>{item.productName} × {item.qty}</span>
-                    <span>{(Number(item.price) * Number(item.qty)).toFixed(2)} {country === "Egypt" ? "?.?" : "?.?"}</span>
+                    <span>{item.productName} Ã— {item.qty}</span>
+                    <span>{(Number(item.price) * Number(item.qty)).toFixed(2)} {currencyLabel}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="hero-card" style={{ marginTop: "20px" }}>
-              <h3 style={{ marginTop: 0 }}>????? ?????</h3>
+              <h3 style={{ marginTop: 0 }}>Payment Method</h3>
 
               <PaymentMethodSelector
                 methods={methods}
@@ -291,14 +293,14 @@ export default function CheckoutPage() {
             </div>
 
             <div className="hero-card" style={{ marginTop: "20px" }}>
-              <h3 style={{ marginTop: 0 }}>???????? ???????</h3>
+              <h3 style={{ marginTop: 0 }}>Discount Tools</h3>
 
               <div style={{ display: "grid", gap: "12px" }}>
                 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                   <input
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="??? ?????"
+                    placeholder="Coupon code"
                     style={{
                       flex: 1,
                       minWidth: "220px",
@@ -309,7 +311,7 @@ export default function CheckoutPage() {
                     }}
                   />
                   <button className="secondary-btn" type="button" onClick={handleApplyCoupon} disabled={loadingCoupon}>
-                    {loadingCoupon ? "???? ???????..." : "????? ???????"}
+                    {loadingCoupon ? "Applying..." : "Apply Coupon"}
                   </button>
                 </div>
 
@@ -319,7 +321,7 @@ export default function CheckoutPage() {
                     min="0"
                     value={requestedPoints}
                     onChange={(e) => setRequestedPoints(e.target.value)}
-                    placeholder="??? ??????"
+                    placeholder="Requested points"
                     style={{
                       flex: 1,
                       minWidth: "220px",
@@ -330,36 +332,36 @@ export default function CheckoutPage() {
                     }}
                   />
                   <button className="secondary-btn" type="button" onClick={handleApplyPoints} disabled={loadingPoints}>
-                    {loadingPoints ? "???? ???????..." : "??????? ??????"}
+                    {loadingPoints ? "Applying..." : "Apply Points"}
                   </button>
                 </div>
               </div>
             </div>
 
             <div className="hero-card" style={{ marginTop: "20px" }}>
-              <h3 style={{ marginTop: 0 }}>???????? ?????????</h3>
+              <h3 style={{ marginTop: 0 }}>Checkout Summary</h3>
 
               <div style={{ display: "grid", gap: "8px" }}>
-                <div><strong>???????? ??? ?????:</strong> {Number(summary?.totalBeforeDiscount || 0).toFixed(2)} {country === "Egypt" ? "?.?" : "?.?"}</div>
-                <div><strong>??? ??????:</strong> {Number(summary?.offerDiscount || 0).toFixed(2)} {country === "Egypt" ? "?.?" : "?.?"}</div>
-                <div><strong>??? ???????:</strong> {Number(summary?.couponDiscount || 0).toFixed(2)} {country === "Egypt" ? "?.?" : "?.?"}</div>
-                <div><strong>??? ??????:</strong> {Number(summary?.pointsDiscount || 0).toFixed(2)} {country === "Egypt" ? "?.?" : "?.?"}</div>
-                <div><strong>???? ???????:</strong> {Number(summary?.deliveryFee || 0).toFixed(2)} {country === "Egypt" ? "?.?" : "?.?"}</div>
-                <div><strong>???????:</strong> {Number(summary?.vatAmount || 0).toFixed(2)} {country === "Egypt" ? "?.?" : "?.?"}</div>
-                <div><strong>?????? ?????????:</strong> {Number(summary?.usedPoints || 0)}</div>
+                <div><strong>Total before discounts:</strong> {Number(summary?.totalBeforeDiscount || 0).toFixed(2)} {currencyLabel}</div>
+                <div><strong>Offer discount:</strong> {Number(summary?.offerDiscount || 0).toFixed(2)} {currencyLabel}</div>
+                <div><strong>Coupon discount:</strong> {Number(summary?.couponDiscount || 0).toFixed(2)} {currencyLabel}</div>
+                <div><strong>Points discount:</strong> {Number(summary?.pointsDiscount || 0).toFixed(2)} {currencyLabel}</div>
+                <div><strong>Delivery fee:</strong> {Number(summary?.deliveryFee || 0).toFixed(2)} {currencyLabel}</div>
+                <div><strong>VAT:</strong> {Number(summary?.vatAmount || 0).toFixed(2)} {currencyLabel}</div>
+                <div><strong>Used points:</strong> {Number(summary?.usedPoints || 0)}</div>
                 <div style={{ fontWeight: "700", fontSize: "20px", marginTop: "6px" }}>
-                  ???????? ???????: {Number(summary?.finalTotal || 0).toFixed(2)} {country === "Egypt" ? "?.?" : "?.?"}
+                  Final total: {Number(summary?.finalTotal || 0).toFixed(2)} {currencyLabel}
                 </div>
               </div>
             </div>
 
             <div style={{ display: "flex", gap: "12px", marginTop: "20px", flexWrap: "wrap" }}>
               <button className="secondary-btn" type="button" onClick={() => navigate("/cart")}>
-                ???? ??? ?????
+                Back to Cart
               </button>
 
               <button className="primary-btn" type="button" onClick={handleConfirm} disabled={confirming}>
-                {confirming ? "???? ????? ?????..." : "????? ?????"}
+                {confirming ? "Confirming order..." : "Confirm Order"}
               </button>
             </div>
           </>

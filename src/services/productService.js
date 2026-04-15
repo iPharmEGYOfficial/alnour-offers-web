@@ -70,9 +70,11 @@ export async function getProducts({
   search = "",
   offersOnly = false
 } = {}) {
-  const response = await apiClient.get("/products");
-  const normalized = normalizeProductsPayload(response?.data);
+ const response = await apiClient.get(
+  `/api/products?page=${page}&pageSize=${pageSize}&search=${search || ""}`
+);
 
+  const normalized = normalizeProductsPayload(response?.data);
   let items = normalized.items;
 
   if (search) {
@@ -95,15 +97,10 @@ export async function getProducts({
   items = items.filter((x) => Number(x.stockQty ?? 0) > 0);
   items = items.filter((x) => Number(x.price ?? 0) > 0);
 
-  const totalCount = items.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-  const start = (page - 1) * pageSize;
-  const pagedItems = items.slice(start, start + pageSize);
-
   return {
-    items: pagedItems,
-    totalPages,
-    totalCount
+    items,
+    totalPages: normalized.totalPages,
+    totalCount: normalized.totalCount
   };
 }
 

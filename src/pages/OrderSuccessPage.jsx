@@ -12,8 +12,8 @@ export default function OrderSuccessPage() {
 
       <main className="container">
         <div className="hero-card" style={{ textAlign: "center" }}>
-          <h1 style={{ fontSize: "32px" }}>?? ????? ????? ?????</h1>
-          <p className="subtle">????? ??! ?? ?????? ???? ?????</p>
+          <h1 style={{ fontSize: "32px" }}>Order Created Successfully</h1>
+          <p className="subtle">Thank you. Your order has been received successfully.</p>
 
           <div
             style={{
@@ -23,7 +23,7 @@ export default function OrderSuccessPage() {
               background: "rgba(255,255,255,0.7)"
             }}
           >
-            <h2>??? ?????</h2>
+            <h2>Order Number</h2>
             <h1 style={{ fontSize: "40px", margin: "10px 0" }}>#{orderId}</h1>
           </div>
 
@@ -37,15 +37,15 @@ export default function OrderSuccessPage() {
             }}
           >
             <Link className="primary-btn" to={`/orders/${orderId}`}>
-              ?????? ?????
+              View Order
             </Link>
 
             <Link className="secondary-btn" to={`/orders/${orderId}/invoice`}>
-              ??? ????????
+              Open Invoice
             </Link>
 
             <Link className="secondary-btn" to="/offers">
-              ?????? ??????
+              Back to Offers
             </Link>
           </div>
         </div>
@@ -53,12 +53,12 @@ export default function OrderSuccessPage() {
         <section className="home-section">
           <div className="section-head">
             <div>
-              <h2>?????? ?? ????? ???? ??? ?????</h2>
-              <p>????? ??????? ??? ??????? ???????? ?? ????????? ?? ????? ???? ??????</p>
+              <h2>Share your order experience</h2>
+              <p>Invite friends or follow our pharmacy channels for more updates and future offers.</p>
             </div>
           </div>
 
-          <SocialBar title="????? ???????? ??? ????? ?????" compact />
+          <SocialBar title="Share this order with your contacts" compact />
         </section>
       </main>
 

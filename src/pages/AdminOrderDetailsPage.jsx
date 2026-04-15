@@ -34,29 +34,29 @@ export default function AdminOrderDetailsPage() {
 
       <main className="container">
         <div className="hero-card">
-          <h2>?????? ????? ??????? #{orderId}</h2>
-          <p className="subtle">????? ?????? + ????? + ??????? ???????</p>
+          <h2>Admin Order Details #{orderId}</h2>
+          <p className="subtle">Review customer details, items, payment method, and current status.</p>
         </div>
 
         <div className="admin-order-layout">
           <section className="hero-card">
-            <h3 style={{ marginTop: 0 }}>?????? ?????</h3>
+            <h3 style={{ marginTop: 0 }}>Order Information</h3>
 
             <div className="admin-meta-grid">
               <div className="admin-meta-card">
-                <span>??????</span>
-                <strong>{data?.customerName || "????"}</strong>
+                <span>Customer</span>
+                <strong>{data?.customerName || "Unknown Customer"}</strong>
               </div>
               <div className="admin-meta-card">
-                <span>??????</span>
+                <span>Phone</span>
                 <strong>{data?.phone || "-"}</strong>
               </div>
               <div className="admin-meta-card">
-                <span>?????</span>
+                <span>Payment</span>
                 <strong>{data?.paymentMethod || "-"}</strong>
               </div>
               <div className="admin-meta-card">
-                <span>?????? ???????</span>
+                <span>Current Status</span>
                 <strong>{getStatusLabel(status)}</strong>
               </div>
             </div>
@@ -68,37 +68,37 @@ export default function AdminOrderDetailsPage() {
             <div className="admin-row-actions" style={{ marginTop: "20px" }}>
               <a
                 className="secondary-btn"
-                href={`https://wa.me/966500000000?text=${encodeURIComponent(`??????? ????? ??? ????? ???? ??? ${orderId} ?????? ????: ${getStatusLabel(status)}`)}`}
+                href={`https://wa.me/966500000000?text=${encodeURIComponent(`Your order #${orderId} status is now ${getStatusLabel(status)}.`)}`}
                 target="_blank"
                 rel="noreferrer"
               >
-                ????? ??????
+                Notify Customer
               </a>
 
               <Link className="secondary-btn" to={`/orders/${orderId}/invoice`}>
-                ??? ????????
+                Open Invoice
               </Link>
             </div>
           </section>
 
           <section className="hero-card">
-            <h3 style={{ marginTop: 0 }}>????? ?????</h3>
+            <h3 style={{ marginTop: 0 }}>Order Items</h3>
 
             {items.length === 0 ? (
-              <div className="status-box">?? ???? ????? ????? ???? ?????</div>
+              <div className="status-box">No order items available.</div>
             ) : (
               <div style={{ display: "grid", gap: "10px" }}>
                 {items.map((item, index) => (
                   <div key={index} className="admin-item-row">
                     <div>
-                      <strong>{item.productName || item.name || "????"}</strong>
+                      <strong>{item.productName || item.name || "Unnamed Product"}</strong>
                       <p className="subtle">{item.barcode || ""}</p>
                     </div>
                     <div>
-                      <strong>× {item.qty || item.quantity || 0}</strong>
+                      <strong>x {item.qty || item.quantity || 0}</strong>
                     </div>
                     <div>
-                      <strong>{Number(item.price || 0).toFixed(2)}</strong>
+                      <strong>{Number(item.price || item.unitPrice || 0).toFixed(2)}</strong>
                     </div>
                   </div>
                 ))}

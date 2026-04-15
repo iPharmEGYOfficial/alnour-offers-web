@@ -91,27 +91,27 @@ export default function OffersPage() {
 
       <main className="container">
         <div className="hero-card">
-          <h1 style={{ marginTop: 0 }}>?????? ?????????</h1>
+          <h1 style={{ marginTop: 0 }}>Today&apos;s Offers</h1>
           <p className="subtle">
-            ?????? ?????? ????????: <strong>{runtimeLabel}</strong>
+            Current runtime: <strong>{runtimeLabel}</strong>
           </p>
 
           <div className="offers-search-row">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="???? ???? ?????? ?? ????????"
+              placeholder="Search by product name, barcode, or brand"
               className="admin-search-input"
             />
-            <button className="primary-btn" onClick={doSearch}>???</button>
+            <button className="primary-btn" onClick={doSearch}>Search</button>
           </div>
         </div>
 
         <section className="home-section">
           <div className="section-head">
             <div>
-              <h2>???? ??????</h2>
-              <p>???? ??? ???? ???????? ???????</p>
+              <h2>Top Offers</h2>
+              <p>Highlighted offer items from the live pharmacy feed</p>
             </div>
           </div>
 
@@ -125,8 +125,8 @@ export default function OffersPage() {
         <section className="home-section">
           <div className="section-head">
             <div>
-              <h2>?????? ?????</h2>
-              <p>?????? ????? ?? ???????? ?????? ????? ?????</p>
+              <h2>Featured Products</h2>
+              <p>Popular products selected from the current pharmacy catalog</p>
             </div>
           </div>
 
@@ -140,15 +140,15 @@ export default function OffersPage() {
         <section className="home-section">
           <div className="section-head">
             <div>
-              <h2>?? ????????</h2>
-              <p>????? ???????? ??????? ??? ???? ??????? ??????</p>
+              <h2>All Products</h2>
+              <p>Browse the live inventory available for customer viewing</p>
             </div>
           </div>
 
           {loading ? (
-            <div className="status-box">???? ????? ????????...</div>
+            <div className="status-box">Loading products...</div>
           ) : items.length === 0 ? (
-            <div className="status-box">?? ???? ?????? ?????</div>
+            <div className="status-box">No products found.</div>
           ) : (
             <div className="products-grid-inline">
               {items.map((p) => (
@@ -159,11 +159,11 @@ export default function OffersPage() {
 
           <div className="pagination-row">
             <button className="secondary-btn" onClick={goPrev} disabled={page <= 1}>
-              ??????
+              Previous
             </button>
-            <span className="subtle">???? {page} ?? {totalPages}</span>
+            <span className="subtle">Page {page} of {totalPages}</span>
             <button className="secondary-btn" onClick={goNext} disabled={page >= totalPages}>
-              ??????
+              Next
             </button>
           </div>
         </section>
