@@ -4,7 +4,8 @@ import HeroBanner from "../components/home/HeroBanner";
 import PromoStrip from "../components/home/PromoStrip";
 import CategoryGrid from "../components/home/CategoryGrid";
 import AdSlots from "../components/home/AdSlots";
-import FeaturedPreview from "../components/home/FeaturedPreview";
+import FeaturedProductsSection from "../components/products/FeaturedProductsSection";
+import LivePharmacySection from "../components/products/LivePharmacySection";
 
 export default function HomePage() {
   return (
@@ -13,10 +14,16 @@ export default function HomePage() {
 
       <main className="container home-layout">
         <HeroBanner />
+
         <PromoStrip />
+
         <CategoryGrid />
+
+        <FeaturedProductsSection />
+
+        <LivePharmacySection />
+
         <AdSlots />
-        <FeaturedPreview />
       </main>
 
       <Footer />

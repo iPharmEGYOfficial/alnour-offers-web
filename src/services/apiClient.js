@@ -1,5 +1,9 @@
-import axios from "axios";
-import { getApiBaseUrl, getBridgeKey, shouldUseBridgeHeaders } from "../config/runtimeConfig";
+﻿import axios from "axios";
+import {
+  getApiBaseUrl,
+  getBridgeKey,
+  shouldUseBridgeHeaders
+} from "../config/runtimeConfig";
 
 const apiClient = axios.create({
   baseURL: getApiBaseUrl(),
@@ -18,10 +22,24 @@ apiClient.interceptors.request.use(
       }
     }
 
-    console.log("API Request:", `${config.baseURL}${config.url}`);
+    console.log("API Request:", `${config.baseURL || ""}${config.url || ""}`);
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    console.error("API Request Error:", error);
+    return Promise.reject(error);
+  }
+);
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error(
+      "API Response Error:",
+      error?.response?.data || error?.message || error
+    );
+    return Promise.reject(error);
+  }
 );
 
 export default apiClient;

@@ -1,4 +1,4 @@
-export const runtimeModes = {
+﻿export const runtimeModes = {
   LOCAL: "local",
   BRIDGE: "bridge",
   PRODUCTION: "production"
@@ -19,14 +19,14 @@ export function getApiBaseUrl() {
   const mode = getRuntimeMode();
 
   if (mode === runtimeModes.BRIDGE) {
-    return import.meta.env.VITE_BRIDGE_BASE_URL || "http://127.0.0.1:5192";
+    return import.meta.env.VITE_BRIDGE_BASE_URL || "https://api-bridge.ipharmegy.com";
   }
 
   if (mode === runtimeModes.PRODUCTION) {
-    return import.meta.env.VITE_API_BASE_URL || "https://api.example.com";
+    return import.meta.env.VITE_API_BASE_URL || "https://api-bridge.ipharmegy.com";
   }
 
-  return import.meta.env.VITE_API_BASE_URL || "http://localhost:5193";
+  return import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5207";
 }
 
 export function getBridgeKey() {
@@ -34,7 +34,8 @@ export function getBridgeKey() {
 }
 
 export function shouldUseBridgeHeaders() {
-  return getRuntimeMode() === runtimeModes.BRIDGE;
+  const mode = getRuntimeMode();
+  return mode === runtimeModes.BRIDGE || mode === runtimeModes.PRODUCTION;
 }
 
 export function getRuntimeLabel() {
