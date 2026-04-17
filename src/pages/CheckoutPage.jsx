@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
@@ -249,7 +249,7 @@ export default function CheckoutPage() {
                       paddingBottom: "8px"
                     }}
                   >
-                    <span>{item.productName} × {item.qty}</span>
+                    <span>{item.productName} Ã— {item.qty}</span>
                     <span>{(Number(item.price) * Number(item.qty)).toFixed(2)} {currencyLabel}</span>
                   </div>
                 ))}
@@ -372,3 +372,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+

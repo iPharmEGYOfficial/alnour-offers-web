@@ -17,3 +17,4 @@ export default function TaxQrBlock({ data, caption = "QR ضريبي" }) {
     </div>
   );
 }
+

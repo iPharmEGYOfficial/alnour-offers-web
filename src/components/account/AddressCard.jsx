@@ -1,4 +1,4 @@
-export default function AddressCard({
+﻿export default function AddressCard({
   item,
   onDelete,
   onSetDefault
@@ -12,9 +12,9 @@ export default function AddressCard({
         </div>
 
         <div className="address-card__badges">
-          {item.isDefault && <span className="verified-badge">???????</span>}
+          {item.isDefault && <span className="verified-badge">افتراضي</span>}
           {item.latitude && item.longitude && (
-            <span className="meta-chip">Map Ready</span>
+            <span className="meta-chip">جاهز للخريطة</span>
           )}
         </div>
       </div>
@@ -24,9 +24,9 @@ export default function AddressCard({
           {item.country} / {item.city} / {item.district}
         </p>
         <p>
-          {item.street} {item.buildingNo ? `- ???? ${item.buildingNo}` : ""}
-          {item.floor ? ` - ??? ${item.floor}` : ""}
-          {item.apartment ? ` - ??? ${item.apartment}` : ""}
+          {item.street} {item.buildingNo ? `- مبنى ${item.buildingNo}` : ""}
+          {item.floor ? ` - دور ${item.floor}` : ""}
+          {item.apartment ? ` - شقة ${item.apartment}` : ""}
         </p>
 
         {item.notes && <p className="subtle">{item.notes}</p>}
@@ -41,11 +41,11 @@ export default function AddressCard({
       <div className="address-card__actions">
         {!item.isDefault && (
           <button className="secondary-btn" onClick={() => onSetDefault(item.id)}>
-            ????? ????????
+            تعيين كافتراضي
           </button>
         )}
         <button className="secondary-btn danger" onClick={() => onDelete(item.id)}>
-          ???
+          حذف
         </button>
       </div>
     </div>

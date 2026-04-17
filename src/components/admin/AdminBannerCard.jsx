@@ -1,4 +1,4 @@
-export default function AdminBannerCard({ item, onToggle }) {
+﻿export default function AdminBannerCard({ item, onToggle }) {
   return (
     <div className="admin-banner-card">
       <div className="admin-banner-card__head">
@@ -24,3 +24,4 @@ export default function AdminBannerCard({ item, onToggle }) {
     </div>
   );
 }
+

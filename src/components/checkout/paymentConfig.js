@@ -1,21 +1,21 @@
-export const paymentCatalog = {
+﻿export const paymentCatalog = {
   SaudiArabia: [
     {
       code: "CashOnDelivery",
-      label: "????? ??? ????????",
+      label: "الدفع عند الاستلام",
       type: "offline",
       country: "SaudiArabia"
     },
     {
       code: "CardGateway",
-      label: "?????? (??? / ???? / ?????)",
+      label: "بطاقة (مدى / فيزا / ماستر)",
       type: "gateway",
       provider: "GenericCardGateway",
       country: "SaudiArabia"
     },
     {
       code: "Tamara",
-      label: "?????",
+      label: "تمارا",
       type: "bnpl",
       provider: "Tamara",
       country: "SaudiArabia"
@@ -24,27 +24,27 @@ export const paymentCatalog = {
   Egypt: [
     {
       code: "CashOnDelivery",
-      label: "????? ??? ????????",
+      label: "الدفع عند الاستلام",
       type: "offline",
       country: "Egypt"
     },
     {
       code: "CardGateway",
-      label: "?????? ?????",
+      label: "بطاقة بنكية",
       type: "gateway",
       provider: "EgyptCardGateway",
       country: "Egypt"
     },
     {
       code: "Fawry",
-      label: "????",
+      label: "فوري",
       type: "cash_network",
       provider: "Fawry",
       country: "Egypt"
     },
     {
       code: "InstaPayManual",
-      label: "???????? (????? ????)",
+      label: "إنستا باي (تحويل يدوي)",
       type: "manual_transfer",
       provider: "InstaPay",
       country: "Egypt"
@@ -55,3 +55,4 @@ export const paymentCatalog = {
 export function getPaymentMethodsByCountry(country = "SaudiArabia") {
   return paymentCatalog[country] || paymentCatalog.SaudiArabia;
 }
+

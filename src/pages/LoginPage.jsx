@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
 import useAuthStore from "../store/authStore";
@@ -32,7 +32,7 @@ export default function LoginPage() {
     <div className="center-screen">
       <form className="auth-card" onSubmit={handleSubmit}>
         <h1>تسجيل الدخول</h1>
-        <p className="subtle">ادخل رقم الهاتف والرقم السري</p>
+        <p className="subtle">أدخل رقم الهاتف والرقم السري</p>
 
         <label>رقم الهاتف</label>
         <input
@@ -53,7 +53,7 @@ export default function LoginPage() {
         {error && <div className="error-box">{error}</div>}
 
         <button className="primary-btn full" disabled={loading}>
-          {loading ? "جارٍ الدخول..." : "دخول"}
+          {loading ? "جار تسجيل الدخول..." : "دخول"}
         </button>
       </form>
     </div>

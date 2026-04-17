@@ -1,4 +1,4 @@
-export default function PaymentCountrySelector({ country, onChange }) {
+﻿export default function PaymentCountrySelector({ country, onChange }) {
   return (
     <div className="country-switcher">
       <button
@@ -6,7 +6,7 @@ export default function PaymentCountrySelector({ country, onChange }) {
         className={country === "SaudiArabia" ? "country-btn active" : "country-btn"}
         onClick={() => onChange("SaudiArabia")}
       >
-        ????????
+        السعودية
       </button>
 
       <button
@@ -14,8 +14,9 @@ export default function PaymentCountrySelector({ country, onChange }) {
         className={country === "Egypt" ? "country-btn active" : "country-btn"}
         onClick={() => onChange("Egypt")}
       >
-        ???
+        مصر
       </button>
     </div>
   );
 }
+

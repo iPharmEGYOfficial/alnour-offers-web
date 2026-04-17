@@ -1,4 +1,4 @@
-import Header from "../components/common/Header";
+﻿import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
 import AccountSidebar from "../components/account/AccountSidebar";
 import AddressForm from "../components/account/AddressForm";
@@ -61,3 +61,4 @@ export default function AddressesPage() {
     </div>
   );
 }
+

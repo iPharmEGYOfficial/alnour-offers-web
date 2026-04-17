@@ -1,4 +1,4 @@
-.product-card {
+﻿.product-card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -18,7 +18,7 @@
 }
 
 .product-card.out {
-  opacity: 0.88;
+  opacity: 0.95;
 }
 
 .image-wrapper {
@@ -71,7 +71,7 @@
 }
 
 .product-rating {
-  font-size: 13px;
+  font-size: 15px;
   color: #f59e0b;
   display: flex;
   align-items: center;
@@ -85,7 +85,7 @@
 }
 
 .product-price {
-  margin-top: 2px;
+  margin-top: 4px;
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -94,7 +94,7 @@
 }
 
 .current {
-  color: var(--primary);
+  color: #059669;
   font-size: 18px;
   font-weight: 800;
 }
@@ -106,7 +106,7 @@
 }
 
 .no-price {
-  color: var(--accent);
+  color: #6b7280;
   font-weight: 700;
   font-size: 14px;
 }
@@ -115,7 +115,7 @@
   width: 100%;
   margin-top: auto;
   padding: 11px 14px;
-  background: var(--primary);
+  background: #2563eb;
   color: #ffffff;
   border: none;
   border-radius: 10px;
@@ -125,19 +125,13 @@
   transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
 }
 
-.add-btn:hover:not(:disabled) {
-  background: var(--primary-dark);
+.add-btn:hover {
+  background: #1d4ed8;
   transform: translateY(-1px);
 }
 
-.add-btn:active:not(:disabled) {
+.add-btn:active {
   transform: translateY(0);
-}
-
-.add-btn:disabled {
-  background: #cbd5e1;
-  color: #475569;
-  cursor: not-allowed;
 }
 
 .discount-badge {

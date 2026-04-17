@@ -1,4 +1,4 @@
-import { adminOrderStatuses, getStatusLabel } from "../../config/adminOrderStatuses";
+﻿import { adminOrderStatuses, getStatusLabel } from "../../config/adminOrderStatuses";
 
 export default function AdminStatusSelector({
   value,
@@ -7,7 +7,7 @@ export default function AdminStatusSelector({
 }) {
   return (
     <div className={compact ? "admin-status-selector compact" : "admin-status-selector"}>
-      <label>???? ????? ???????: <strong>{getStatusLabel(value)}</strong></label>
+      <label>حالة الطلب الحالية: <strong>{getStatusLabel(value)}</strong></label>
 
       <select value={value || "Pending"} onChange={(e) => onChange(e.target.value)}>
         {adminOrderStatuses.map((status) => (
@@ -19,3 +19,4 @@ export default function AdminStatusSelector({
     </div>
   );
 }
+

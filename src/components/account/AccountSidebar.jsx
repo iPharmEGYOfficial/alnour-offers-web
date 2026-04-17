@@ -1,10 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
+﻿import { Link, useLocation } from "react-router-dom";
 
 const links = [
-  { to: "/account", label: "??????" },
-  { to: "/account/addresses", label: "????????" },
-  { to: "/orders", label: "??????" },
-  { to: "/offers", label: "????????" }
+  { to: "/account", label: "حسابي" },
+  { to: "/account/addresses", label: "عناويني" },
+  { to: "/orders", label: "طلباتي" },
+  { to: "/offers", label: "المنتجات" }
 ];
 
 export default function AccountSidebar() {
@@ -12,7 +12,7 @@ export default function AccountSidebar() {
 
   return (
     <aside className="account-sidebar">
-      <h3>?????</h3>
+      <h3>حسابي</h3>
 
       <div className="account-sidebar__links">
         {links.map((item) => (
@@ -32,3 +32,4 @@ export default function AccountSidebar() {
     </aside>
   );
 }
+

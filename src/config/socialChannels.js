@@ -1,37 +1,51 @@
-export const socialChannels = [
+﻿export const socialChannels = [
   {
     key: "whatsapp",
-    label: "??????",
+    label: "واتساب",
     icon: "",
-    url: "https://wa.me/966500000000",
-    note: "????? ???? ?????? ???????"
+    url: "https://wa.me/966598918692",
+    note: "تواصل مباشر وسريع مع خدمة العملاء"
   },
   {
     key: "snapchat",
-    label: "???????",
+    label: "سناب شات",
     icon: "",
-    url: "https://www.snapchat.com/add/alnour_offers",
-    note: "???? ????? ?????? ??????"
+    url: "https://www.snapchat.com/add/alnoorparma",
+    note: "عروض يومية ومحتوى سريع"
   },
   {
     key: "telegram",
-    label: "???????",
+    label: "تيليجرام",
     icon: "",
-    url: "https://t.me/alnour_offers",
-    note: "???? ????? ????????"
+    url: "https://t.me/966598918692",
+    note: "تنبيهات وعروض ورسائل مختصرة"
   },
   {
     key: "viber",
-    label: "?????",
+    label: "فايبر",
     icon: "",
-    url: "viber://chat?number=%2B966500000000",
-    note: "????? ?????"
+    url: "viber://chat?number=%2B966598918692",
+    note: "قناة بديلة للتواصل المباشر"
   },
   {
-    key: "imo",
-    label: "IMO",
+    key: "facebook",
+    label: "فيسبوك",
     icon: "",
-    url: "https://imo.im/",
-    note: "???? ??? ?????"
+    url: "https://www.facebook.com/AlnoorPharmacyKhurmah",
+    note: "أخبار الصيدلية ومحتوى المجتمع المحلي"
+  },
+  {
+    key: "instagram",
+    label: "إنستجرام",
+    icon: "",
+    url: "https://www.instagram.com/alnourelkhurma",
+    note: "محتوى بصري وعروض ومنتجات"
+  },
+  {
+    key: "email",
+    label: "البريد الإلكتروني",
+    icon: "",
+    url: "mailto:alnoorparma@gmail.com",
+    note: "للاستفسارات الرسمية والتواصل الكتابي"
   }
 ];

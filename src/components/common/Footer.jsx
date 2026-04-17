@@ -1,44 +1,52 @@
-import SocialBar from "./SocialBar";
-
-export default function Footer() {
+﻿export default function Footer() {
   return (
-    <footer className="site-footer">
-      <div className="container">
-        <SocialBar title="????? ??????? ??????" compact />
-      </div>
-
-      <div className="container site-footer__inner">
-        <div className="footer-col">
-          <h3>Al-Nour Offers</h3>
-          <p>
-            ???? ???????? ????? ?????? ???? ???????? ?????? ?????????
-            ?????? ?????? ???????? ?????? ?????????? ??????.
-          </p>
+    <footer
+      style={{
+        marginTop: "40px",
+        borderTop: "1px solid #e5e7eb",
+        background: "#ffffff"
+      }}
+    >
+      <div
+        className="container"
+        style={{
+          padding: "20px 16px",
+          display: "grid",
+          gap: "10px"
+        }}
+      >
+        <div style={{ fontWeight: 800, fontSize: "16px", color: "#111827" }}>
+          صيدلية النور
         </div>
 
-        <div className="footer-col">
-          <h4>????? ?????</h4>
-          <a href="/">????????</a>
-          <a href="/offers">????????</a>
-          <a href="/cart">?????</a>
-          <a href="/orders">??????</a>
+        <div style={{ color: "#6b7280", fontSize: "14px", lineHeight: 1.8 }}>
+          متجر إلكتروني لعرض المنتجات الصحية والطبية وتجربة شراء سهلة وواضحة.
         </div>
 
-        <div className="footer-col">
-          <h4>??????? ??????</h4>
-          <span>Product Details</span>
-          <span>Maps & Addresses</span>
-          <span>Public Reviews</span>
-          <span>Saudi & Egypt Payments</span>
+        <div
+          style={{
+            display: "flex",
+            gap: "14px",
+            flexWrap: "wrap",
+            fontSize: "14px"
+          }}
+        >
+          <a href="/" style={footerLinkStyle}>الرئيسية</a>
+          <a href="/offers" style={footerLinkStyle}>المنتجات</a>
+          <a href="/cart" style={footerLinkStyle}>السلة</a>
+          <a href="/orders" style={footerLinkStyle}>طلباتي</a>
         </div>
-      </div>
 
-      <div className="footer-bottom">
-        <div className="container footer-bottom__inner">
-          <span> Al-Nour Offers</span>
-          <span>Prepared for Eng. Haitham Osama</span>
+        <div style={{ color: "#9ca3af", fontSize: "12px" }}>
+          جميع الحقوق محفوظة لصيدلية النور
         </div>
       </div>
     </footer>
   );
 }
+
+const footerLinkStyle = {
+  color: "#2563eb",
+  textDecoration: "none",
+  fontWeight: 600
+};

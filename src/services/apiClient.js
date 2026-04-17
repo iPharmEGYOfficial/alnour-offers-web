@@ -1,13 +1,9 @@
 ﻿import axios from "axios";
-import {
-  getApiBaseUrl,
-  getBridgeKey,
-  shouldUseBridgeHeaders
-} from "../config/runtimeConfig";
+import runtimeConfig from "../config/runtimeConfig";
 
 const apiClient = axios.create({
-  baseURL: getApiBaseUrl(),
-  timeout: 30000,
+  baseURL: runtimeConfig.apiBaseUrl,
+  timeout: 20000,
   headers: {
     "Content-Type": "application/json"
   }
@@ -15,31 +11,20 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    if (shouldUseBridgeHeaders()) {
-      const key = getBridgeKey();
-      if (key) {
-        config.headers["X-Bridge-Key"] = key;
-      }
+    config.headers = config.headers || {};
+
+    if (runtimeConfig.bridgeKey) {
+      config.headers["X-Bridge-Key"] = runtimeConfig.bridgeKey;
     }
 
-    console.log("API Request:", `${config.baseURL || ""}${config.url || ""}`);
     return config;
   },
-  (error) => {
-    console.error("API Request Error:", error);
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
-    console.error(
-      "API Response Error:",
-      error?.response?.data || error?.message || error
-    );
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export default apiClient;

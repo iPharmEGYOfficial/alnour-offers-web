@@ -1,4 +1,4 @@
-function renderStars(value) {
+﻿function renderStars(value) {
   const rounded = Math.round(Number(value || 0));
   return "".repeat(rounded) + "".repeat(5 - rounded);
 }
@@ -12,11 +12,12 @@ export default function ReviewSummary({ average = 0, total = 0 }) {
       </div>
 
       <div className="review-summary__meta">
-        <h3>????? ???????</h3>
+        <h3>ملخص التقييمات</h3>
         <p>
-          ????? ??????? ????? ??? <strong>{total}</strong> ??????
+          بناءً على <strong>{total}</strong> مراجعة
         </p>
       </div>
     </div>
   );
 }
+

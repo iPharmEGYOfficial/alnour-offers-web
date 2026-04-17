@@ -1,4 +1,4 @@
-export default function PaymentMethodSelector({
+﻿export default function PaymentMethodSelector({
   methods = [],
   selectedMethod = "",
   onChange
@@ -23,3 +23,4 @@ export default function PaymentMethodSelector({
     </div>
   );
 }
+

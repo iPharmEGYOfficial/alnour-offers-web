@@ -1,4 +1,4 @@
-import QRCode from 'qrcode.react';
+﻿import QRCode from 'qrcode.react';
 
 export default function TaxQrBlock({ data }) {
   return (
@@ -7,3 +7,4 @@ export default function TaxQrBlock({ data }) {
     </div>
   );
 }
+

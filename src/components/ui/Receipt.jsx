@@ -1,4 +1,4 @@
-import TaxQrBlock from './TaxQrBlock';
+﻿import TaxQrBlock from './TaxQrBlock';
 import '../styles/receipt.css';
 
 export default function Receipt({ data }) {
@@ -51,3 +51,4 @@ export default function Receipt({ data }) {
     </div>
   );
 }
+

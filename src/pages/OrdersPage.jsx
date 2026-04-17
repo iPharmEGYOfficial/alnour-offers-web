@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/common/Header";
 import useAuthStore from "../store/authStore";
@@ -16,8 +16,8 @@ export default function OrdersPage() {
   const loadOrders = async () => {
     try {
       setLoading(true);
-      const data = await getCustomerOrders(user.customerID);
-      setOrders(data);
+      const data = await getCustomerOrders(user?.customerID);
+      setOrders(Array.isArray(data) ? data : []);
     } catch {
       setOrders([]);
     } finally {
@@ -36,7 +36,7 @@ export default function OrdersPage() {
         </div>
 
         {loading ? (
-          <div className="status-box">جارٍ تحميل الطلبات...</div>
+          <div className="status-box">جار تحميل الطلبات...</div>
         ) : orders.length === 0 ? (
           <div className="status-box">لا توجد طلبات حتى الآن</div>
         ) : (

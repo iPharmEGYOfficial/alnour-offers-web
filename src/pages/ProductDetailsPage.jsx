@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
@@ -169,10 +169,10 @@ export default function ProductDetailsPage() {
 
               <div className="product-rating-inline">
                 <span className="rating-stars large">
-                  {"★".repeat(Math.round(averageRating || 0)) + "☆".repeat(5 - Math.round(averageRating || 0))}
+                  {"˜…".repeat(Math.round(averageRating || 0)) + "˜†".repeat(5 - Math.round(averageRating || 0))}
                 </span>
                 <span className="rating-meta big">
-                  {averageRating > 0 ? averageRating.toFixed(1) : "0.0"} · {reviews.length} reviews
+                  {averageRating > 0 ? averageRating.toFixed(1) : "0.0"} Â· {reviews.length} reviews
                 </span>
               </div>
 
@@ -273,3 +273,5 @@ export default function ProductDetailsPage() {
     </div>
   );
 }
+
+

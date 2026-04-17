@@ -1,4 +1,4 @@
-import Header from "../components/common/Header";
+﻿import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
 import AccountSidebar from "../components/account/AccountSidebar";
 import useAuthStore from "../store/authStore";
@@ -71,3 +71,4 @@ export default function AccountPage() {
     </div>
   );
 }
+

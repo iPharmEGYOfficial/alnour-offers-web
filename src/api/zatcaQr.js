@@ -1,4 +1,4 @@
-function toTLV(tag, value) {
+﻿function toTLV(tag, value) {
   const textEncoder = new TextEncoder();
   const valueBytes = textEncoder.encode(value);
 
@@ -26,3 +26,4 @@ export function generateZatcaQR({
 
   return btoa(String.fromCharCode(...tlv));
 }
+

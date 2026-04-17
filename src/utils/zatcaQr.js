@@ -21,3 +21,4 @@ export function generateZatcaQR({
 
   return btoa(String.fromCharCode(...tlv));
 }
+

@@ -1,4 +1,4 @@
-import { create } from "zustand";
+﻿import { create } from "zustand";
 
 const storedUser = localStorage.getItem("alnour_user");
 const parsedUser = storedUser ? JSON.parse(storedUser) : null;
@@ -17,3 +17,4 @@ const useAuthStore = create((set) => ({
 }));
 
 export default useAuthStore;
+

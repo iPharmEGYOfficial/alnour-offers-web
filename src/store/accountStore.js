@@ -1,4 +1,4 @@
-import { create } from "zustand";
+﻿import { create } from "zustand";
 
 const STORAGE_KEY = "alnour_addresses";
 
@@ -23,7 +23,7 @@ const useAccountStore = create((set, get) => ({
   addAddress(address) {
     const item = {
       id: crypto.randomUUID(),
-      label: address.label || "?????",
+      label: address.label || "المنزل",
       fullName: address.fullName || "",
       phone: address.phone || "",
       country: address.country || "Saudi Arabia",
@@ -95,3 +95,4 @@ const useAccountStore = create((set, get) => ({
 }));
 
 export default useAccountStore;
+

@@ -1,4 +1,4 @@
-import Receipt from './components/Receipt';
+﻿import Receipt from './components/Receipt';
 import { generateZatcaQR } from './utils/zatcaQr';
 
 export default function ReceiptTest() {
@@ -14,7 +14,7 @@ export default function ReceiptTest() {
   };
 
   invoice.qr = generateZatcaQR({
-    seller: '?????? ?????',
+    seller: 'فاتورة? فاتورة',
     vat: '1234567890',
     timestamp: invoice.date,
     total: invoice.total,
@@ -24,10 +24,11 @@ export default function ReceiptTest() {
   return (
     <div>
       <button onClick={() => window.print()}>
-        ?????
+        فاتورة
       </button>
 
       <Receipt data={invoice} />
     </div>
   );
 }
+
