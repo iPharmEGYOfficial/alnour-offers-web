@@ -1,137 +1,79 @@
-﻿import { Navigate, Route, Routes } from "react-router-dom";
-import useAuthStore from "../store/authStore";
+﻿import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import MainLayout from "../layout/MainLayout";
+import AdminLayout from "../layout/AdminLayout";
+import AuthLayout from "../layout/AuthLayout";
+
 import ProtectedRoute from "../components/common/ProtectedRoute";
 
+// Pages
 import HomePage from "../pages/HomePage";
-import LoginPage from "../pages/LoginPage";
 import OffersPage from "../pages/OffersPage";
-import ProductDetailsPage from "../pages/ProductDetailsPage";
 import CartPage from "../pages/CartPage";
-import CheckoutPage from "../pages/CheckoutPage";
-import OrderSuccessPage from "../pages/OrderSuccessPage";
 import OrdersPage from "../pages/OrdersPage";
 import OrderDetailsPage from "../pages/OrderDetailsPage";
-import InvoicePage from "../pages/InvoicePage";
-import RateOrderPage from "../pages/RateOrderPage";
-import RatingSuccessPage from "../pages/RatingSuccessPage";
+import CheckoutPage from "../pages/CheckoutPage";
+import OrderSuccessPage from "../pages/OrderSuccessPage";
+
 import AccountPage from "../pages/AccountPage";
 import AddressesPage from "../pages/AddressesPage";
+
+import LoginPage from "../pages/LoginPage";
+
+import ProductDetailsPage from "../pages/ProductDetailsPage";
 
 import AdminOrdersPage from "../pages/AdminOrdersPage";
 import AdminOrderDetailsPage from "../pages/AdminOrderDetailsPage";
 import AdminBannersPage from "../pages/AdminBannersPage";
-import InvoicePrintPage from "../pages/InvoicePrintPage";
+
+// ---------------------------------------------------------
 
 export default function AppRouter() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
   return (
-    <Routes>
-      {/* Public start */}
-      <Route path="/" element={<HomePage />} />
-      <Route
-        path="/start"
-        element={<Navigate to={isAuthenticated ? "/offers" : "/"} replace />}
-      />
-      <Route path="/login" element={<LoginPage />} />
+    <BrowserRouter>
 
-      {/* Public shopping discovery */}
-      <Route path="/offers" element={<OffersPage />} />
-      <Route path="/product/:productId" element={<ProductDetailsPage />} />
-      <Route path="/cart" element={<CartPage />} />
+      <Routes>
 
-      {/* Protected purchase completion */}
-      <Route
-        path="/checkout"
-        element={
-          <ProtectedRoute>
-            <CheckoutPage />
-          </ProtectedRoute>
-        }
-      />
+        {/* ================= PUBLIC ================= */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/offers" element={<OffersPage />} />
+          <Route path="/product/:id" element={<ProductDetailsPage />} />
+          <Route path="/cart" element={<CartPage />} />
+        </Route>
 
-      <Route
-        path="/order-success/:orderId"
-        element={
-          <ProtectedRoute>
-            <OrderSuccessPage />
-          </ProtectedRoute>
-        }
-      />
+        {/* ================= AUTH ================= */}
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<LoginPage />} />
+        </Route>
 
-      {/* Protected customer area */}
-      <Route
-        path="/orders"
-        element={
-          <ProtectedRoute>
-            <OrdersPage />
-          </ProtectedRoute>
-        }
-      />
+        {/* ================= PROTECTED USER ================= */}
+        <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
 
-      <Route
-        path="/orders/:orderId"
-        element={
-          <ProtectedRoute>
-            <OrderDetailsPage />
-          </ProtectedRoute>
-        }
-      />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/orders/:id" element={<OrderDetailsPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-success" element={<OrderSuccessPage />} />
 
-      <Route
-        path="/orders/:orderId/invoice"
-        element={
-          <ProtectedRoute>
-            <InvoicePage />
-          </ProtectedRoute>
-        }
-      />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/account/addresses" element={<AddressesPage />} />
 
-      <Route
-        path="/orders/:orderId/rate"
-        element={
-          <ProtectedRoute>
-            <RateOrderPage />
-          </ProtectedRoute>
-        }
-      />
+        </Route>
 
-      <Route
-        path="/orders/:orderId/rating-success"
-        element={
-          <ProtectedRoute>
-            <RatingSuccessPage />
-          </ProtectedRoute>
-        }
-      />
+        {/* ================= ADMIN ================= */}
+        <Route element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
 
-      <Route
-        path="/account"
-        element={
-          <ProtectedRoute>
-            <AccountPage />
-          </ProtectedRoute>
-        }
-      />
+          <Route path="/admin/orders" element={<AdminOrdersPage />} />
+          <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
+          <Route path="/admin/banners" element={<AdminBannersPage />} />
 
-      <Route
-        path="/account/addresses"
-        element={
-          <ProtectedRoute>
-            <AddressesPage />
-          </ProtectedRoute>
-        }
-      />
+        </Route>
 
-      {/* Operational pages */}
-      <Route path="/print" element={<InvoicePrintPage />} />
-      <Route path="/admin/orders" element={<AdminOrdersPage />} />
-      <Route path="/admin/orders/:orderId" element={<AdminOrderDetailsPage />} />
-      <Route path="/admin/banners" element={<AdminBannersPage />} />
+        {/* ================= FALLBACK ================= */}
+        <Route path="*" element={<MainLayout><h2 style={{padding:20}}>الصفحة غير موجودة</h2></MainLayout>} />
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      </Routes>
+
+    </BrowserRouter>
   );
 }
-

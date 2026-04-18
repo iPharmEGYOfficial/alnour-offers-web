@@ -1,122 +1,58 @@
 ﻿.receipt {
-  width: 80mm;
-  margin: 0 auto;
-  padding: 6mm;
+  width: 100%;
+  max-width: 700px;
+  margin: auto;
   background: #fff;
-  color: #000;
-  direction: rtl;
-  font-family: "Segoe UI", Tahoma;
-  font-size: 16px;
-  line-height: 1.6;
-  border: 2px solid #000;
-  border-radius: 14px;
+  padding: 20px;
+  font-family: Arial;
 }
 
 .receipt-header {
   text-align: center;
 }
 
-.receipt-logo {
-  width: 70px;
-  margin-bottom: 6px;
-}
-
-.receipt-title-ar {
-  font-size: 26px;
-  font-weight: 900;
-}
-
-.receipt-title-en {
-  font-size: 14px;
-  color: #333;
-}
-
-.receipt-divider {
-  border-top: 1px dashed #000;
-  margin: 10px 0;
-}
-
-.receipt-section-title {
-  font-weight: 800;
-  text-align: center;
-  font-size: 17px;
-}
-
-.receipt-meta {
-  font-size: 14px;
-}
-
-.receipt-items-table {
+.receipt-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 8px;
 }
 
-.receipt-items-table th,
-.receipt-items-table td {
-  border-bottom: 1px dashed #000;
+.receipt-table th,
+.receipt-table td {
+  border-bottom: 1px solid #ddd;
   padding: 6px;
+  text-align: center;
 }
 
 .receipt-total-box {
-  border: 2px solid #000;
-  border-radius: 12px;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-.receipt-grand-total {
-  font-size: 22px;
-  font-weight: 900;
   text-align: center;
+  font-size: 18px;
+  margin-top: 10px;
 }
 
 .qr-section {
   text-align: center;
-  margin-top: 12px;
-}
-
-.qr-frame {
-  border: 2px solid #000;
-  border-radius: 12px;
-  padding: 10px;
-  display: inline-block;
+  margin-top: 10px;
 }
 
 .receipt-footer {
   text-align: center;
-  font-size: 14px;
-  margin-top: 12px;
-  font-weight: bold;
+  margin-top: 10px;
 }
 
-/* PRINT FIX (NO SPLIT) */
-@page {
-  size: 80mm auto;
-  margin: 0;
-}
-
+/* ================= PRINT ================= */
 @media print {
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 80mm;
-  }
-
   body * {
-    visibility: hidden !important;
+    visibility: hidden;
   }
 
   .receipt, .receipt * {
-    visibility: visible !important;
+    visibility: visible;
   }
 
   .receipt {
     position: absolute;
     top: 0;
     left: 0;
-    width: 80mm;
-    border: none;
+    width: 100%;
   }
 }
-

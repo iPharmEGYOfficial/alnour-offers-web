@@ -1,96 +1,51 @@
-﻿import "./product-card.css";
-import useCartStore from "../../store/cartStore";
-
-function renderStars(value) {
-  const rounded = Math.round(Number(value || 0));
-  return "★".repeat(rounded) + "☆".repeat(5 - rounded);
-}
+﻿import useCartStore from "../../store/cartStore";
 
 export default function ProductCard({ product, onAddToCart }) {
-  const cartState = useCartStore();
-  const addToCart = cartState.addToCart || cartState.addItem;
+  const addItem = useCartStore((s) => s.addItem);
 
-  const name = product.productName || product.name || "منتج";
-  const image = product.primaryImageUrl || product.imageUrl || product.image || "/no-image.svg";
+  const name = product.productName || "منتج";
+  const image = product.primaryImageUrl || product.image || "/no-image.svg";
 
-  const price = Number(product.price ?? 0);
-  const original = Number(product.originalPrice ?? price);
+  const price = product.displayFinalPrice || "السعر عند الطلب";
+  const old = product.displayOriginalPrice;
+  const hasDiscount = product.hasDiscount;
+  const discount = product.discountPercent || 0;
 
-  const displayPrice = product.displayFinalPrice || product.displayPrice || `${price} ⃁`;
-  const displayOriginalPrice = product.displayOriginalPrice || `${original} ⃁`;
-
-  const incomingStock = Number(product.stockQty ?? product.stock ?? 1);
-  const stock = incomingStock > 0 ? incomingStock : 1;
-
-  const hasDiscount = Boolean(product.hasDiscount) || (original > price && price > 0);
-  const discount = Number(product.discountPercent ?? (hasDiscount ? Math.round(((original - price) / original) * 100) : 0));
-  const isOutOfStock = false;
+  const isOut = Number(product.stockQty ?? 0) <= 0;
 
   const handleAdd = () => {
-    const payload = {
-      ...product,
-      productID: product.productID || product.id || product.barcode || name,
-      productName: name,
-      stockQty: stock,
-      price,
-      originalPrice: original,
-      primaryImageUrl: image,
-      imageUrl: image,
-      qty: 1
-    };
-
-    if (typeof onAddToCart === "function") {
-      onAddToCart(payload);
-      return;
-    }
-
-    if (typeof addToCart === "function") {
-      addToCart(payload);
-    }
+    const payload = { ...product, qty: 1 };
+    if (onAddToCart) onAddToCart(payload);
+    else addItem(payload);
   };
 
   return (
-    <div className={`product-card ${isOutOfStock ? "out" : ""}`}>
-      {hasDiscount && (
-        <div className="discount-badge">-{discount}%</div>
-      )}
+    <div className={`product-card ${isOut ? "out" : ""}`}>
+      {hasDiscount && <div className="discount-badge">-{discount}%</div>}
+      {isOut && <div className="stock-badge">غير متوفر</div>}
 
       <div className="image-wrapper">
-        <img
-          src={image}
-          alt={name}
-          className="product-image"
-          loading="lazy"
-        />
+        <img src={image} alt={name} className="product-image" loading="lazy" />
       </div>
 
       <div className="product-body">
-        <div className="product-name" title={name}>
-          {name}
-        </div>
+        <div className="product-name" title={name}>{name}</div>
 
         <div className="product-brand">
-          {product.brandName || product.brand || "علامة عامة"}
-        </div>
-
-        <div className="product-rating">
-          {renderStars(product.averageRating || 0)}
-          <span className="reviews">({product.reviewsCount || 0})</span>
+          {product.brandName || product.brand || "Generic"}
         </div>
 
         <div className="product-price">
-          {product.hasVisiblePrice !== false && price > 0 ? (
-            <>
-              {hasDiscount && <span className="old">{displayOriginalPrice}</span>}
-              <span className="current">{displayPrice}</span>
-            </>
-          ) : (
-            <span className="no-price">السعر عند الطلب</span>
-          )}
+          <span className="current">{price}</span>
+          {old && <span className="old">~{old}~</span>}
         </div>
 
-        <button className="add-btn" onClick={handleAdd}>
-          أضف إلى السلة
+        <button
+          className="add-btn"
+          disabled={isOut}
+          onClick={handleAdd}
+        >
+          {isOut ? "غير متاح" : "أضف للسلة"}
         </button>
       </div>
     </div>

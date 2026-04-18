@@ -4,40 +4,30 @@ import productService from "../../services/productService";
 import "./product-grid.css";
 
 export default function ProductGrid() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState({ loading: true, items: [] });
 
   useEffect(() => {
-    load();
+    (async () => {
+      try {
+        const res = await productService.getProducts({ pageSize: 24 });
+        setState({ loading: false, items: res.items || [] });
+      } catch {
+        setState({ loading: false, items: [] });
+      }
+    })();
   }, []);
 
-  async function load() {
-    try {
-      setLoading(true);
-      const res = await productService.getProducts({
-        page: 1,
-        pageSize: 24
-      });
-      setProducts(res.items || []);
-    } catch (err) {
-      console.error("ERROR LOADING PRODUCTS", err);
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
+  if (state.loading) {
+    return <div className="status-box">جارٍ تحميل المنتجات...</div>;
   }
 
-  if (loading) {
-    return <div className="catalog-message">جارٍ تحميل المنتجات...</div>;
-  }
-
-  if (!products.length) {
-    return <div className="catalog-message">لا توجد منتجات متاحة حاليًا.</div>;
+  if (!state.items.length) {
+    return <div className="status-box">لا توجد منتجات حالياً</div>;
   }
 
   return (
     <div className="product-grid">
-      {products.map((p) => (
+      {state.items.map((p) => (
         <ProductCard key={p.productID} product={p} />
       ))}
     </div>
