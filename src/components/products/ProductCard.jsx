@@ -1,51 +1,67 @@
-﻿import useCartStore from "../../store/cartStore";
+﻿import "./product-card.css";
+import useCartStore from "../../store/cartStore";
+import formatCurrency from "../../utils/formatCurrency";
 
 export default function ProductCard({ product, onAddToCart }) {
-  const addItem = useCartStore((s) => s.addItem);
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const name = product.productName || "منتج";
-  const image = product.primaryImageUrl || product.image || "/no-image.svg";
+  const image = product.primaryImageUrl || "/no-image.svg";
 
-  const price = product.displayFinalPrice || "السعر عند الطلب";
-  const old = product.displayOriginalPrice;
-  const hasDiscount = product.hasDiscount;
-  const discount = product.discountPercent || 0;
+  const price = Number(product.price || 0);
+  const original = Number(product.originalPrice || price);
 
-  const isOut = Number(product.stockQty ?? 0) <= 0;
+  const hasDiscount = original > price && price > 0;
+  const discount = hasDiscount
+    ? Math.round(((original - price) / original) * 100)
+    : 0;
 
   const handleAdd = () => {
-    const payload = { ...product, qty: 1 };
-    if (onAddToCart) onAddToCart(payload);
-    else addItem(payload);
+    const payload = {
+      ...product,
+      qty: 1
+    };
+
+    if (onAddToCart) {
+      onAddToCart(payload);
+    } else {
+      addToCart(payload);
+    }
   };
 
   return (
-    <div className={`product-card ${isOut ? "out" : ""}`}>
-      {hasDiscount && <div className="discount-badge">-{discount}%</div>}
-      {isOut && <div className="stock-badge">غير متوفر</div>}
+    <div className="product-card">
+      {hasDiscount && (
+        <div className="discount-badge">-{discount}%</div>
+      )}
 
       <div className="image-wrapper">
-        <img src={image} alt={name} className="product-image" loading="lazy" />
+        <img src={image} alt={name} className="product-image" />
       </div>
 
       <div className="product-body">
-        <div className="product-name" title={name}>{name}</div>
-
-        <div className="product-brand">
-          {product.brandName || product.brand || "Generic"}
-        </div>
+        <div className="product-name">{name}</div>
 
         <div className="product-price">
-          <span className="current">{price}</span>
-          {old && <span className="old">~{old}~</span>}
+          {price > 0 ? (
+            <>
+              <span className="current">
+                {formatCurrency(price)}
+              </span>
+
+              {hasDiscount && (
+                <span className="old">
+                  {formatCurrency(original)}
+                </span>
+              )}
+            </>
+          ) : (
+            <span className="no-price">السعر عند الطلب</span>
+          )}
         </div>
 
-        <button
-          className="add-btn"
-          disabled={isOut}
-          onClick={handleAdd}
-        >
-          {isOut ? "غير متاح" : "أضف للسلة"}
+        <button className="add-btn" onClick={handleAdd}>
+          أضف للسلة
         </button>
       </div>
     </div>

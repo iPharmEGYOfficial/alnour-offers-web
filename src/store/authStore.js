@@ -1,20 +1,28 @@
 ﻿import { create } from "zustand";
 
-const storedUser = localStorage.getItem("alnour_user");
-const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+function safeParse(raw) {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+const storedUser = safeParse(localStorage.getItem("alnour_user"));
 
 const useAuthStore = create((set) => ({
-  user: parsedUser,
-  isAuthenticated: !!parsedUser,
+  user: storedUser,
+  isAuthenticated: !!storedUser,
+
   setUser: (user) => {
     localStorage.setItem("alnour_user", JSON.stringify(user));
     set({ user, isAuthenticated: true });
   },
+
   logout: () => {
     localStorage.removeItem("alnour_user");
     set({ user: null, isAuthenticated: false });
-  },
+  }
 }));
 
 export default useAuthStore;
-
