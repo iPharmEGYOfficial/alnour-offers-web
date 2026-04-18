@@ -1,6 +1,6 @@
 ﻿function renderStars(value) {
   const rounded = Math.round(Number(value || 0));
-  return "".repeat(rounded) + "".repeat(5 - rounded);
+  return "★".repeat(rounded) + "☆".repeat(5 - rounded);
 }
 
 export default function ReviewSummary({ average = 0, total = 0 }) {
@@ -20,4 +20,3 @@ export default function ReviewSummary({ average = 0, total = 0 }) {
     </div>
   );
 }
-

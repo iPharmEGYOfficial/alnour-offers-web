@@ -1,6 +1,6 @@
 ﻿function renderStars(value) {
   const rounded = Math.round(Number(value || 0));
-  return "".repeat(rounded) + "".repeat(5 - rounded);
+  return "★".repeat(rounded) + "☆".repeat(5 - rounded);
 }
 
 export default function ReviewList({ reviews = [] }) {
@@ -36,7 +36,7 @@ export default function ReviewList({ reviews = [] }) {
 
           {review.adminReply && (
             <div className="review-admin-reply">
-              <strong>التقييم:</strong>
+              <strong>رد الإدارة:</strong>
               <p>{review.adminReply}</p>
             </div>
           )}
@@ -45,4 +45,3 @@ export default function ReviewList({ reviews = [] }) {
     </div>
   );
 }
-

@@ -55,4 +55,3 @@
 export function getPaymentMethodsByCountry(country = "SaudiArabia") {
   return paymentCatalog[country] || paymentCatalog.SaudiArabia;
 }
-

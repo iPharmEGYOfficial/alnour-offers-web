@@ -1,4 +1,5 @@
-﻿export default function FeaturedPreview() {
-  return <div className="card">Featured Products</div>;
-}
+﻿import FeaturedProductsSection from "../products/FeaturedProductsSection";
 
+export default function FeaturedPreview() {
+  return <FeaturedProductsSection />;
+}

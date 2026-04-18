@@ -45,7 +45,7 @@
       </div>
 
       <p className="subtle">
-        يجب إرسال بيانات البطاقة إلى مزود دفع آمن يدعم tokenization و3DS.
+        يجب إرسال بيانات البطاقة إلى مزود دفع آمن يدعم Tokenization و3D Secure.
       </p>
     </div>
   );
@@ -67,7 +67,7 @@ export function FawryPanel() {
     <div className="payment-panel-box">
       <h4>فوري</h4>
       <p className="subtle">
-        سيتم إنشاء جلسة دفع من Payment Session وإظهار كود الدفع عند الربط.
+        سيتم إنشاء جلسة دفع وإظهار كود السداد عند الربط الفعلي.
       </p>
     </div>
   );
@@ -98,9 +98,8 @@ export function CashOnDeliveryPanel() {
     <div className="payment-panel-box">
       <h4>الدفع عند الاستلام</h4>
       <p className="subtle">
-        سيتم إنشاء الطلب بحالة Pending ثم يتم تأكيده من الإدارة.
+        سيتم إنشاء الطلب أولًا ثم مراجعته وتأكيده من الإدارة.
       </p>
     </div>
   );
 }
-

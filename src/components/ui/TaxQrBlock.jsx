@@ -1,10 +1,19 @@
-﻿import QRCode from 'qrcode.react';
+﻿import { QRCodeSVG } from "qrcode.react";
 
-export default function TaxQrBlock({ data }) {
+export default function TaxQrBlock({ data, caption = "QR ضريبي" }) {
+  if (!data) return null;
+
   return (
-    <div style={{ textAlign: 'center', marginTop: '10px' }}>
-      <QRCode value={data} size={120} />
+    <div className="qr-section no-break">
+      <div className="qr-frame">
+        <QRCodeSVG
+          value={data}
+          size={170}
+          level="H"
+          includeMargin={true}
+        />
+      </div>
+      <div className="qr-caption">{caption}</div>
     </div>
   );
 }
-

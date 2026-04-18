@@ -1,41 +1,44 @@
-﻿import ProductCard from "./ProductCard";
-import mockProducts from "../../services/mockProducts.json";
-import useCartStore from "../../store/cartStore";
+﻿import { useEffect, useState } from "react";
+import ProductCard from "./ProductCard";
+import { getFeaturedProducts } from "../../services/productService";
 import "./featured-products.css";
 import "./product-grid.css";
 
 export default function FeaturedProductsSection() {
-  const addToCart = useCartStore((s) => s.addItem);
+  const [items, setItems] = useState([]);
 
-  const featuredItems = (mockProducts || []).slice(0, 12);
+  useEffect(() => {
+    load();
+  }, []);
 
-  function handleAddToCart(product) {
-    addToCart({
-      ...product,
-      qty: 1
-    });
+  async function load() {
+    try {
+      const res = await getFeaturedProducts({
+        page: 1,
+        pageSize: 12
+      });
+      setItems(res.items || []);
+    } catch {
+      setItems([]);
+    }
   }
+
+  if (!items.length) return null;
 
   return (
     <section className="catalog-section">
       <div className="catalog-section__head">
         <div>
           <h2>الأجهزة الطبية المميزة</h2>
-          <p>مجموعة مختارة من الأجهزة الطبية بصور حقيقية من الصيدلية</p>
+          <p>مجموعة مختارة من المنتجات المصورة داخل الكتالوج المحلي</p>
         </div>
       </div>
 
       <div className="product-grid">
-        {featuredItems.map((item) => (
-          <ProductCard
-            key={item.productID}
-            product={item}
-            onAddToCart={handleAddToCart}
-          />
+        {items.map((item) => (
+          <ProductCard key={item.productID} product={item} />
         ))}
       </div>
     </section>
   );
 }
-
-

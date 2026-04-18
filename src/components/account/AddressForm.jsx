@@ -4,7 +4,7 @@ const initialState = {
   label: "",
   fullName: "",
   phone: "",
-  country: "Saudi Arabia",
+  country: "المملكة العربية السعودية",
   city: "",
   district: "",
   street: "",
@@ -27,12 +27,18 @@ export default function AddressForm({ onSave }) {
   const useMockLocation = () => {
     setForm((prev) => ({
       ...prev,
-      city: prev.city || "Jeddah",
-      district: prev.district || "Al Zahra",
-      street: prev.street || "Prince Sultan Road",
-      latitude: prev.latitude || "21.543333",
-      longitude: prev.longitude || "39.172779",
-      notes: prev.notes || "عنوان تجريبي للمساعدة في اختبار التوصيل داخل المشروع."
+      label: prev.label || "المنزل",
+      fullName: prev.fullName || "هيثم أسامة",
+      phone: prev.phone || "966598918692",
+      city: prev.city || "الخرمة",
+      district: prev.district || "حي النزهه",
+      street: prev.street || "طريق الملك فهد",
+      buildingNo: prev.buildingNo || "4273",
+      floor: prev.floor || "1",
+      apartment: prev.apartment || "2",
+      latitude: prev.latitude || "21.9167",
+      longitude: prev.longitude || "42.8500",
+      notes: prev.notes || "عنوان تجريبي منظم لاختبار التوصيل داخل المشروع."
     }));
   };
 
@@ -45,7 +51,7 @@ export default function AddressForm({ onSave }) {
   return (
     <form className="address-form" onSubmit={submit}>
       <div className="address-form__grid">
-        <input value={form.label} onChange={(e) => setValue("label", e.target.value)} placeholder="اسم العنوان" />
+        <input value={form.label} onChange={(e) => setValue("label", e.target.value)} placeholder="اسم العنوان (المنزل / العمل)" />
         <input value={form.fullName} onChange={(e) => setValue("fullName", e.target.value)} placeholder="الاسم الكامل" />
         <input value={form.phone} onChange={(e) => setValue("phone", e.target.value)} placeholder="رقم الهاتف" />
         <input value={form.country} onChange={(e) => setValue("country", e.target.value)} placeholder="الدولة" />
@@ -62,7 +68,7 @@ export default function AddressForm({ onSave }) {
       <textarea
         value={form.notes}
         onChange={(e) => setValue("notes", e.target.value)}
-        placeholder="ملاحظات إضافية"
+        placeholder="ملاحظات إضافية للمندوب أو للإدارة"
         rows={4}
       />
 
@@ -73,12 +79,12 @@ export default function AddressForm({ onSave }) {
             checked={form.isDefault}
             onChange={(e) => setValue("isDefault", e.target.checked)}
           />
-          <span>اجعل هذا العنوان افتراضيا</span>
+          <span>اجعل هذا العنوان افتراضيًا</span>
         </label>
 
         <div className="address-action-buttons">
           <button type="button" className="secondary-btn" onClick={useMockLocation}>
-            استخدام موقع تجريبي
+            تعبئة عنوان تجريبي
           </button>
           <button type="submit" className="primary-btn">
             حفظ العنوان

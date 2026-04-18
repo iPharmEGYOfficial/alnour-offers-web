@@ -67,7 +67,7 @@
 .product-brand {
   font-size: 12px;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .product-rating {
@@ -87,7 +87,7 @@
 .product-price {
   margin-top: 4px;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: wrap;
   gap: 8px;
   min-height: 28px;

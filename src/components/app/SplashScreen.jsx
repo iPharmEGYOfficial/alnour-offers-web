@@ -16,9 +16,9 @@
           <span style={{ color: "#fff", fontSize: 28, fontWeight: 900 }}>AN</span>
         </div>
 
-        <h1 style={{ marginBottom: 12 }}>Al-Nour Offers</h1>
+        <h1 style={{ marginBottom: 12 }}>صيدلية النور</h1>
         <p className="subtle" style={{ marginBottom: 16 }}>
-          Loading storefront, checking session, and preparing customer experience...
+          جارٍ تحميل الواجهة وتجهيز الجلسة وتحسين تجربة العميل...
         </p>
 
         <div
@@ -44,4 +44,3 @@
     </div>
   );
 }
-

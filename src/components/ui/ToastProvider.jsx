@@ -1,4 +1,4 @@
-﻿import { createContext, useContext, useState } from "react";
+﻿import { createContext, useContext, useMemo, useState } from "react";
 
 const ToastContext = createContext(null);
 
@@ -19,8 +19,10 @@ export default function ToastProvider({ children }) {
     }, 3000);
   };
 
+  const value = useMemo(() => ({ showToast }), []);
+
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={value}>
       {children}
 
       <div className="toast-container">

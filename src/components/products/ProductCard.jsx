@@ -1,19 +1,29 @@
 ﻿import "./product-card.css";
 import useCartStore from "../../store/cartStore";
 
-export default function ProductCard({ product, onAddToCart }) {
-  const addToCart = useCartStore((state) => state.addToCart);
+function renderStars(value) {
+  const rounded = Math.round(Number(value || 0));
+  return "★".repeat(rounded) + "☆".repeat(5 - rounded);
+}
 
-  const name = product.productName || product.name || "Unnamed Product";
+export default function ProductCard({ product, onAddToCart }) {
+  const cartState = useCartStore();
+  const addToCart = cartState.addToCart || cartState.addItem;
+
+  const name = product.productName || product.name || "منتج";
   const image = product.primaryImageUrl || product.imageUrl || product.image || "/no-image.svg";
+
   const price = Number(product.price ?? 0);
   const original = Number(product.originalPrice ?? price);
+
+  const displayPrice = product.displayFinalPrice || product.displayPrice || `${price} ⃁`;
+  const displayOriginalPrice = product.displayOriginalPrice || `${original} ⃁`;
 
   const incomingStock = Number(product.stockQty ?? product.stock ?? 1);
   const stock = incomingStock > 0 ? incomingStock : 1;
 
-  const hasDiscount = original > price && price > 0;
-  const discount = hasDiscount ? Math.round(((original - price) / original) * 100) : 0;
+  const hasDiscount = Boolean(product.hasDiscount) || (original > price && price > 0);
+  const discount = Number(product.discountPercent ?? (hasDiscount ? Math.round(((original - price) / original) * 100) : 0));
   const isOutOfStock = false;
 
   const handleAdd = () => {
@@ -25,7 +35,8 @@ export default function ProductCard({ product, onAddToCart }) {
       price,
       originalPrice: original,
       primaryImageUrl: image,
-      imageUrl: image
+      imageUrl: image,
+      qty: 1
     };
 
     if (typeof onAddToCart === "function") {
@@ -33,7 +44,9 @@ export default function ProductCard({ product, onAddToCart }) {
       return;
     }
 
-    addToCart(payload);
+    if (typeof addToCart === "function") {
+      addToCart(payload);
+    }
   };
 
   return (
@@ -57,31 +70,27 @@ export default function ProductCard({ product, onAddToCart }) {
         </div>
 
         <div className="product-brand">
-          {product.brandName || product.brand || "Generic"}
+          {product.brandName || product.brand || "علامة عامة"}
         </div>
 
         <div className="product-rating">
-          {"".repeat(Math.round(product.averageRating || 0))}
-          {"".repeat(5 - Math.round(product.averageRating || 0))}
+          {renderStars(product.averageRating || 0)}
           <span className="reviews">({product.reviewsCount || 0})</span>
         </div>
 
         <div className="product-price">
-          {price > 0 ? (
+          {product.hasVisiblePrice !== false && price > 0 ? (
             <>
-              <span className="current">{price} SAR</span>
-              {hasDiscount && <span className="old">{original} SAR</span>}
+              {hasDiscount && <span className="old">{displayOriginalPrice}</span>}
+              <span className="current">{displayPrice}</span>
             </>
           ) : (
-            <span className="no-price">Price on request</span>
+            <span className="no-price">السعر عند الطلب</span>
           )}
         </div>
 
-        <button
-          className="add-btn"
-          onClick={handleAdd}
-        >
-          Add to Cart
+        <button className="add-btn" onClick={handleAdd}>
+          أضف إلى السلة
         </button>
       </div>
     </div>
