@@ -1,7 +1,8 @@
-﻿import { useMemo } from "react";
+import "../styles/invoice.css";
+import { useMemo } from "react";
 import Receipt from "../components/Receipt";
 import { generateZatcaQR } from "../utils/zatcaQr";
-import "../styles/print.css";
+
 
 function getQueryParam(name) {
   const url = new URL(window.location.href);
@@ -90,4 +91,5 @@ export default function InvoicePrintPage() {
     </div>
   );
 }
+
 

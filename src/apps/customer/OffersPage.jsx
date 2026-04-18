@@ -1,35 +1,44 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import Header from "../components/common/Header";
-import Footer from "../components/common/Footer";
-import ProductCard from "../components/products/ProductCard";
-import productService from "../services/productService";
-import debounce from "../utils/debounce";
-import BarcodeScanner from "../components/ui/BarcodeScanner";
-import useCartStore from "../store/cartStore";
-import { useToast } from "../components/ui/ToastProvider";
+import ProductCard from "../../components/products/ProductCard";
+import productService from "../../services/productService";
+import debounce from "../../utils/debounce";
 
 export default function OffersPage() {
   const [search, setSearch] = useState("");
   const [items, setItems] = useState([]);
-  const [showScanner, setShowScanner] = useState(false);
-
-  const addToCart = useCartStore((s) => s.addToCart);
-  const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    load();
+    loadInitial();
   }, []);
 
-  async function load() {
-    const res = await productService.getProducts();
-    setItems(res.items || []);
+  async function loadInitial() {
+    try {
+      setLoading(true);
+      const res = await productService.getProducts({ page: 1, pageSize: 24 });
+      setItems(res.items || []);
+    } catch {
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const doSearch = useMemo(
     () =>
       debounce(async (q) => {
-        const res = await productService.searchProducts(q);
-        setItems(res.items || []);
+        try {
+          setLoading(true);
+          const res = await (productService.searchProducts
+            ? productService.searchProducts(q)
+            : productService.getProducts({ page: 1, pageSize: 24, search: q }));
+
+          setItems(res.items || []);
+        } catch {
+          setItems([]);
+        } finally {
+          setLoading(false);
+        }
       }, 300),
     []
   );
@@ -39,83 +48,48 @@ export default function OffersPage() {
     setSearch(value);
 
     if (!value.trim()) {
-      load();
+      loadInitial();
       return;
     }
 
     doSearch(value);
   }
 
-  // 🔥🔥🔥 MAGIC HERE
-  async function handleScan(code) {
-    setShowScanner(false);
-    setSearch(code);
-
-    const res = await productService.searchProducts(code);
-    const found = res.items || [];
-
-    if (found.length === 0) {
-      showToast("❌ المنتج غير موجود", "error");
-      return;
-    }
-
-    const product = found[0];
-
-    addToCart({
-      ...product,
-      qty: 1
-    });
-
-    showToast(`✅ تم إضافة ${product.productName} للسلة`, "success");
-
-    setItems(found); // optional: show result
-  }
-
   return (
-    <div>
-      <Header />
-
-      <div className="container">
-        <h1>منتجات الصيدلية</h1>
-
-        <div style={{ display: "flex", gap: "10px" }}>
-          <input
-            value={search}
-            onChange={handleChange}
-            placeholder="🔍 ابحث أو امسح باركود..."
-            style={{ flex: 1, padding: "12px" }}
-          />
-
-          <button
-            onClick={() => setShowScanner(true)}
-            style={{
-              padding: "12px",
-              borderRadius: "10px",
-              background: "#0ea5e9",
-              color: "#fff",
-              border: "none",
-              cursor: "pointer"
-            }}
-          >
-            📷
-          </button>
-        </div>
-
-        <div className="product-grid" style={{ marginTop: "20px" }}>
-          {items.map((p) => (
-            <ProductCard key={p.productID} product={p} />
-          ))}
+    <section className="catalog-section">
+      <div className="catalog-section__head">
+        <div>
+          <h2>منتجات صيدلية النور</h2>
+          <p>تصفح المنتجات وابحث بالاسم أو الباركود</p>
         </div>
       </div>
 
-      {showScanner && (
-        <BarcodeScanner
-          onScan={handleScan}
-          onClose={() => setShowScanner(false)}
+      <div style={{ marginBottom: 16 }}>
+        <input
+          value={search}
+          onChange={handleChange}
+          placeholder="ابحث بالاسم أو الباركود"
+          style={{
+            width: "100%",
+            padding: "12px 14px",
+            borderRadius: "12px",
+            border: "1px solid #d1d5db",
+            fontSize: "14px"
+          }}
         />
-      )}
+      </div>
 
-      <Footer />
-    </div>
+      {loading ? (
+        <div className="catalog-message">جارٍ تحميل النتائج...</div>
+      ) : items.length === 0 ? (
+        <div className="catalog-message">لا توجد منتجات مطابقة.</div>
+      ) : (
+        <div className="product-grid">
+          {items.map((item) => (
+            <ProductCard key={item.productID || item.barcode} product={item} />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

@@ -1,9 +1,10 @@
-﻿import { useEffect, useState } from "react";
+import "../styles/invoice.css";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
 import { getOrderDetails } from "../services/orderService";
 import { generateZatcaQR } from "../utils/zatcaQr";
-import "../styles/invoice-print-pro.css";
+
 
 export default function InvoicePage() {
   const { orderId } = useParams();
@@ -115,4 +116,5 @@ export default function InvoicePage() {
     </div>
   );
 }
+
 

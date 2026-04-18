@@ -1,3 +1,0 @@
-﻿import POSPage from "../pages/POSPage";
-
-<Route path="/pos" element={<POSPage />} />
