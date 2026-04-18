@@ -1,4 +1,4 @@
-﻿import Receipt from "./components/ui/Receipt";
+﻿import Receipt from './components/Receipt';
 import { generateZatcaQR } from './utils/zatcaQr';
 
 export default function ReceiptTest() {

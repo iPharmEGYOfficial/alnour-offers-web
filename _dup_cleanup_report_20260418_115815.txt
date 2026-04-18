@@ -1,0 +1,32 @@
+SAFE DUPLICATION CLEANUP REPORT
+Project Root : D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web
+Backup Root  : D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\_backup_dup_cleanup_20260418_115815
+Time         : 04/18/2026 11:58:15
+==================================================
+
+STEP 1: DIRECT DUPLICATE FILES
+--------------------------------------------------
+KEEP (still referenced): Duplicate Receipt outside ui
+  RemovePath: D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\components\Receipt.jsx
+  Referenced in:
+    - D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\pages\InvoicePrintPage.jsx
+    - D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\ReceiptTest.jsx
+
+REMOVED: Duplicate TaxQrBlock outside ui
+  Removed : D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\components\TaxQrBlock.jsx
+  Kept    : D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\components\ui\TaxQrBlock.jsx
+
+REMOVED: Duplicate ZATCA QR helper inside api
+  Removed : D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\api\zatcaQr.js
+  Kept    : D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\utils\zatcaQr.js
+
+STEP 2: VITE BACKUP FILES
+--------------------------------------------------
+REMOVED: D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\vite.config.backup_20260418_104451.js
+
+STEP 3: CONFIG DUPLICATION REPORT ONLY (NO DELETE)
+--------------------------------------------------
+DONE
+Backup Folder: D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\_backup_dup_cleanup_20260418_115815
+Report File  : D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\_dup_cleanup_report_20260418_115815.txt
+==================================================

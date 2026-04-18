@@ -1,28 +1,28 @@
 ﻿import apiClient from "./apiClient";
 
 export async function fetchProductsFromBridge() {
-  try {
-    const res = await apiClient.get("/api/shamel/products");
-    return res.data || [];
-  } catch (err) {
-    console.error("BRIDGE ERROR:", err);
-    return [];
-  }
+  const response = await apiClient.get("/api/shamel/products");
+  return response?.data || [];
 }
 
 export async function searchProductsInBridge(query) {
+  const response = await apiClient.get("/api/shamel/product-search", {
+    params: { q: query }
+  });
+  return response?.data || [];
+}
+
+export async function pingBridge() {
   try {
-    const res = await apiClient.get("/api/shamel/product-search", {
-      params: { q: query }
-    });
-    return res.data || [];
-  } catch (err) {
-    console.error("SEARCH ERROR:", err);
-    return [];
+    const response = await apiClient.get("/health");
+    return response?.data || "OK";
+  } catch {
+    return null;
   }
 }
 
 export default {
   fetchProductsFromBridge,
-  searchProductsInBridge
+  searchProductsInBridge,
+  pingBridge
 };

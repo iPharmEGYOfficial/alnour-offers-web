@@ -1,5 +1,5 @@
-﻿import TaxQrBlock from "./TaxQrBlock";
-import "../styles/receipt.css";
+import TaxQrBlock from "./TaxQrBlock";
+import "../../styles/receipt.css";
 import formatCurrency from "../../utils/formatCurrency";
 
 export default function Receipt({ data }) {

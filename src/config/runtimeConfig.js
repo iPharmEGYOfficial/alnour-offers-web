@@ -6,12 +6,21 @@ export const runtimeModes = {
 };
 
 export function getRuntimeMode() {
-  return "bridge"; // 🔥 FORCE PRODUCTION
+  return env.VITE_RUNTIME_MODE || runtimeModes.MOCK;
 }
 
-export const runtimeConfig = {
-  apiBaseUrl: env.VITE_API_BASE_URL || "http://localhost:5192",
-  bridgeKey: env.VITE_BRIDGE_KEY || "DEV-KEY"
+export function getRuntimeLabel() {
+  const mode = getRuntimeMode();
+
+  if (mode === runtimeModes.MOCK) return "وضع تجريبي";
+  if (mode === runtimeModes.BRIDGE) return "متصل بالشامل عبر Bridge";
+
+  return "غير معروف";
+}
+
+const runtimeConfig = {
+  apiBaseUrl: env.VITE_API_BASE_URL || "http://localhost:5207",
+  bridgeKey: env.VITE_BRIDGE_KEY || ""
 };
 
 export default runtimeConfig;
