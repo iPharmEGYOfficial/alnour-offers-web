@@ -1,4 +1,4 @@
-﻿import localProducts from "../data/products.json"; // 🔥 ده ملفك الجديد
+import localProducts from "./mockProducts.json"; // ?? ?? ???? ??????
 import { buildPriceModel } from "./pricingService";
 
 function normalize(item, index = 0) {
@@ -11,8 +11,8 @@ function normalize(item, index = 0) {
     productID: String(item.productID ?? item.barcode ?? index + 1),
     id: String(item.productID ?? item.barcode ?? index + 1),
 
-    productName: item.productName ?? item.name ?? "منتج",
-    name: item.productName ?? item.name ?? "منتج",
+    productName: item.productName ?? item.name ?? "????",
+    name: item.productName ?? item.name ?? "????",
 
     barcode: String(item.barcode ?? ""),
 
@@ -22,7 +22,7 @@ function normalize(item, index = 0) {
     categoryName: item.categoryName ?? item.productType ?? "General",
     category: item.categoryName ?? item.productType ?? "General",
 
-    // 💰 السعر (من JSON)
+    // ?? ????? (?? JSON)
     price: priceModel.price,
     originalPrice: priceModel.originalPrice,
     displayPrice: priceModel.displayPrice,
@@ -33,7 +33,7 @@ function normalize(item, index = 0) {
     stockQty: Number(item.stockQty ?? item.stock ?? 0),
     stock: Number(item.stockQty ?? item.stock ?? 0),
 
-    // 🖼️ صور (fix مهم)
+    // ??? ??? (fix ???)
     imageUrl:
       (item.imageUrl || "").replace("/src", "") || "/assets/no-image.png",
     primaryImageUrl:
@@ -55,7 +55,7 @@ function normalize(item, index = 0) {
     productType: item.productType || "general",
     isActive: item.isActive !== false,
 
-    source: "local-json", // 🔥 مهم
+    source: "local-json", // ?? ???
   };
 }
 
@@ -82,9 +82,9 @@ function filterLocal(items, query) {
   );
 }
 
-// 🔥 الأساسي
+// ?? ???????
 export async function getProducts({ pageSize = 24 } = {}) {
-  await new Promise((r) => setTimeout(r, 300)); // loading وهمي
+  await new Promise((r) => setTimeout(r, 300)); // loading ????
 
   const items = (localProducts || []).map(normalize);
 
@@ -95,7 +95,7 @@ export async function getProducts({ pageSize = 24 } = {}) {
   };
 }
 
-// 🔍 البحث
+// ?? ?????
 export async function searchProducts(query) {
   const q = String(query || "").trim();
 
@@ -112,7 +112,7 @@ export async function searchProducts(query) {
   };
 }
 
-// ⭐ Featured
+// ? Featured
 export async function getFeaturedProducts({ pageSize = 6 } = {}) {
   const res = await getProducts();
   return {
@@ -121,7 +121,7 @@ export async function getFeaturedProducts({ pageSize = 6 } = {}) {
   };
 }
 
-// 📦 منتج واحد
+// ?? ???? ????
 export async function getProductById(id) {
   const safeId = String(id || "").trim();
   const items = (localProducts || []).map(normalize);
@@ -134,7 +134,7 @@ export async function getProductById(id) {
   );
 }
 
-// ⭐ مراجعات (مؤقت)
+// ? ??????? (????)
 export async function getProductReviews() {
   return [];
 }

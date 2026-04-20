@@ -5,10 +5,7 @@ import AdminLayout from "../layout/AdminLayout";
 import AuthLayout from "../layout/AuthLayout";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 
-// Customer app pages
-import HomePage from "../apps/customer/HomePage";
-import OffersPage from "../apps/customer/OffersPage";
-import CartPage from "../apps/customer/CartPage";
+import customerRoutes from "./customerRouter";
 
 // Existing pages
 import OrdersPage from "../pages/OrdersPage";
@@ -18,7 +15,6 @@ import OrderSuccessPage from "../pages/OrderSuccessPage";
 import AccountPage from "../pages/AccountPage";
 import AddressesPage from "../pages/AddressesPage";
 import LoginPage from "../pages/LoginPage";
-import ProductDetailsPage from "../pages/ProductDetailsPage";
 import AdminOrdersPage from "../pages/AdminOrdersPage";
 import AdminOrderDetailsPage from "../pages/AdminOrderDetailsPage";
 import AdminBannersPage from "../pages/AdminBannersPage";
@@ -31,18 +27,26 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Customer routes */}
         <Route element={<MainLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/offers" element={<OffersPage />} />
-          <Route path="/product/:id" element={<ProductDetailsPage />} />
-          <Route path="/cart" element={<CartPage />} />
+          {customerRoutes.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
         </Route>
 
+        {/* Auth */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
         </Route>
 
-        <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+        {/* Protected customer/account/order routes */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/:id" element={<OrderDetailsPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
@@ -55,12 +59,20 @@ export default function AppRouter() {
           <Route path="/rating-success" element={<RatingSuccessPage />} />
         </Route>
 
-        <Route element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+        {/* Admin */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/admin/orders" element={<AdminOrdersPage />} />
           <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
           <Route path="/admin/banners" element={<AdminBannersPage />} />
         </Route>
 
+        {/* 404 */}
         <Route
           path="*"
           element={

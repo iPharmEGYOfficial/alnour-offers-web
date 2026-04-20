@@ -30,8 +30,8 @@ export default function OffersPage() {
   async function loadInitial() {
     try {
       setLoading(true);
-      const res = await productService.getProducts({ page: 1, pageSize: 60 });
-      const list = res.items || [];
+      const res = await productService.getProducts({ page: 1, pageSize: 100 });
+      const list = res?.items || [];
       setAllItems(list);
       setItems(list);
     } catch {
@@ -50,9 +50,13 @@ export default function OffersPage() {
 
           const res = await (productService.searchProducts
             ? productService.searchProducts(q)
-            : productService.getProducts({ page: 1, pageSize: 60, search: q }));
+            : productService.getProducts({
+                page: 1,
+                pageSize: 100,
+                search: q,
+              }));
 
-          setAllItems(res.items || []);
+          setAllItems(res?.items || []);
         } catch {
           setAllItems([]);
         } finally {
@@ -91,7 +95,7 @@ export default function OffersPage() {
       <div className="catalog-section__head">
         <div>
           <h2>الأجهزة الطبية ومنتجات العناية</h2>
-          <p>تصفح الأجهزة الطبية وابحث بالاسم أو الباركود أو الماركة</p>
+          <p>ابحث بالاسم أو الباركود أو الماركة، ثم أضف مباشرة إلى السلة</p>
         </div>
       </div>
 
@@ -106,6 +110,7 @@ export default function OffersPage() {
             borderRadius: "12px",
             border: "1px solid #d1d5db",
             fontSize: "14px",
+            outline: "none",
           }}
         />
       </div>
@@ -143,11 +148,20 @@ export default function OffersPage() {
       ) : items.length === 0 ? (
         <div className="catalog-message">لا توجد منتجات مطابقة.</div>
       ) : (
-        <div className="product-grid">
-          {items.map((item) => (
-            <ProductCard key={item.productID || item.barcode} product={item} />
-          ))}
-        </div>
+        <>
+          <div style={{ marginBottom: 12, color: "#64748b", fontWeight: 600 }}>
+            عدد النتائج: {items.length}
+          </div>
+
+          <div className="product-grid">
+            {items.map((item) => (
+              <ProductCard
+                key={item.productID || item.barcode}
+                product={item}
+              />
+            ))}
+          </div>
+        </>
       )}
     </section>
   );
