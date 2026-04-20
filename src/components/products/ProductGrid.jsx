@@ -10,6 +10,28 @@ export default function ProductGrid() {
     error: "",
   });
 
+  async function loadProducts() {
+    try {
+      setState((s) => ({ ...s, loading: true, error: "" }));
+
+      const res = await productService.getProducts({ pageSize: 24 });
+
+      setState({
+        loading: false,
+        items: res?.items ?? [], // 🔥 حماية
+        error: "",
+      });
+    } catch (err) {
+      console.error("❌ Product load error:", err);
+
+      setState({
+        loading: false,
+        items: [],
+        error: "تعذر تحميل المنتجات حالياً",
+      });
+    }
+  }
+
   useEffect(() => {
     let mounted = true;
 
@@ -21,11 +43,13 @@ export default function ProductGrid() {
 
         setState({
           loading: false,
-          items: res.items || [],
+          items: res?.items ?? [],
           error: "",
         });
-      } catch {
+      } catch (err) {
         if (!mounted) return;
+
+        console.error("❌ Product load error:", err);
 
         setState({
           loading: false,
@@ -40,22 +64,37 @@ export default function ProductGrid() {
     };
   }, []);
 
+  // ⏳ Loading
   if (state.loading) {
-    return <div className="status-box">جارٍ تحميل المنتجات...</div>;
+    return <div className="status-box">⏳ جارٍ تحميل المنتجات...</div>;
   }
 
+  // ❌ Error
   if (state.error) {
-    return <div className="status-box">{state.error}</div>;
+    return (
+      <div className="status-box">
+        ❌ {state.error}
+        <br />
+        <button onClick={loadProducts} className="retry-btn">
+          🔄 إعادة المحاولة
+        </button>
+      </div>
+    );
   }
 
+  // 📭 Empty
   if (!state.items.length) {
-    return <div className="status-box">لا توجد منتجات حالياً</div>;
+    return <div className="status-box">📭 لا توجد منتجات حالياً</div>;
   }
 
+  // ✅ Grid
   return (
     <div className="product-grid">
       {state.items.map((p) => (
-        <ProductCard key={p.productID || p.barcode} product={p} />
+        <ProductCard
+          key={p.productID || p.barcode || crypto.randomUUID()} // 🔥 fix
+          product={p}
+        />
       ))}
     </div>
   );
