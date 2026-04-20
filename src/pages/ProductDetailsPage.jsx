@@ -1,8 +1,8 @@
 ﻿import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
 import useCartStore from "../store/cartStore";
 import productService from "../services/productService";
 import formatCurrency from "../utils/formatCurrency";
-import { useEffect, useState } from "react";
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
@@ -11,6 +11,7 @@ export default function ProductDetailsPage() {
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeImage, setActiveImage] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -19,7 +20,11 @@ export default function ProductDetailsPage() {
       try {
         const item = await productService.getProductById(id);
         if (!mounted) return;
-        setProduct(item);
+
+        setProduct(item || null);
+        setActiveImage(
+          item?.primaryImageUrl || item?.imageUrl || "/no-image.svg",
+        );
       } finally {
         if (mounted) setLoading(false);
       }
@@ -29,6 +34,18 @@ export default function ProductDetailsPage() {
       mounted = false;
     };
   }, [id]);
+
+  const gallery = useMemo(() => {
+    if (!product) return [];
+    const items = [
+      product.primaryImageUrl,
+      product.imageUrl,
+      ...(Array.isArray(product.gallery) ? product.gallery : []),
+      product.barcodeImageUrl,
+    ].filter(Boolean);
+
+    return [...new Set(items)];
+  }, [product]);
 
   function handleAdd() {
     if (!product) return;
@@ -44,24 +61,18 @@ export default function ProductDetailsPage() {
     return <div className="catalog-message">المنتج غير موجود.</div>;
   }
 
-  const image = product.primaryImageUrl || product.imageUrl || "/no-image.svg";
-
   return (
     <section className="catalog-section">
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 420px) 1fr", gap: 20 }}>
-        <div
-          style={{
-            background: "#fff",
-            border: "1px solid #e5e7eb",
-            borderRadius: 16,
-            padding: 20,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(280px, 420px) 1fr",
+          gap: 20,
+        }}
+      >
+        <div style={imageCardStyle}>
           <img
-            src={image}
+            src={activeImage || "/no-image.svg"}
             alt={product.productName || product.name || "منتج"}
             style={{ maxWidth: "100%", maxHeight: 360, objectFit: "contain" }}
             onError={(e) => {
@@ -69,33 +80,104 @@ export default function ProductDetailsPage() {
               e.currentTarget.src = "/no-image.svg";
             }}
           />
+
+          {!!gallery.length && (
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                flexWrap: "wrap",
+                justifyContent: "center",
+                marginTop: 16,
+              }}
+            >
+              {gallery.map((img, index) => (
+                <button
+                  key={`${img}-${index}`}
+                  type="button"
+                  onClick={() => setActiveImage(img)}
+                  style={{
+                    border:
+                      activeImage === img
+                        ? "2px solid #2563eb"
+                        : "1px solid #d1d5db",
+                    borderRadius: 10,
+                    padding: 4,
+                    background: "#fff",
+                    cursor: "pointer",
+                  }}
+                >
+                  <img
+                    src={img}
+                    alt={`preview-${index}`}
+                    style={{
+                      width: 56,
+                      height: 56,
+                      objectFit: "contain",
+                      display: "block",
+                    }}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "/no-image.svg";
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div
-          style={{
-            background: "#fff",
-            border: "1px solid #e5e7eb",
-            borderRadius: 16,
-            padding: 20,
-            display: "grid",
-            gap: 12
-          }}
-        >
-          <h2 style={{ margin: 0 }}>{product.productName || product.name || "منتج"}</h2>
-          <div style={{ color: "#64748b" }}>الماركة: {product.brandName || product.brand || "-"}</div>
-          <div style={{ color: "#64748b" }}>القسم: {product.categoryName || product.category || "-"}</div>
+        <div style={detailsCardStyle}>
+          <h2 style={{ margin: 0 }}>
+            {product.productName || product.name || "منتج"}
+          </h2>
+
+          <div style={{ color: "#64748b" }}>
+            الماركة: {product.brandName || product.brand || "-"}
+          </div>
+
+          <div style={{ color: "#64748b" }}>
+            القسم: {product.categoryName || product.category || "-"}
+          </div>
+
           <div style={{ color: "#64748b" }}>
             الباركود: {product.barcode || "غير متوفر"}
           </div>
+
           <div style={{ fontWeight: 800, fontSize: 22 }}>
             {formatCurrency(product.price)}
           </div>
+
+          {Number(product.originalPrice || 0) > Number(product.price || 0) && (
+            <div style={{ color: "#94a3b8", textDecoration: "line-through" }}>
+              {formatCurrency(product.originalPrice)}
+            </div>
+          )}
+
           <div style={{ color: "#475569", lineHeight: 1.8 }}>
             {product.description || "لا يوجد وصف إضافي لهذا المنتج حاليًا."}
           </div>
 
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 8 }}>
-            <button onClick={handleAdd} style={primaryBtn}>
+          <div style={{ color: "#0f172a", fontWeight: 700 }}>
+            حالة التوفر:{" "}
+            {Number(product.stockQty ?? product.stock ?? 0) > 0
+              ? "متوفر"
+              : "غير متوفر"}
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              flexWrap: "wrap",
+              marginTop: 8,
+            }}
+          >
+            <button
+              onClick={handleAdd}
+              style={primaryBtn}
+              disabled={Number(product.stockQty ?? product.stock ?? 0) <= 0}
+            >
               أضف للسلة
             </button>
 
@@ -109,6 +191,26 @@ export default function ProductDetailsPage() {
   );
 }
 
+const imageCardStyle = {
+  background: "#fff",
+  border: "1px solid #e5e7eb",
+  borderRadius: 16,
+  padding: 20,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  flexDirection: "column",
+};
+
+const detailsCardStyle = {
+  background: "#fff",
+  border: "1px solid #e5e7eb",
+  borderRadius: 16,
+  padding: 20,
+  display: "grid",
+  gap: 12,
+};
+
 const primaryBtn = {
   padding: "10px 14px",
   borderRadius: 10,
@@ -116,7 +218,7 @@ const primaryBtn = {
   background: "#2563eb",
   color: "#fff",
   fontWeight: 700,
-  cursor: "pointer"
+  cursor: "pointer",
 };
 
 const secondaryLink = {
@@ -127,5 +229,5 @@ const secondaryLink = {
   background: "#fff",
   color: "#111827",
   textDecoration: "none",
-  fontWeight: 700
+  fontWeight: 700,
 };
