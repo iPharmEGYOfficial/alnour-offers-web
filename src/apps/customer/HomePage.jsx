@@ -3,15 +3,13 @@ import HeroBanner from "../../components/home/HeroBanner";
 import PromoStrip from "../../components/home/PromoStrip";
 import CategoryGrid from "../../components/home/CategoryGrid";
 import AdSlots from "../../components/home/AdSlots";
-import ProductGrid from "../../components/products/ProductGrid";
+import ProductGrid from "../../components/products/ProductGrid.jsx";
 
 export default function HomePage() {
   return (
     <>
       <HeroBanner />
-
       <PromoStrip />
-
       <CategoryGrid />
 
       <section style={{ padding: "15px" }}>
@@ -54,3 +52,4 @@ export default function HomePage() {
     </>
   );
 }
+

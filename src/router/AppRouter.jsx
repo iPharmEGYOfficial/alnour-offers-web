@@ -7,7 +7,6 @@ import ProtectedRoute from "../components/common/ProtectedRoute";
 
 import customerRoutes from "./customerRouter";
 
-// Existing pages
 import OrdersPage from "../pages/OrdersPage";
 import OrderDetailsPage from "../pages/OrderDetailsPage";
 import CheckoutPage from "../pages/CheckoutPage";
@@ -27,19 +26,16 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Customer routes */}
         <Route element={<MainLayout />}>
           {customerRoutes.map((route) => (
             <Route key={route.path} path={route.path} element={route.element} />
           ))}
         </Route>
 
-        {/* Auth */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
         </Route>
 
-        {/* Protected customer/account/order routes */}
         <Route
           element={
             <ProtectedRoute>
@@ -59,7 +55,6 @@ export default function AppRouter() {
           <Route path="/rating-success" element={<RatingSuccessPage />} />
         </Route>
 
-        {/* Admin */}
         <Route
           element={
             <ProtectedRoute>
@@ -72,7 +67,6 @@ export default function AppRouter() {
           <Route path="/admin/banners" element={<AdminBannersPage />} />
         </Route>
 
-        {/* 404 */}
         <Route
           path="*"
           element={

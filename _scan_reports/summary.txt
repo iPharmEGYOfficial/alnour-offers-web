@@ -1,0 +1,19 @@
+﻿ProjectRoot: D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web
+ScanTime: 04/20/2026 13:50:45
+SourceFiles: 70
+ImportsFound: 103
+BrokenImports: 3
+
+==== Broken Imports ====
+Importer: D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\apps\customer\HomePage.jsx
+Import:   ../../components/products/ProductGrid.jsx
+Target:   D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\components\products\ProductGrid.jsx
+----------------------------------------
+Importer: D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\apps\customer\OffersPage.jsx
+Import:   ../../components/products/ProductCard
+Target:   D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\components\products\ProductCard
+----------------------------------------
+Importer: D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\components\home\FeaturedPreview.jsx
+Import:   ../products/ProductCard
+Target:   D:\iPharmEGY_RUNTIME\AlNourOffers\alnour-offers-web\src\components\products\ProductCard
+----------------------------------------

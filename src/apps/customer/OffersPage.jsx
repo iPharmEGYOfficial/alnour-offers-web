@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import ProductCard from "../../components/products/ProductCard";
+import ProductCard from "../../components/products/ProductCard.jsx";
 import productService from "../../services/productService";
 import debounce from "../../utils/debounce";
 
@@ -50,11 +50,7 @@ export default function OffersPage() {
 
           const res = await (productService.searchProducts
             ? productService.searchProducts(q)
-            : productService.getProducts({
-                page: 1,
-                pageSize: 100,
-                search: q,
-              }));
+            : productService.getProducts({ page: 1, pageSize: 100, search: q }));
 
           setAllItems(res?.items || []);
         } catch {
@@ -179,3 +175,4 @@ function chipStyle(active) {
     fontSize: "13px",
   };
 }
+

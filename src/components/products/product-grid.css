@@ -4,3 +4,27 @@
   gap: 16px;
   padding: 16px 0;
 }
+
+.status-box {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.retry-btn {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.retry-btn:hover {
+  background: #1d4ed8;
+}

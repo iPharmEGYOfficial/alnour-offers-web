@@ -1,52 +1,60 @@
-﻿import { Link, useParams } from "react-router-dom";
-import Header from "../components/common/Header";
+﻿import { Link, useLocation } from "react-router-dom";
 
 export default function RatingSuccessPage() {
-  const { orderId } = useParams();
+  const location = useLocation();
+  const data = location.state || null;
 
   return (
-    <div className="page">
-      <Header />
-
-      <main className="container">
-        <div className="hero-card" style={{ textAlign: "center" }}>
-          <h1 style={{ fontSize: "32px" }}>تم استلام تقييمك بنجاح</h1>
-          <p className="subtle">شكرًا لك، تم حفظ تقييم الطلب رقم #{orderId}</p>
-
-          <div
-            style={{
-              marginTop: "20px",
-              padding: "20px",
-              borderRadius: "20px",
-              background: "rgba(255,255,255,0.7)"
-            }}
-          >
-            <h2 style={{ marginBottom: "10px" }}>اكتملت الخطوات بنجاح</h2>
-            <p className="subtle" style={{ marginBottom: 0 }}>
-              يمكنك الآن العودة إلى طلباتك أو متابعة العروض الجديدة.
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "12px",
-              justifyContent: "center",
-              marginTop: "24px",
-              flexWrap: "wrap"
-            }}
-          >
-            <Link to="/orders" className="secondary-btn">
-               العودة إلى طلباتي
-            </Link>
-
-            <Link to="/offers" className="primary-btn">
-              متابعة العروض 
-            </Link>
-          </div>
+    <section className="catalog-section">
+      <div className="catalog-section__head">
+        <div>
+          <h2>تم إرسال التقييم بنجاح ⭐</h2>
+          <p>شكرًا لك على مشاركتنا رأيك</p>
         </div>
-      </main>
-    </div>
+      </div>
+
+      <div className="catalog-message">
+        {data ? (
+          <>
+            تم حفظ تقييم الطلب رقم <strong>{data.orderNo}</strong> بعدد{" "}
+            <strong>{data.stars}</strong> نجوم.
+          </>
+        ) : (
+          <>تم حفظ التقييم بنجاح.</>
+        )}
+
+        <div
+          style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 16 }}
+        >
+          <Link to="/orders" style={primaryLink}>
+            العودة إلى طلباتي
+          </Link>
+          <Link to="/" style={secondaryLink}>
+            العودة للرئيسية
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }
 
+const primaryLink = {
+  display: "inline-block",
+  padding: "10px 14px",
+  borderRadius: 10,
+  background: "#2563eb",
+  color: "#fff",
+  textDecoration: "none",
+  fontWeight: 700,
+};
+
+const secondaryLink = {
+  display: "inline-block",
+  padding: "10px 14px",
+  borderRadius: 10,
+  border: "1px solid #d1d5db",
+  background: "#fff",
+  color: "#111827",
+  textDecoration: "none",
+  fontWeight: 700,
+};

@@ -8,20 +8,27 @@ export default function LivePharmacySection() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    load();
-  }, []);
+    let mounted = true;
 
-  async function load() {
-    try {
-      const res = await getProducts({
-        page: 1,
-        pageSize: 8
-      });
-      setItems(res.items || []);
-    } catch {
-      setItems([]);
-    }
-  }
+    (async () => {
+      try {
+        const res = await getProducts({
+          page: 1,
+          pageSize: 8,
+        });
+
+        if (!mounted) return;
+        setItems(res?.items || []);
+      } catch {
+        if (!mounted) return;
+        setItems([]);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   if (!items.length) return null;
 
@@ -36,7 +43,7 @@ export default function LivePharmacySection() {
 
       <div className="product-grid">
         {items.map((item) => (
-          <ProductCard key={item.productID} product={item} />
+          <ProductCard key={item.productID || item.barcode} product={item} />
         ))}
       </div>
     </section>

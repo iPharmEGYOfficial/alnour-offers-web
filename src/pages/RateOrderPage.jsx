@@ -1,112 +1,156 @@
 ﻿import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import Header from "../components/common/Header";
-import useAuthStore from "../store/authStore";
-import { submitRating } from "../services/orderService";
-import { useToast } from "../components/ui/ToastProvider";
+import { useNavigate, useParams, Link } from "react-router-dom";
+
+const STORAGE_KEY = "alnour_orders";
+
+function readOrders() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = JSON.parse(raw || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveOrderRating(orderNo, payload) {
+  const orders = readOrders().map((order) =>
+    String(order.orderNo) === String(orderNo)
+      ? {
+          ...order,
+          ratingSubmitted: true,
+          rating: payload,
+        }
+      : order,
+  );
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+}
 
 export default function RateOrderPage() {
-  const { orderId } = useParams();
-  const user = useAuthStore((state) => state.user);
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { showToast } = useToast();
 
   const [stars, setStars] = useState(5);
+  const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
+  function handleSubmit(e) {
+    e.preventDefault();
 
-      await submitRating({
-        customerId: user.customerID,
-        orderId: Number(orderId),
-        stars: Number(stars),
-        comment,
-      });
+    saveOrderRating(id, {
+      stars,
+      title,
+      comment,
+      createdAt: new Date().toISOString(),
+    });
 
-      showToast("تم إرسال التقييم بنجاح", "success");
-
-      setTimeout(() => {
-        navigate(`/orders/${orderId}/rating-success`);
-      }, 500);
-    } catch (err) {
-      showToast(err?.response?.data?.message || "فشل إرسال التقييم", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+    navigate("/rating-success", {
+      state: {
+        orderNo: id,
+        stars,
+      },
+    });
+  }
 
   return (
-    <div className="page">
-      <Header />
+    <section className="catalog-section">
+      <div className="catalog-section__head">
+        <div>
+          <h2>تقييم الطلب</h2>
+          <p>رقم الطلب: {id}</p>
+        </div>
+      </div>
 
-      <main className="container">
-        <div className="hero-card">
-          <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
-            <div>
-              <h2 style={{ margin: 0 }}>تقييم الطلب</h2>
-              <p className="subtle" style={{ marginTop: "8px" }}>
-                شاركنا رأيك في الطلب رقم #{orderId}
-              </p>
-            </div>
-
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              <Link to={`/orders/${orderId}`} className="secondary-btn">
-                رجوع إلى التفاصيل
-              </Link>
-            </div>
-          </div>
+      <form onSubmit={handleSubmit} style={cardStyle}>
+        <div style={{ marginBottom: 14 }}>
+          <label style={labelStyle}>عدد النجوم</label>
+          <select
+            value={stars}
+            onChange={(e) => setStars(Number(e.target.value))}
+            style={inputStyle}
+          >
+            <option value={5}>5</option>
+            <option value={4}>4</option>
+            <option value={3}>3</option>
+            <option value={2}>2</option>
+            <option value={1}>1</option>
+          </select>
         </div>
 
-        <div className="hero-card" style={{ marginTop: "20px" }}>
-          <label style={{ display: "block", marginBottom: "8px", fontWeight: "700" }}>عدد النجوم</label>
+        <div style={{ marginBottom: 14 }}>
+          <label style={labelStyle}>عنوان التقييم</label>
           <input
-            type="number"
-            min="1"
-            max="5"
-            value={stars}
-            onChange={(e) => setStars(e.target.value)}
-            style={{
-              height: "50px",
-              borderRadius: "16px",
-              border: "1px solid rgba(128, 144, 186, 0.22)",
-              padding: "0 14px",
-              background: "rgba(255, 255, 255, 0.82)",
-              width: "100%",
-              marginBottom: "16px"
-            }}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            style={inputStyle}
+            placeholder="مثال: تجربة ممتازة"
           />
+        </div>
 
-          <label style={{ display: "block", marginBottom: "8px", fontWeight: "700" }}>تعليقك</label>
+        <div style={{ marginBottom: 14 }}>
+          <label style={labelStyle}>ملاحظاتك</label>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="اكتب رأيك هنا..."
-            style={{
-              width: "100%",
-              minHeight: "140px",
-              borderRadius: "16px",
-              border: "1px solid rgba(128, 144, 186, 0.22)",
-              padding: "14px",
-              background: "rgba(255, 255, 255, 0.82)",
-              resize: "vertical"
-            }}
+            style={{ ...inputStyle, minHeight: 120 }}
+            placeholder="اكتب ملاحظاتك هنا"
           />
-
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "16px" }}>
-            <Link to={`/orders/${orderId}`} className="secondary-btn">
-              رجوع
-            </Link>
-
-            <button className="primary-btn" onClick={handleSubmit} disabled={loading}>
-              {loading ? "جارٍ الإرسال..." : "إرسال التقييم"}
-            </button>
-          </div>
         </div>
-      </main>
-    </div>
+
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <button type="submit" style={primaryBtn}>
+            إرسال التقييم
+          </button>
+
+          <Link to="/orders" style={secondaryLink}>
+            العودة إلى طلباتي
+          </Link>
+        </div>
+      </form>
+    </section>
   );
 }
 
+const cardStyle = {
+  background: "#fff",
+  border: "1px solid #e5e7eb",
+  borderRadius: 14,
+  padding: 16,
+};
+
+const labelStyle = {
+  display: "block",
+  marginBottom: 8,
+  fontWeight: 700,
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "12px 14px",
+  borderRadius: 12,
+  border: "1px solid #d1d5db",
+  fontSize: 14,
+  outline: "none",
+};
+
+const primaryBtn = {
+  padding: "10px 14px",
+  borderRadius: 10,
+  border: "none",
+  background: "#2563eb",
+  color: "#fff",
+  fontWeight: 700,
+  cursor: "pointer",
+};
+
+const secondaryLink = {
+  display: "inline-block",
+  padding: "10px 14px",
+  borderRadius: 10,
+  border: "1px solid #d1d5db",
+  background: "#fff",
+  color: "#111827",
+  textDecoration: "none",
+  fontWeight: 700,
+};

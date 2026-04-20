@@ -6,15 +6,29 @@ import "./featured-products.css";
 import "./product-grid.css";
 
 export default function FeaturedProductsSection() {
-  const addItem = useCartStore((s) => s.addItem);
+  const addToCart = useCartStore((s) => s.addToCart);
   const [items, setItems] = useState([]);
 
   useEffect(() => {
+    let mounted = true;
+
     (async () => {
-      const res = await productService.getFeaturedProducts({ pageSize: 12 });
-      setItems(res.items || []);
+      try {
+        const res = await productService.getFeaturedProducts({ pageSize: 12 });
+        if (!mounted) return;
+        setItems(res?.items || []);
+      } catch {
+        if (!mounted) return;
+        setItems([]);
+      }
     })();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
+
+  if (!items.length) return null;
 
   return (
     <section className="catalog-section">
@@ -28,9 +42,9 @@ export default function FeaturedProductsSection() {
       <div className="product-grid">
         {items.map((item) => (
           <ProductCard
-            key={item.productID}
+            key={item.productID || item.barcode}
             product={item}
-            onAddToCart={(p) => addItem({ ...p, qty: 1 })}
+            onAddToCart={(p) => addToCart({ ...p, qty: 1 })}
           />
         ))}
       </div>

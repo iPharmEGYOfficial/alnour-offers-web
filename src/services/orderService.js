@@ -17,7 +17,7 @@ export async function confirmOrder(payload) {
 
 export async function getCustomerOrders(customerId) {
   const response = await apiClient.get(`/api/orders`, {
-    params: { customerId }
+    params: { customerId },
   });
   return response?.data || [];
 }
@@ -36,7 +36,7 @@ export async function createPaymentSession(payload) {
       success: true,
       providerSessionId: `SIM-${Date.now()}`,
       status: "mocked",
-      paymentUrl: null
+      paymentUrl: null,
     };
   }
 }
@@ -52,20 +52,22 @@ export async function getAdminOrders() {
 
 export async function updateAdminOrderStatus(orderId, status) {
   try {
-    const response = await apiClient.put(`/api/admin/orders/${orderId}/status`, {
-      status
-    });
+    const response = await apiClient.put(
+      `/api/admin/orders/${orderId}/status`,
+      {
+        status,
+      },
+    );
     return response?.data;
   } catch {
     return {
       success: true,
       orderId,
       status,
-      mocked: true
+      mocked: true,
     };
   }
 }
-
 
 export async function submitRating(payload) {
   try {
@@ -74,7 +76,7 @@ export async function submitRating(payload) {
   } catch {
     return {
       success: true,
-      mocked: true
+      mocked: true,
     };
   }
 }
@@ -86,9 +88,8 @@ const orderService = {
   getOrderDetails,
   createPaymentSession,
   getAdminOrders,
-  updateAdminOrderStatus
+  updateAdminOrderStatus,
 };
 
 export default orderService;
-
 

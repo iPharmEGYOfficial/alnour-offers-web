@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import productService from "../../services/productService";
-import ProductCard from "../products/ProductCard";
+import ProductCard from "../products/ProductCard.jsx";
 
 export default function FeaturedPreview() {
   const [items, setItems] = useState([]);

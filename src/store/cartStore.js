@@ -2,14 +2,23 @@
 
 const STORAGE_KEY = "alnour_cart";
 
-const readCart = () => {
+function safeParse(raw) {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
-};
+}
+
+function readCart() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? safeParse(raw) : [];
+  } catch {
+    return [];
+  }
+}
 
 const useCartStore = create((set, get) => ({
   items: readCart(),
@@ -18,7 +27,7 @@ const useCartStore = create((set, get) => ({
     localStorage.setItem(STORAGE_KEY, JSON.stringify(get().items));
   },
 
-  addToCart: (product) => {
+  addToCart(product) {
     const items = [...get().items];
     const index = items.findIndex((x) => x.productID === product.productID);
     const stock = Number(product.stockQty || 0);
@@ -28,19 +37,30 @@ const useCartStore = create((set, get) => ({
         items[index].qty += 1;
       }
     } else {
-      items.push({ ...product, qty: 1, stockQty: stock });
+      items.push({
+        ...product,
+        qty: 1,
+        stockQty: stock,
+      });
     }
 
     set({ items });
     get().persist();
   },
 
-  increaseQty: (productID) => {
+  // ✅ alias للتوافق مع أي ملفات قديمة
+  addItem(product) {
+    get().addToCart(product);
+  },
+
+  increaseQty(productID) {
     const items = get().items.map((item) => {
       const stock = Number(item.stockQty || 0);
+
       if (item.productID === productID && item.qty < stock) {
         return { ...item, qty: item.qty + 1 };
       }
+
       return item;
     });
 
@@ -48,13 +68,10 @@ const useCartStore = create((set, get) => ({
     get().persist();
   },
 
-  decreaseQty: (productID) => {
+  decreaseQty(productID) {
     const items = get()
-      .items
-      .map((item) =>
-        item.productID === productID
-          ? { ...item, qty: item.qty - 1 }
-          : item
+      .items.map((item) =>
+        item.productID === productID ? { ...item, qty: item.qty - 1 } : item,
       )
       .filter((item) => item.qty > 0);
 
@@ -62,10 +79,28 @@ const useCartStore = create((set, get) => ({
     get().persist();
   },
 
-  clearCart: () => {
+  removeItem(productID) {
+    const items = get().items.filter((item) => item.productID !== productID);
+    set({ items });
+    get().persist();
+  },
+
+  clearCart() {
     set({ items: [] });
     localStorage.removeItem(STORAGE_KEY);
-  }
+  },
+
+  getCartCount() {
+    return get().items.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+  },
+
+  getCartTotal() {
+    return get().items.reduce(
+      (sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0),
+      0,
+    );
+  },
 }));
 
 export default useCartStore;
+

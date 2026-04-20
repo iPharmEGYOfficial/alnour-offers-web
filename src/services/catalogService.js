@@ -15,14 +15,16 @@ export function extractCategories(items = []) {
       map.set(key, {
         key,
         label: key,
-        count: 1
+        count: 1,
       });
     } else {
       map.get(key).count += 1;
     }
   }
 
-  return Array.from(map.values()).sort((a, b) => a.label.localeCompare(b.label));
+  return Array.from(map.values()).sort((a, b) =>
+    a.label.localeCompare(b.label),
+  );
 }
 
 export function extractBrands(items = []) {
@@ -34,14 +36,16 @@ export function extractBrands(items = []) {
       map.set(key, {
         key,
         label: key,
-        count: 1
+        count: 1,
       });
     } else {
       map.get(key).count += 1;
     }
   }
 
-  return Array.from(map.values()).sort((a, b) => a.label.localeCompare(b.label));
+  return Array.from(map.values()).sort((a, b) =>
+    a.label.localeCompare(b.label),
+  );
 }
 
 export function filterCatalog(
@@ -51,8 +55,8 @@ export function filterCatalog(
     category = "",
     brand = "",
     offersOnly = false,
-    activeOnly = true
-  } = {}
+    activeOnly = true,
+  } = {},
 ) {
   const q = normalizeSearch(search);
   const selectedCategory = normalizeSearch(category);
@@ -63,7 +67,12 @@ export function filterCatalog(
       return false;
     }
 
-    if (offersOnly && !String(item.productType ?? "").toLowerCase().includes("offer")) {
+    if (
+      offersOnly &&
+      !String(item.productType ?? "")
+        .toLowerCase()
+        .includes("offer")
+    ) {
       return false;
     }
 
@@ -87,7 +96,7 @@ export function filterCatalog(
       item.brand,
       item.categoryName,
       item.category,
-      item.productID
+      item.productID,
     ]
       .filter(Boolean)
       .some((value) => normalizeSearch(value).includes(q));
@@ -97,5 +106,6 @@ export function filterCatalog(
 export default {
   extractCategories,
   extractBrands,
-  filterCatalog
+  filterCatalog,
 };
+

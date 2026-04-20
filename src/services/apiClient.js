@@ -5,8 +5,8 @@ const apiClient = axios.create({
   baseURL: runtimeConfig.apiBaseUrl,
   timeout: 20000,
   headers: {
-    "Content-Type": "application/json"
-  }
+    "Content-Type": "application/json",
+  },
 });
 
 apiClient.interceptors.request.use(
@@ -19,7 +19,8 @@ apiClient.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 export default apiClient;
+

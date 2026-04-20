@@ -1,4 +1,4 @@
-import HomePage from "../apps/customer/HomePage";
+﻿import HomePage from "../apps/customer/HomePage";
 import OffersPage from "../apps/customer/OffersPage";
 import CartPage from "../apps/customer/CartPage";
 import ProductDetailsPage from "../pages/ProductDetailsPage";
@@ -11,3 +11,4 @@ const customerRoutes = [
 ];
 
 export default customerRoutes;
+

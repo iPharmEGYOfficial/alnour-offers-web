@@ -7,7 +7,7 @@ export async function fetchProductsFromBridge() {
 
 export async function searchProductsInBridge(query) {
   const response = await apiClient.get("/api/shamel/product-search", {
-    params: { q: query }
+    params: { q: query },
   });
   return response?.data || [];
 }
@@ -24,5 +24,6 @@ export async function pingBridge() {
 export default {
   fetchProductsFromBridge,
   searchProductsInBridge,
-  pingBridge
+  pingBridge,
 };
+

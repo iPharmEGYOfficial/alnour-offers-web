@@ -1,120 +1,122 @@
-import "../styles/invoice.css";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { QRCodeSVG } from "qrcode.react";
-import { getOrderDetails } from "../services/orderService";
-import { generateZatcaQR } from "../utils/zatcaQr";
+﻿import { Link, useParams } from "react-router-dom";
+import formatCurrency from "../utils/formatCurrency";
 
+const STORAGE_KEY = "alnour_orders";
+
+function readOrders() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = JSON.parse(raw || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
 export default function InvoicePage() {
-  const { orderId } = useParams();
-  const [data, setData] = useState(null);
+  const { id } = useParams();
+  const order = readOrders().find((x) => String(x.orderNo) === String(id));
 
-  useEffect(() => {
-    load();
-  }, [orderId]);
-
-  const load = async () => {
-    try {
-      const res = await getOrderDetails(orderId);
-
-      const order = res.order;
-      const items = res.items;
-
-      const qr = generateZatcaQR({
-        seller: "صيدلية النور",
-        vat: "311263307300003",
-        timestamp: new Date(order.orderDate).toISOString(),
-        total: order.finalTotal,
-        vatTotal: order.finalTotal * 0.15
-      });
-
-      setData({ order, items, qr });
-
-      setTimeout(() => window.print(), 700);
-
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  if (!data) return <div>جارٍ تحميل الفاتورة...</div>;
-
-  const { order, items, qr } = data;
+  if (!order) {
+    return <div className="catalog-message">الفاتورة غير موجودة.</div>;
+  }
 
   return (
-    <div className="invoice-print-area">
-      <div className="invoice-sheet">
-
-        {/* HEADER */}
-        <div className="invoice-head">
-          <div className="invoice-title">صيدلية النور</div>
-          <div className="invoice-subtitle">Al-Noor Medical Company</div>
+    <section className="catalog-section">
+      <div className="catalog-section__head">
+        <div>
+          <h2>الفاتورة</h2>
+          <p>رقم الفاتورة/الطلب: {order.orderNo}</p>
         </div>
-
-        {/* META */}
-        <div className="invoice-meta">
-          <div>رقم الفاتورة: {order.orderID}</div>
-          <div>{new Date(order.orderDate).toLocaleString("ar-SA")}</div>
-        </div>
-
-        {/* COMPANY */}
-        <div className="invoice-section">
-          <div className="invoice-card">
-            <b>بيانات المنشأة</b>
-            <div>الرقم الضريبي: 311263307300003</div>
-            <div>السجل التجاري: 7036852742</div>
-          </div>
-
-          <div className="invoice-card">
-            <b>العنوان</b>
-            <div>المملكة العربية السعودية</div>
-            <div>الخبر</div>
-          </div>
-        </div>
-
-        {/* ITEMS */}
-        <div className="invoice-section">
-          <table className="invoice-table">
-            <thead>
-              <tr>
-                <th>الصنف</th>
-                <th>الكمية</th>
-                <th>السعر</th>
-                <th>الإجمالي</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((i) => (
-                <tr key={i.orderItemID}>
-                  <td>{i.displayName || i.productName}</td>
-                  <td>{i.qty}</td>
-                  <td>{i.unitPrice}</td>
-                  <td>{i.finalPrice}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* TOTAL */}
-        <div className="invoice-final-total">
-          الإجمالي: {order.finalTotal} ر.س
-        </div>
-
-        {/* QR */}
-        <div className="qr-box">
-          <QRCodeSVG value={qr} size={140} />
-        </div>
-
-        {/* FOOTER */}
-        <div className="invoice-footer">
-          شكراً لزيارتكم 
-        </div>
-
       </div>
-    </div>
+
+      <div style={cardStyle}>
+        <div style={{ fontWeight: 800, marginBottom: 12 }}>صيدلية النور</div>
+        <div style={{ color: "#64748b", marginBottom: 6 }}>
+          العميل: {order.address?.fullName}
+        </div>
+        <div style={{ color: "#64748b", marginBottom: 6 }}>
+          الجوال: {order.address?.phone}
+        </div>
+        <div style={{ color: "#64748b", marginBottom: 16 }}>
+          التاريخ:{" "}
+          {order.createdAt
+            ? new Date(order.createdAt).toLocaleString("ar-SA")
+            : "-"}
+        </div>
+
+        <table style={tableStyle}>
+          <thead>
+            <tr>
+              <th style={thtd}>المنتج</th>
+              <th style={thtd}>الكمية</th>
+              <th style={thtd}>السعر</th>
+              <th style={thtd}>الإجمالي</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(order.items || []).map((item) => (
+              <tr key={item.productID}>
+                <td style={thtd}>{item.productName || item.name || "منتج"}</td>
+                <td style={thtd}>{item.qty}</td>
+                <td style={thtd}>{formatCurrency(item.price)}</td>
+                <td style={thtd}>
+                  {formatCurrency(
+                    Number(item.price || 0) * Number(item.qty || 0),
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div style={{ marginTop: 16, fontWeight: 800 }}>
+          الإجمالي النهائي: {formatCurrency(order.total)}
+        </div>
+
+        <div
+          style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 16 }}
+        >
+          <Link to={`/invoice-print/${order.orderNo}`} style={secondaryLink}>
+            نسخة الطباعة
+          </Link>
+          <Link to={`/orders/${order.orderNo}`} style={secondaryLink}>
+            العودة لتفاصيل الطلب
+          </Link>
+          <Link to={`/rate-order/${order.orderNo}`} style={secondaryLink}>
+            تقييم الطلب
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }
 
+const cardStyle = {
+  background: "#fff",
+  border: "1px solid #e5e7eb",
+  borderRadius: 14,
+  padding: 16,
+};
 
+const tableStyle = {
+  width: "100%",
+  borderCollapse: "collapse",
+};
+
+const thtd = {
+  border: "1px solid #e5e7eb",
+  padding: 10,
+  textAlign: "right",
+};
+
+const secondaryLink = {
+  display: "inline-block",
+  padding: "10px 14px",
+  borderRadius: 10,
+  border: "1px solid #d1d5db",
+  background: "#fff",
+  color: "#111827",
+  textDecoration: "none",
+  fontWeight: 700,
+};

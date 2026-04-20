@@ -18,7 +18,7 @@ export default function ProductGrid() {
 
       setState({
         loading: false,
-        items: res?.items ?? [], // 🔥 حماية
+        items: res?.items ?? [],
         error: "",
       });
     } catch (err) {
@@ -33,43 +33,13 @@ export default function ProductGrid() {
   }
 
   useEffect(() => {
-    let mounted = true;
-
-    (async () => {
-      try {
-        const res = await productService.getProducts({ pageSize: 24 });
-
-        if (!mounted) return;
-
-        setState({
-          loading: false,
-          items: res?.items ?? [],
-          error: "",
-        });
-      } catch (err) {
-        if (!mounted) return;
-
-        console.error("❌ Product load error:", err);
-
-        setState({
-          loading: false,
-          items: [],
-          error: "تعذر تحميل المنتجات حالياً",
-        });
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
+    loadProducts();
   }, []);
 
-  // ⏳ Loading
   if (state.loading) {
     return <div className="status-box">⏳ جارٍ تحميل المنتجات...</div>;
   }
 
-  // ❌ Error
   if (state.error) {
     return (
       <div className="status-box">
@@ -82,19 +52,14 @@ export default function ProductGrid() {
     );
   }
 
-  // 📭 Empty
   if (!state.items.length) {
     return <div className="status-box">📭 لا توجد منتجات حالياً</div>;
   }
 
-  // ✅ Grid
   return (
     <div className="product-grid">
       {state.items.map((p) => (
-        <ProductCard
-          key={p.productID || p.barcode || crypto.randomUUID()} // 🔥 fix
-          product={p}
-        />
+        <ProductCard key={p.productID || p.barcode} product={p} />
       ))}
     </div>
   );

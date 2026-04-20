@@ -37,7 +37,7 @@ const useAccountStore = create((set, get) => ({
       latitude: address.latitude || "",
       longitude: address.longitude || "",
       isDefault: Boolean(address.isDefault),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
     let next = [...get().addresses];
@@ -58,13 +58,13 @@ const useAccountStore = create((set, get) => ({
 
   updateAddress(id, payload) {
     let next = get().addresses.map((item) =>
-      item.id === id ? { ...item, ...payload } : item
+      item.id === id ? { ...item, ...payload } : item,
     );
 
     if (payload.isDefault) {
       next = next.map((item) => ({
         ...item,
-        isDefault: item.id === id
+        isDefault: item.id === id,
       }));
     }
 
@@ -86,12 +86,12 @@ const useAccountStore = create((set, get) => ({
   setDefaultAddress(id) {
     const next = get().addresses.map((item) => ({
       ...item,
-      isDefault: item.id === id
+      isDefault: item.id === id,
     }));
 
     set({ addresses: next });
     get().persist();
-  }
+  },
 }));
 
 export default useAccountStore;

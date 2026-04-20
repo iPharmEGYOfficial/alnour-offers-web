@@ -4,7 +4,7 @@ import { socialCampaigns } from "../config/socialCampaigns";
 export function getSocialChannels() {
   return (socialChannels || []).map((item) => ({
     ...item,
-    isActive: item.isActive ?? true
+    isActive: item.isActive ?? true,
   }));
 }
 
@@ -13,29 +13,41 @@ export function getActiveSocialChannels() {
 }
 
 export function getSocialChannelByKey(key) {
-  const safeKey = String(key ?? "").trim().toLowerCase();
-  return getSocialChannels().find(
-    (item) => String(item.key ?? "").trim().toLowerCase() === safeKey
-  ) || null;
+  const safeKey = String(key ?? "")
+    .trim()
+    .toLowerCase();
+  return (
+    getSocialChannels().find(
+      (item) =>
+        String(item.key ?? "")
+          .trim()
+          .toLowerCase() === safeKey,
+    ) || null
+  );
 }
 
 export function getSocialCampaigns() {
   return (socialCampaigns || []).map((item) => ({
     ...item,
-    status: item.status || "active"
+    status: item.status || "active",
   }));
 }
 
 export function getActiveSocialCampaigns() {
   return getSocialCampaigns().filter(
-    (item) => String(item.status).toLowerCase() === "active"
+    (item) => String(item.status).toLowerCase() === "active",
   );
 }
 
 export function getCampaignsByChannel(channel) {
-  const safeChannel = String(channel ?? "").trim().toLowerCase();
+  const safeChannel = String(channel ?? "")
+    .trim()
+    .toLowerCase();
   return getSocialCampaigns().filter(
-    (item) => String(item.channel ?? "").trim().toLowerCase() === safeChannel
+    (item) =>
+      String(item.channel ?? "")
+        .trim()
+        .toLowerCase() === safeChannel,
   );
 }
 
@@ -45,7 +57,8 @@ const socialService = {
   getSocialChannelByKey,
   getSocialCampaigns,
   getActiveSocialCampaigns,
-  getCampaignsByChannel
+  getCampaignsByChannel,
 };
 
 export default socialService;
+

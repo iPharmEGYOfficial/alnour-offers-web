@@ -5,14 +5,20 @@ function toNumber(value, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
-function roundPrice(value) {
-  return Math.round(toNumber(value, 0));
+function roundPrice(value, digits = 2) {
+  const n = toNumber(value, 0);
+  return Number(n.toFixed(digits));
 }
 
 function formatSar(value) {
-  const amount = roundPrice(value);
-  if (amount <= 0) return `غير متوفر`;
-  return `${amount} ${SAR_SYMBOL}`;
+  const amount = roundPrice(value, 2);
+  if (amount <= 0) return "السعر عند الطلب";
+
+  const normalized = Number.isInteger(amount)
+    ? String(amount)
+    : amount.toFixed(2).replace(/\.00$/, "");
+
+  return `${normalized} ${SAR_SYMBOL}`;
 }
 
 function calculateDiscountPercent(originalPrice, finalPrice) {
@@ -48,16 +54,14 @@ function buildPriceModel({
   const discountPercent = calculateDiscountPercent(computedOriginal, finalPrice);
 
   return {
-    price: roundPrice(finalPrice),
-    originalPrice: roundPrice(computedOriginal),
+    price: roundPrice(finalPrice, 2),
+    originalPrice: roundPrice(computedOriginal, 2),
     hasVisiblePrice,
     hasDiscount,
     discountPercent,
     displayPrice: hasVisiblePrice ? formatSar(finalPrice) : "السعر عند الطلب",
-    displayOriginalPrice:
-      hasDiscount ? formatSar(computedOriginal) : "",
-    displayFinalPrice:
-      hasVisiblePrice ? formatSar(finalPrice) : "السعر عند الطلب"
+    displayOriginalPrice: hasDiscount ? formatSar(computedOriginal) : "",
+    displayFinalPrice: hasVisiblePrice ? formatSar(finalPrice) : "السعر عند الطلب"
   };
 }
 
@@ -78,3 +82,4 @@ export default {
   calculateDiscountPercent,
   buildPriceModel
 };
+
