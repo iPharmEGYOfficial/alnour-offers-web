@@ -1,32 +1,38 @@
-﻿const env = import.meta.env || {};
-
 export const runtimeModes = {
   MOCK: "mock",
   BRIDGE: "bridge",
 };
 
-export function getRuntimeMode() {
-  return env.VITE_RUNTIME_MODE || runtimeModes.BRIDGE;
-}
-
-export function getRuntimeLabel() {
-  const mode = getRuntimeMode();
-
-  if (mode === runtimeModes.MOCK) return "وضع تجريبي";
-  if (mode === runtimeModes.BRIDGE) return "متصل بالشامل عبر Bridge";
-
-  return "غير معروف";
-}
+const env = import.meta.env || {};
 
 const runtimeConfig = {
+  mode: env.VITE_RUNTIME_MODE || runtimeModes.BRIDGE,
   apiBaseUrl:
     env.VITE_API_BASE_URL ||
     env.VITE_BRIDGE_BASE_URL ||
-    "https://syracuse-bus-operate-posts.trycloudflare.com",
-  bridgeKey: env.VITE_BRIDGE_KEY || "",
+    "http://192.168.8.140:5215",
 };
 
-console.log("Runtime Config:", runtimeConfig);
-console.log("Runtime Mode:", getRuntimeMode());
+console.log("ENV API:", env.VITE_API_BASE_URL);
+console.log("RUNTIME CONFIG:", runtimeConfig);
+
+export function getRuntimeMode() {
+  return runtimeConfig.mode;
+}
+
+export function isBridgeMode() {
+  return getRuntimeMode() === runtimeModes.BRIDGE;
+}
+
+export function getApiBaseUrl() {
+  return (runtimeConfig.apiBaseUrl || "").replace(/\/+$/, "");
+}
+
+export function getRuntimeLabel() {
+  if (isBridgeMode()) {
+    return `Bridge API: ${getApiBaseUrl()}`;
+  }
+  return "وضع محلي JSON";
+}
 
 export default runtimeConfig;

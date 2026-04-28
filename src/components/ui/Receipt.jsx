@@ -55,3 +55,12 @@ export default function Receipt({ data }) {
   );
 }
 
+
+
+
+
+
+
+
+
+

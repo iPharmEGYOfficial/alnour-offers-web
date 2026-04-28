@@ -12,3 +12,12 @@ export default function TaxQrBlock({ data, caption = "امسح للتحقق ال
     </div>
   );
 }
+
+
+
+
+
+
+
+
+

@@ -24,9 +24,9 @@ export default function HomePage() {
           }}
         >
           <div>
-            <h2 style={{ margin: 0 }}>🛍️ أحدث المنتجات</h2>
+            <h2 style={{ margin: 0 }}>🛍️ عروض وأجهزة مختارة</h2>
             <p style={{ margin: "6px 0 0", color: "#64748b" }}>
-              مجموعة مختارة من الأجهزة الطبية ومنتجات العناية
+              منتجات محلية بصور وأسعار جاهزة للطلب
             </p>
           </div>
 
@@ -52,4 +52,13 @@ export default function HomePage() {
     </>
   );
 }
+
+
+
+
+
+
+
+
+
 

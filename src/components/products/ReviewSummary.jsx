@@ -20,3 +20,12 @@ export default function ReviewSummary({ average = 0, total = 0 }) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+

@@ -23,3 +23,12 @@ export function generateZatcaQR({
 }
 
 
+
+
+
+
+
+
+
+
+

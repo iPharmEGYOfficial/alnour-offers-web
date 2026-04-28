@@ -5,7 +5,7 @@ const initialState = {
   label: "",
   fullName: "",
   phone: "",
-  country: "المملكة العربية السعودية",
+  country: "Saudi Arabia",
   city: "",
   district: "",
   street: "",
@@ -20,46 +20,68 @@ const initialState = {
 
 export default function AddressForm({ onSave, initialValues, onCancel }) {
   const [form, setForm] = useState(initialValues || initialState);
-  const [isResolvingAddress, setIsResolvingAddress] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   const setValue = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
   async function reverseGeocode(lat, lng) {
-    setIsResolvingAddress(true);
+    setForm((prev) => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng
+    }));
 
     try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=ar`,
-        { headers: { Accept: "application/json" } }
-      );
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=ar`;
+      const res = await fetch(url, {
+        headers: {
+          "Accept": "application/json"
+        }
+      });
+
+      if (!res.ok) throw new Error("reverse geocode failed");
 
       const data = await res.json();
-      const addr = data?.address || {};
+      const addr = data.address || {};
 
       setForm((prev) => ({
         ...prev,
         latitude: lat,
         longitude: lng,
-        country: addr.country || prev.country || "المملكة العربية السعودية",
-        city: addr.city || addr.town || addr.village || addr.state_district || prev.city,
-        district: addr.suburb || addr.neighbourhood || addr.city_district || prev.district,
-        street: addr.road || addr.pedestrian || addr.footway || prev.street
+        country: addr.country || prev.country || "Saudi Arabia",
+        city:
+          addr.city ||
+          addr.town ||
+          addr.village ||
+          addr.county ||
+          addr.state ||
+          prev.city,
+        district:
+          addr.suburb ||
+          addr.neighbourhood ||
+          addr.quarter ||
+          addr.city_district ||
+          prev.district,
+        street:
+          addr.road ||
+          addr.pedestrian ||
+          addr.footway ||
+          addr.residential ||
+          prev.street,
+        buildingNo:
+          addr.house_number ||
+          prev.buildingNo
       }));
     } catch {
-      setForm((prev) => ({
-        ...prev,
-        latitude: lat,
-        longitude: lng
-      }));
-      alert("تم تحديد الموقع، لكن تعذر جلب العنوان تلقائيًا.");
-    } finally {
-      setIsResolvingAddress(false);
+      alert("تم تحديد الموقع على الخريطة، لكن تعذر جلب تفاصيل العنوان تلقائيًا. أكمل البيانات يدويًا.");
     }
   }
 
   const detectLocation = () => {
+    setShowMap(true);
+
     if (!navigator.geolocation) {
       alert("المتصفح لا يدعم تحديد الموقع");
       return;
@@ -69,21 +91,27 @@ export default function AddressForm({ onSave, initialValues, onCancel }) {
       async (pos) => {
         await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
       },
-      () => alert("فشل تحديد الموقع"),
+      () => alert("تعذر تحديد الموقع"),
       { enableHighAccuracy: true, timeout: 10000 }
     );
   };
 
   const useMockLocation = async () => {
+    setShowMap(true);
+
     setForm((prev) => ({
       ...prev,
       label: prev.label || "المنزل",
-      fullName: prev.fullName || "هيثم أسامة عبدالغفار",
+      fullName: prev.fullName || "هيثم أسامة",
       phone: prev.phone || "0535272372",
-      buildingNo: prev.buildingNo || "4273",
+      country: prev.country || "Saudi Arabia",
+      city: prev.city || "الخرمة",
+      district: prev.district || "الخزيمة",
+      street: prev.street || "طريق الملك فهد",
+      buildingNo: prev.buildingNo || "101",
       floor: prev.floor || "1",
-      apartment: prev.apartment || "2",
-      notes: prev.notes || "عنوان تجريبي منظم لاختبار التوصيل داخل المشروع."
+      apartment: prev.apartment || "1",
+      notes: prev.notes || "بجوار مجمع أهالي الخرمة الطبي العام."
     }));
 
     await reverseGeocode(21.9167, 42.85);
@@ -93,12 +121,7 @@ export default function AddressForm({ onSave, initialValues, onCancel }) {
     e.preventDefault();
 
     if (!form.fullName.trim() || !form.phone.trim() || !form.city.trim()) {
-      alert("من فضلك أدخل الاسم ورقم الهاتف والمدينة");
-      return;
-    }
-
-    if (!form.latitude || !form.longitude) {
-      alert("من فضلك اختر الموقع من الخريطة أو استخدم تحديد الموقع");
+      alert("من فضلك أدخل الاسم ورقم الجوال والمدينة");
       return;
     }
 
@@ -107,11 +130,11 @@ export default function AddressForm({ onSave, initialValues, onCancel }) {
   };
 
   return (
-    <form className="address-form" onSubmit={submit}>
+    <form className="address-form" onSubmit={submit} dir="rtl">
       <div className="address-form__grid">
-        <input value={form.label} onChange={(e) => setValue("label", e.target.value)} placeholder="اسم العنوان (المنزل / العمل)" />
-        <input value={form.fullName} onChange={(e) => setValue("fullName", e.target.value)} placeholder="الاسم الكامل" />
-        <input value={form.phone} onChange={(e) => setValue("phone", e.target.value)} placeholder="رقم الهاتف" />
+        <input value={form.label} onChange={(e) => setValue("label", e.target.value)} placeholder="اسم العنوان" />
+        <input value={form.fullName} onChange={(e) => setValue("fullName", e.target.value)} placeholder="اسم المستلم" />
+        <input value={form.phone} onChange={(e) => setValue("phone", e.target.value)} placeholder="رقم الجوال" />
         <input value={form.country} onChange={(e) => setValue("country", e.target.value)} placeholder="الدولة" />
         <input value={form.city} onChange={(e) => setValue("city", e.target.value)} placeholder="المدينة" />
         <input value={form.district} onChange={(e) => setValue("district", e.target.value)} placeholder="الحي" />
@@ -121,45 +144,43 @@ export default function AddressForm({ onSave, initialValues, onCancel }) {
         <input value={form.apartment} onChange={(e) => setValue("apartment", e.target.value)} placeholder="الشقة" />
       </div>
 
-      <div style={{ marginTop: 16 }}>
-        <h3 style={{ marginBottom: 10 }}>📍 اختر موقعك على الخريطة</h3>
+      <div style={{ marginTop: 18, padding: 14, border: "1px solid #dbeafe", borderRadius: 14, background: "#eff6ff" }}>
+        <h3 style={{ margin: "0 0 10px", fontSize: 18 }}>اختيار الموقع على الخريطة</h3>
 
-        <MapPicker
-          value={
-            form.latitude && form.longitude
-              ? { lat: Number(form.latitude), lng: Number(form.longitude) }
-              : null
-          }
-          onSelect={async (pos) => {
-            await reverseGeocode(pos.lat, pos.lng);
-          }}
-        />
+        <div style={{ display: "flex", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
+          <button type="button" className="secondary-btn" onClick={() => setShowMap((v) => !v)}>
+            {showMap ? "إخفاء الخريطة" : "فتح الخريطة الكاملة"}
+          </button>
 
-        <div style={{ marginTop: 10, fontSize: 12, color: "#475569" }}>
-          Lat: {form.latitude || "-"} | Lng: {form.longitude || "-"}
-        </div>
-
-        {isResolvingAddress && (
-          <div style={{ marginTop: 8, fontSize: 13, color: "#2563eb" }}>
-            جارٍ تعبئة العنوان من الخريطة...
-          </div>
-        )}
-
-        <div style={{ display: "flex", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
           <button type="button" className="secondary-btn" onClick={detectLocation}>
-            📡 تحديد موقعي تلقائيًا
+            تحديد موقعي الحالي
           </button>
 
           <button type="button" className="secondary-btn" onClick={useMockLocation}>
-            🧪 تعبئة عنوان تجريبي
+            استخدام عنوان تجريبي
           </button>
+        </div>
+
+        {showMap && (
+          <div style={{ height: 420, borderRadius: 14, overflow: "hidden", border: "1px solid #bfdbfe", background: "#fff" }}>
+            <MapPicker
+              value={form.latitude && form.longitude ? { lat: Number(form.latitude), lng: Number(form.longitude) } : null}
+              onSelect={async (pos) => {
+                await reverseGeocode(pos.lat, pos.lng);
+              }}
+            />
+          </div>
+        )}
+
+        <div style={{ marginTop: 10, fontSize: 13, color: "#475569" }}>
+          Lat: {form.latitude || "-"} | Lng: {form.longitude || "-"}
         </div>
       </div>
 
       <textarea
         value={form.notes}
         onChange={(e) => setValue("notes", e.target.value)}
-        placeholder="ملاحظات إضافية للمندوب أو للإدارة"
+        placeholder="ملاحظات إضافية"
         rows={4}
         style={{ marginTop: 16 }}
       />
@@ -171,7 +192,7 @@ export default function AddressForm({ onSave, initialValues, onCancel }) {
             checked={form.isDefault}
             onChange={(e) => setValue("isDefault", e.target.checked)}
           />
-          <span>اجعل هذا العنوان افتراضيًا</span>
+          <span>جعله العنوان الافتراضي</span>
         </label>
 
         <div className="address-action-buttons">
@@ -189,3 +210,4 @@ export default function AddressForm({ onSave, initialValues, onCancel }) {
     </form>
   );
 }
+

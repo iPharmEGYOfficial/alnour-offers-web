@@ -171,3 +171,12 @@ function buttonStyle(bg, color, borderColor) {
     cursor: "pointer"
   };
 }
+
+
+
+
+
+
+
+
+

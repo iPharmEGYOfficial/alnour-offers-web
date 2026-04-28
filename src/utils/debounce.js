@@ -5,3 +5,12 @@
     timer = setTimeout(() => fn(...args), delay);
   };
 }
+
+
+
+
+
+
+
+
+

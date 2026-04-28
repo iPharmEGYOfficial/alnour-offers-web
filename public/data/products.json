@@ -1,0 +1,16 @@
+﻿[
+  {
+    "id": 1,
+    "productID": "1",
+    "productName": "منتج تجريبي",
+    "barcode": "",
+    "brandName": "صيدلية النور",
+    "categoryName": "Medical Devices",
+    "price": 10,
+    "originalPrice": 10,
+    "stockQty": 5,
+    "imageUrl": "/no-image.svg",
+    "primaryImageUrl": "/no-image.svg",
+    "isActive": true
+  }
+]

@@ -48,3 +48,12 @@ export default function MapPicker({ onSelect, value }) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+

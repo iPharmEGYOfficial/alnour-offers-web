@@ -187,3 +187,12 @@ export default function CartPage() {
   );
 }
 
+
+
+
+
+
+
+
+
+

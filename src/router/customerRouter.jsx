@@ -12,3 +12,12 @@ const customerRoutes = [
 
 export default customerRoutes;
 
+
+
+
+
+
+
+
+
+

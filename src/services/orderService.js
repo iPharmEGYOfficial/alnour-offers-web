@@ -1,85 +1,88 @@
-﻿import apiClient from "./apiClient";
+﻿const STORAGE_KEY = "alnour_orders";
 
-export async function applyCoupon(payload) {
-  const response = await apiClient.post("/api/checkout/apply-coupon", payload);
-  return response?.data;
-}
-
-export async function applyPoints(payload) {
-  const response = await apiClient.post("/api/checkout/apply-points", payload);
-  return response?.data;
-}
-
-export async function confirmOrder(payload) {
-  const response = await apiClient.post("/api/checkout/confirm", payload);
-  return response?.data;
-}
-
-export async function getCustomerOrders(customerId) {
-  const response = await apiClient.get(`/api/orders`, {
-    params: { customerId },
-  });
-  return response?.data || [];
-}
-
-export async function getOrderDetails(orderId) {
-  const response = await apiClient.get(`/api/orders/${orderId}`);
-  return response?.data;
-}
-
-export async function createPaymentSession(payload) {
+function readOrders() {
   try {
-    const response = await apiClient.post("/api/payments/session", payload);
-    return response?.data;
-  } catch {
-    return {
-      success: true,
-      providerSessionId: `SIM-${Date.now()}`,
-      status: "mocked",
-      paymentUrl: null,
-    };
-  }
-}
-
-export async function getAdminOrders() {
-  try {
-    const response = await apiClient.get("/api/admin/orders");
-    return response?.data || [];
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = JSON.parse(raw || "[]");
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
 }
 
+function saveOrders(orders) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+}
+
+export async function applyCoupon(payload) {
+  return { success: true, discount: 0, payload };
+}
+
+export async function applyPoints(payload) {
+  return { success: true, pointsDiscount: 0, payload };
+}
+
+export async function confirmOrder(payload) {
+  const order = {
+    ...payload,
+    orderNo: payload.orderNo || `AN-${Date.now()}`,
+    id: payload.orderNo || `AN-${Date.now()}`,
+    status: "new",
+    createdAt: new Date().toISOString(),
+  };
+
+  const orders = readOrders();
+  saveOrders([order, ...orders]);
+
+  return { success: true, order };
+}
+
+export async function getCustomerOrders() {
+  return readOrders();
+}
+
+export async function getOrderDetails(orderId) {
+  return readOrders().find((x) => String(x.orderNo) === String(orderId) || String(x.id) === String(orderId)) || null;
+}
+
+export async function createPaymentSession(payload) {
+  return {
+    success: true,
+    providerSessionId: `LOCAL-${Date.now()}`,
+    status: "local",
+    paymentUrl: null,
+    payload,
+  };
+}
+
+export async function getAdminOrders() {
+  return readOrders();
+}
+
 export async function updateAdminOrderStatus(orderId, status) {
-  try {
-    const response = await apiClient.put(
-      `/api/admin/orders/${orderId}/status`,
-      {
-        status,
-      },
-    );
-    return response?.data;
-  } catch {
-    return {
-      success: true,
-      orderId,
-      status,
-      mocked: true,
-    };
-  }
+  const orders = readOrders().map((order) =>
+    String(order.orderNo) === String(orderId) || String(order.id) === String(orderId)
+      ? { ...order, status }
+      : order
+  );
+
+  saveOrders(orders);
+
+  return { success: true, orderId, status };
 }
 
 export async function submitRating(payload) {
-  try {
-    const response = await apiClient.post("/api/ratings", payload);
-    return response?.data;
-  } catch {
-    return {
-      success: true,
-      mocked: true,
-    };
-  }
+  const orders = readOrders().map((order) =>
+    String(order.orderNo) === String(payload.orderNo)
+      ? { ...order, ratingSubmitted: true, rating: payload }
+      : order
+  );
+
+  saveOrders(orders);
+
+  return { success: true, payload };
 }
+
 const orderService = {
   applyCoupon,
   applyPoints,
@@ -89,7 +92,7 @@ const orderService = {
   createPaymentSession,
   getAdminOrders,
   updateAdminOrderStatus,
+  submitRating,
 };
 
 export default orderService;
-

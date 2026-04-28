@@ -22,33 +22,47 @@ export default function InvoicePrintPage() {
     const style = document.createElement("style");
     style.innerHTML = `
       @media print {
+        html, body {
+          margin: 0 !important;
+          padding: 0 !important;
+          background: #fff !important;
+          direction: rtl !important;
+        }
+
         header, footer, nav, .site-header, .site-footer {
           display: none !important;
         }
+
         body * {
           visibility: hidden !important;
         }
+
         #print-invoice, #print-invoice * {
           visibility: visible !important;
         }
+
         #print-invoice {
-          position: absolute !important;
-          left: 0 !important;
-          top: 0 !important;
+          position: fixed !important;
+          inset: 0 !important;
           width: 100% !important;
+          min-height: 100% !important;
           margin: 0 !important;
-          padding: 20px !important;
+          padding: 8mm !important;
+          box-sizing: border-box !important;
           background: #fff !important;
+          color: #111827 !important;
+          transform: none !important;
         }
+
         @page {
-          size: A4;
-          margin: 12mm;
+          size: A4 portrait;
+          margin: 0;
         }
       }
     `;
     document.head.appendChild(style);
 
-    const t = setTimeout(() => window.print(), 500);
+    const t = setTimeout(() => window.print(), 700);
 
     return () => {
       clearTimeout(t);
@@ -57,51 +71,52 @@ export default function InvoicePrintPage() {
   }, []);
 
   if (!order) {
-    return <div className="catalog-message">بيانات الطباعة غير موجودة.</div>;
+    return <div className="catalog-message">الطلب غير موجود.</div>;
   }
 
   return (
-    <div id="print-invoice" style={{ background: "#fff", color: "#111827", padding: 24, maxWidth: 900, margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 24 }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: 30 }}>فاتورة</h1>
-          <div style={{ color: "#64748b", marginTop: 8 }}>صيدلية النور | Al-Nour Offers</div>
+    <div id="print-invoice" dir="rtl" style={pageStyle}>
+      <div style={headerStyle}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <img src="/logo.png" alt="صيدلية النور" style={logoStyle} onError={(e) => { e.currentTarget.style.display = "none"; }} />
+          <div>
+            <h1 style={shopTitle}>صيدلية النور</h1>
+            <div style={shopSub}>Al-Nour Offers</div>
+            <div style={smallText}>بجوار مجمع أهالي الخرمة الطبي العام - الخرمة</div>
+          </div>
         </div>
 
         <div style={{ textAlign: "left" }}>
-          <div style={{ fontWeight: 800 }}>رقم الطلب: {order.orderNo}</div>
-          <div style={{ color: "#64748b", marginTop: 6 }}>
+          <h2 style={invoiceTitle}>فاتورة</h2>
+          <div style={strongLine}>رقم الطلب: {order.orderNo}</div>
+          <div style={smallText}>
             التاريخ: {order.createdAt ? new Date(order.createdAt).toLocaleString("ar-SA") : "-"}
           </div>
-          <div style={{ color: "#64748b", marginTop: 6 }}>
+          <div style={smallText}>
             الدفع: {order.paymentMethod === "cash" ? "الدفع عند الاستلام" : "بطاقة"}
           </div>
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+      <div style={infoGrid}>
         <div style={boxStyle}>
-          <div style={boxTitle}>بيانات العميل</div>
-          <div>{order.address?.fullName}</div>
-          <div style={{ marginTop: 6 }}>{order.address?.phone}</div>
+          <h3 style={boxTitle}>بيانات العميل</h3>
+          <div style={lineStyle}>{order.address?.fullName || "-"}</div>
+          <div style={lineStyle}>{order.address?.phone || "-"}</div>
         </div>
 
         <div style={boxStyle}>
-          <div style={boxTitle}>عنوان التوصيل</div>
-          <div>{order.address?.city || "-"}</div>
-          <div style={{ marginTop: 6 }}>
-            {order.address?.district || "-"} - {order.address?.street || "-"}
-          </div>
-          <div style={{ marginTop: 6 }}>
-            مبنى: {order.address?.buildingNo || "-"} | شقة: {order.address?.apartment || "-"}
-          </div>
+          <h3 style={boxTitle}>عنوان التوصيل</h3>
+          <div style={lineStyle}>{order.address?.city || "-"} - {order.address?.district || "-"}</div>
+          <div style={lineStyle}>{order.address?.street || "-"}</div>
+          <div style={lineStyle}>مبنى: {order.address?.buildingNo || "-"} | شقة: {order.address?.apartment || "-"}</div>
         </div>
       </div>
 
-      <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 24 }}>
+      <table style={tableStyle}>
         <thead>
           <tr>
-            <th style={cellHead}>المنتج</th>
+            <th style={cellHead}>الصنف</th>
             <th style={cellHead}>الكمية</th>
             <th style={cellHead}>سعر الوحدة</th>
             <th style={cellHead}>الإجمالي</th>
@@ -109,47 +124,164 @@ export default function InvoicePrintPage() {
         </thead>
         <tbody>
           {(order.items || []).map((item) => (
-            <tr key={item.productID}>
+            <tr key={item.productID || item.id}>
               <td style={cell}>{item.productName || item.name || "منتج"}</td>
-              <td style={cell}>{item.qty}</td>
-              <td style={cell}>{formatCurrency(item.price)}</td>
-              <td style={cell}>{formatCurrency(Number(item.price || 0) * Number(item.qty || 0))}</td>
+              <td style={cellCenter}>{item.qty}</td>
+              <td style={cellCenter}>{formatCurrency(item.price)}</td>
+              <td style={cellCenter}>{formatCurrency(Number(item.price || 0) * Number(item.qty || 0))}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
-        <div style={{ color: "#64748b" }}>شكرًا لثقتكم في صيدلية النور</div>
-        <div style={{ fontSize: 24, fontWeight: 800 }}>
-          الإجمالي النهائي: {formatCurrency(order.total)}
-        </div>
+      <div style={totalBox}>
+        <span>الإجمالي النهائي:</span>
+        <strong>{formatCurrency(order.total)}</strong>
+      </div>
+
+      <div style={footerStyle}>
+        <div>شكرًا لثقتكم في صيدلية النور</div>
+        <div style={{ fontWeight: 800 }}>هيثم أسامة عبدالغفار | iPharmEGY</div>
       </div>
     </div>
   );
 }
 
+const pageStyle = {
+  background: "#fff",
+  color: "#111827",
+  padding: "28px",
+  maxWidth: "980px",
+  minHeight: "1350px",
+  margin: "0 auto",
+  fontSize: 18,
+  lineHeight: 1.7,
+  boxSizing: "border-box",
+};
+
+const headerStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  borderBottom: "3px solid #2563eb",
+  paddingBottom: 18,
+  marginBottom: 22,
+};
+
+const logoStyle = {
+  width: 92,
+  height: 92,
+  objectFit: "contain",
+  borderRadius: 16,
+};
+
+const shopTitle = {
+  margin: 0,
+  fontSize: 34,
+  fontWeight: 900,
+};
+
+const shopSub = {
+  fontSize: 18,
+  color: "#2563eb",
+  fontWeight: 800,
+};
+
+const invoiceTitle = {
+  margin: 0,
+  fontSize: 36,
+  fontWeight: 900,
+  color: "#2563eb",
+};
+
+const strongLine = {
+  fontSize: 18,
+  fontWeight: 900,
+  marginTop: 8,
+};
+
+const smallText = {
+  fontSize: 15,
+  color: "#475569",
+  marginTop: 4,
+};
+
+const infoGrid = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: 18,
+  marginBottom: 24,
+};
+
 const boxStyle = {
-  border: "1px solid #e5e7eb",
-  borderRadius: 12,
-  padding: 14
+  border: "2px solid #e5e7eb",
+  borderRadius: 16,
+  padding: 18,
+  minHeight: 120,
 };
 
 const boxTitle = {
-  fontWeight: 800,
-  marginBottom: 10
+  margin: "0 0 10px",
+  fontSize: 22,
+  fontWeight: 900,
+  color: "#0f172a",
+};
+
+const lineStyle = {
+  fontSize: 18,
+  marginBottom: 6,
+};
+
+const tableStyle = {
+  width: "100%",
+  borderCollapse: "collapse",
+  marginTop: 18,
+  marginBottom: 24,
+  fontSize: 18,
 };
 
 const cellHead = {
-  border: "1px solid #d1d5db",
-  padding: 12,
-  background: "#f8fafc",
+  border: "2px solid #cbd5e1",
+  padding: 16,
+  background: "#eff6ff",
   textAlign: "right",
-  fontWeight: 800
+  fontWeight: 900,
+  fontSize: 19,
 };
 
 const cell = {
-  border: "1px solid #e5e7eb",
-  padding: 12,
-  textAlign: "right"
+  border: "2px solid #e5e7eb",
+  padding: 16,
+  textAlign: "right",
+  fontWeight: 700,
+};
+
+const cellCenter = {
+  border: "2px solid #e5e7eb",
+  padding: 16,
+  textAlign: "center",
+  fontWeight: 800,
+};
+
+const totalBox = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  border: "3px solid #2563eb",
+  borderRadius: 18,
+  padding: "18px 22px",
+  fontSize: 26,
+  fontWeight: 900,
+  marginTop: 20,
+};
+
+const footerStyle = {
+  marginTop: 34,
+  paddingTop: 18,
+  borderTop: "2px solid #e5e7eb",
+  display: "flex",
+  justifyContent: "space-between",
+  gap: 16,
+  fontSize: 17,
+  color: "#334155",
 };

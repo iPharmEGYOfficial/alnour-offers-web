@@ -17,6 +17,7 @@ import LoginPage from "../pages/LoginPage";
 import AdminOrdersPage from "../pages/AdminOrdersPage";
 import AdminOrderDetailsPage from "../pages/AdminOrderDetailsPage";
 import AdminBannersPage from "../pages/AdminBannersPage";
+import AdminDataTubePage from "../pages/AdminDataTubePage";
 import InvoicePage from "../pages/InvoicePage";
 import InvoicePrintPage from "../pages/InvoicePrintPage";
 import RateOrderPage from "../pages/RateOrderPage";
@@ -65,6 +66,7 @@ export default function AppRouter() {
           <Route path="/admin/orders" element={<AdminOrdersPage />} />
           <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
           <Route path="/admin/banners" element={<AdminBannersPage />} />
+          <Route path="/admin/data-tube" element={<AdminDataTubePage />} />
         </Route>
 
         <Route
