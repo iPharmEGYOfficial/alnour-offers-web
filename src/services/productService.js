@@ -1,4 +1,5 @@
-import productsData from "./localProducts.json";
+import productsSA from "./ProductsSA.json";
+import productsEG from "./ProductsEG.json";
 import {
   getApiBaseUrl,
   isBridgeMode,
@@ -8,7 +9,13 @@ import {
 } from "../config/runtimeConfig";
 
 const DEFAULT_PAGE_SIZE = 50;
-const STORAGE_KEY = "alnour_local_products";
+const DEFAULT_MARKET = "SA";
+const STORAGE_KEY = "alnour_local_products_by_market";
+
+const MARKET_SOURCES = {
+  SA: productsSA,
+  EG: productsEG,
+};
 
 function toNumber(value, fallback = 0) {
   const n = Number(value);
@@ -19,46 +26,79 @@ function pick(...values) {
   return values.find((v) => v !== undefined && v !== null && v !== "");
 }
 
-function readLocalStorageProducts() {
+function readStorage() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return null;
-
-    const parsed = JSON.parse(saved);
-    return Array.isArray(parsed) ? parsed : null;
+    return saved ? JSON.parse(saved) : {};
   } catch {
-    return null;
+    return {};
   }
 }
 
-function writeLocalStorageProducts(products) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(products || []));
+function writeStorage(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data || {}));
 }
 
-function getLocalSourceProducts() {
-  return readLocalStorageProducts() || productsData;
+function getRawLocalProducts(market = DEFAULT_MARKET) {
+  const storage = readStorage();
+  return storage[market] || MARKET_SOURCES[market] || [];
 }
 
-function normalizeProduct(raw = {}, index = 0, forcedSource = "") {
+function saveRawLocalProducts(market, products) {
+  const storage = readStorage();
+  storage[market] = products || [];
+  writeStorage(storage);
+}
+
+function normalizeCategory(cat = "") {
+  const map = {
+    "Personal Care": "العناية الشخصية",
+    "Hair Care": "العناية بالشعر",
+    Thermometers: "أجهزة قياس ومتابعة",
+    "Blood Pressure Monitors": "أجهزة قياس ومتابعة",
+    "First Aid": "إسعافات أولية",
+    "Mother & Baby": "الأم والطفل",
+    "Massage Devices": "العلاج الطبيعي والتدليك",
+    Hijama: "مستلزمات الحجامة",
+  };
+
+  return map[cat] || cat || "مستلزمات طبية";
+}
+
+function normalizeProduct(
+  raw = {},
+  index = 0,
+  forcedSource = "local",
+  market = DEFAULT_MARKET,
+) {
   const source = pick(forcedSource, raw.source, raw.Source, "local");
 
-  const id = pick(
-    raw.productID,
-    raw.ProductId,
-    raw.ProductID,
-    raw.productId,
-    raw.id,
-    raw.ItemNo,
-    raw.itemNo,
-    raw.legacyProductId,
-    raw.CLS_ID,
-    raw.clsId,
-    index + 1,
+  const rawId = String(
+    pick(
+      raw.rawId,
+      raw.productID,
+      raw.ProductId,
+      raw.ProductID,
+      raw.productId,
+      raw.id,
+      raw.ItemNo,
+      raw.itemNo,
+      raw.legacyProductId,
+      raw.CLS_ID,
+      raw.clsId,
+      `${market}-${index + 1}`,
+    ),
   );
 
-  const cleanId = String(id);
-
-  const barcode = pick(raw.barcode, raw.Barcode, raw.GTIN, raw.gtin, "");
+  const productName = pick(
+    raw.productName,
+    raw.ProductName,
+    raw.ItemNameAr,
+    raw.itemNameAr,
+    raw.name,
+    raw.Name,
+    "منتج",
+  );
 
   const price = toNumber(
     pick(
@@ -83,16 +123,6 @@ function normalizeProduct(raw = {}, index = 0, forcedSource = "") {
     price,
   );
 
-  const productName = pick(
-    raw.productName,
-    raw.ProductName,
-    raw.ItemNameAr,
-    raw.itemNameAr,
-    raw.name,
-    raw.Name,
-    "منتج",
-  );
-
   const imageUrl = pick(
     raw.imageUrl,
     raw.ImageUrl,
@@ -106,34 +136,34 @@ function normalizeProduct(raw = {}, index = 0, forcedSource = "") {
     pick(raw.stockQty, raw.StockQty, raw.stock, raw.Stock, 0),
   );
 
+  const cleanSource = source === "live" ? "live" : `local-${market}`;
+
   return {
     ...raw,
-
     source,
+    market,
 
-    id: `${source}-${cleanId}`,
-    productID: `${source}-${cleanId}`,
-    productId: `${source}-${cleanId}`,
-
-    rawId: cleanId,
+    id: raw.id || `${cleanSource}-${rawId}`,
+    productID: raw.productID || `${cleanSource}-${rawId}`,
+    productId: raw.productId || `${cleanSource}-${rawId}`,
+    rawId,
 
     legacyProductId: pick(
       raw.legacyProductId,
       raw.LegacyProductId,
       raw.CLS_ID,
       raw.clsId,
-      cleanId,
+      rawId,
     ),
-
     clsId: pick(
       raw.clsId,
       raw.CLS_ID,
       raw.legacyProductId,
       raw.LegacyProductId,
-      cleanId,
+      rawId,
     ),
 
-    barcode,
+    barcode: pick(raw.barcode, raw.Barcode, raw.GTIN, raw.gtin, ""),
     productName,
     name: pick(raw.name, productName, "منتج"),
 
@@ -143,19 +173,11 @@ function normalizeProduct(raw = {}, index = 0, forcedSource = "") {
     primaryImageUrl: pick(raw.primaryImageUrl, raw.PrimaryImageUrl, imageUrl),
     imageUrl,
 
-    categoryName: pick(
-      raw.categoryName,
-      raw.CategoryName,
-      raw.category,
-      raw.Category,
-      source === "live" ? "منتجات الصيدلية" : "أجهزة ومستلزمات طبية",
+    categoryName: normalizeCategory(
+      pick(raw.categoryName, raw.CategoryName, raw.category, raw.Category, ""),
     ),
-
-    category: pick(
-      raw.category,
-      raw.categoryName,
-      raw.CategoryName,
-      source === "live" ? "منتجات الصيدلية" : "أجهزة ومستلزمات طبية",
+    category: normalizeCategory(
+      pick(raw.category, raw.categoryName, raw.CategoryName, raw.Category, ""),
     ),
 
     brandName: pick(raw.brandName, raw.BrandName, raw.brand, raw.Brand, ""),
@@ -163,7 +185,6 @@ function normalizeProduct(raw = {}, index = 0, forcedSource = "") {
 
     stockQty,
     availability: stockQty >= 1 ? "available" : "unavailable",
-
     isActive: raw.isActive ?? true,
   };
 }
@@ -192,7 +213,7 @@ function normalizeOffer(raw = {}) {
       pick(raw.offerState, raw.OfferState, raw.OFF_STATE, 0),
     ),
     startDate: pick(raw.startDate, raw.StartDate, raw.OFF_F_DATE, null),
-    endDate: pick(raw.endDate, raw.EndDate, raw.OFF_T_DATE, null),
+    endDate: pick(raw.endDate, raw.StartDate, raw.OFF_T_DATE, null),
     offerType: toNumber(pick(raw.offerType, raw.OfferType, raw.OFF_TYPE, 0)),
     discountType: toNumber(
       pick(raw.discountType, raw.DiscountType, raw.OFF_DIS_TYPE, 0),
@@ -206,10 +227,7 @@ function normalizeOffer(raw = {}) {
 
 async function requestJson(path, options = {}) {
   const baseUrl = getApiBaseUrl();
-
-  if (!baseUrl) {
-    throw new Error("API base URL is empty.");
-  }
+  if (!baseUrl) throw new Error("API base URL is empty.");
 
   const url = `${baseUrl}${path}`;
 
@@ -221,15 +239,11 @@ async function requestJson(path, options = {}) {
     ...options,
   });
 
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} while loading ${url}`);
-  }
+  if (!res.ok) throw new Error(`HTTP ${res.status} while loading ${url}`);
 
   const data = await res.json();
-
-  if (data?.status === "ERROR") {
+  if (data?.status === "ERROR")
     throw new Error(data.error || `API error from ${url}`);
-  }
 
   return data;
 }
@@ -242,7 +256,7 @@ function toPagedResult(
 ) {
   if (Array.isArray(data)) {
     return {
-      items: data.map((x, i) => normalizeProduct(x, i, source)),
+      items: data.map((x, i) => normalizeProduct(x, i, source, "LIVE")),
       page,
       pageSize,
       total: data.length,
@@ -253,7 +267,7 @@ function toPagedResult(
 
   const rawItems = data?.items || data?.data || data?.products || [];
   const items = Array.isArray(rawItems)
-    ? rawItems.map((x, i) => normalizeProduct(x, i, source))
+    ? rawItems.map((x, i) => normalizeProduct(x, i, source, "LIVE"))
     : [];
 
   return {
@@ -268,17 +282,14 @@ function toPagedResult(
 }
 
 function applyOffersToProducts(products, offers) {
-  if (!Array.isArray(products) || !Array.isArray(offers) || !offers.length) {
+  if (!Array.isArray(products) || !Array.isArray(offers) || !offers.length)
     return products;
-  }
 
   const offerByProduct = new Map();
 
   offers.map(normalizeOffer).forEach((offer) => {
     const key = String(offer.legacyProductId ?? "");
-    if (key && !offerByProduct.has(key)) {
-      offerByProduct.set(key, offer);
-    }
+    if (key && !offerByProduct.has(key)) offerByProduct.set(key, offer);
   });
 
   return products.map((product) => {
@@ -340,14 +351,17 @@ async function getBridgeProducts(params = {}) {
 async function getLocalProducts(params = {}) {
   const page = params.page ?? 1;
   const pageSize = params.pageSize ?? DEFAULT_PAGE_SIZE;
+  const market = params.market || params.country || "ALL";
 
   const search = (params.search || params.q || "")
     .toString()
     .trim()
     .toLowerCase();
 
-  let items = getLocalSourceProducts().map((x, i) =>
-    normalizeProduct(x, i, "local"),
+  const markets = market === "ALL" ? ["SA", "EG"] : [market];
+
+  let items = markets.flatMap((m) =>
+    getRawLocalProducts(m).map((x, i) => normalizeProduct(x, i, "local", m)),
   );
 
   if (search) {
@@ -360,6 +374,7 @@ async function getLocalProducts(params = {}) {
         p.categoryName,
         p.productID,
         p.rawId,
+        p.market,
       ]
         .filter(Boolean)
         .some((v) => String(v).toLowerCase().includes(search)),
@@ -375,6 +390,7 @@ async function getLocalProducts(params = {}) {
     total: items.length,
     hasMore: start + pageSize < items.length,
     source: "local",
+    market,
   };
 }
 
@@ -388,7 +404,7 @@ function mergePagedResults(localResult, bridgeResult, params = {}) {
   const map = new Map();
 
   [...localItems, ...bridgeItems].forEach((item) => {
-    const key = `${item.source}-${item.rawId || item.id || item.productID}`;
+    const key = `${item.source}-${item.market || "LIVE"}-${item.rawId || item.id || item.productID}`;
     if (!map.has(key)) map.set(key, item);
   });
 
@@ -424,17 +440,13 @@ async function getHybridProducts(params = {}) {
 
   const localResult =
     results[0].status === "fulfilled" ? results[0].value : null;
-
   const bridgeResult =
     results[1].status === "fulfilled" ? results[1].value : null;
 
-  if (results[0].status === "rejected") {
+  if (results[0].status === "rejected")
     console.warn("Local products failed:", results[0].reason);
-  }
-
-  if (results[1].status === "rejected") {
+  if (results[1].status === "rejected")
     console.warn("Live products failed:", results[1].reason);
-  }
 
   if (!localResult && !bridgeResult) {
     throw new Error("تعذر تحميل المنتجات من المصدر المحلي واللايف");
@@ -444,87 +456,36 @@ async function getHybridProducts(params = {}) {
 }
 
 export async function getProducts(params = {}) {
-  if (isHybridMode()) {
-    return getHybridProducts(params);
-  }
+  if (isHybridMode()) return getHybridProducts(params);
 
-  if (isBridgeMode() || shouldUseBridgeProducts()) {
+  if (isBridgeMode() || shouldUseBridgeProducts())
     return getBridgeProducts(params);
-  }
 
-  if (shouldUseLocalProducts()) {
-    return getLocalProducts(params);
-  }
+  if (shouldUseLocalProducts()) return getLocalProducts(params);
 
   return getLocalProducts(params);
 }
 
 export async function searchProducts(query, params = {}) {
-  return getProducts({
-    ...params,
-    page: 1,
-    search: query,
-  });
+  return getProducts({ ...params, page: 1, search: query });
 }
 
 export async function getFeaturedProducts(limit = 12) {
-  const res = await getProducts({
-    page: 1,
-    pageSize: limit,
-  });
-
+  const res = await getProducts({ page: 1, pageSize: limit });
   return res.items || [];
 }
 
 export async function getProductById(id) {
   const value = String(id);
 
-  if (isHybridMode()) {
-    const res = await getProducts({
-      page: 1,
-      pageSize: 500,
-      search: value,
-    });
-
-    return (
-      (res.items || []).find((p) =>
-        [p.id, p.productID, p.productId, p.rawId, p.barcode].some(
-          (x) => String(x) === value,
-        ),
-      ) || null
-    );
-  }
-
-  if (isBridgeMode()) {
-    try {
-      return normalizeProduct(
-        await requestJson(`/api/products/${encodeURIComponent(value)}`),
-        0,
-        "live",
-      );
-    } catch {
-      const res = await getProducts({
-        page: 1,
-        pageSize: 200,
-        search: value,
-      });
-
-      return (
-        (res.items || []).find((p) =>
-          [p.id, p.productID, p.productId, p.rawId, p.barcode].some(
-            (x) => String(x) === value,
-          ),
-        ) || null
-      );
-    }
-  }
-
-  const all = getLocalSourceProducts().map((x, i) =>
-    normalizeProduct(x, i, "local"),
-  );
+  const res = await getProducts({
+    page: 1,
+    pageSize: 1000,
+    search: value,
+  });
 
   return (
-    all.find((p) =>
+    (res.items || []).find((p) =>
       [p.id, p.productID, p.productId, p.rawId, p.barcode].some(
         (x) => String(x) === value,
       ),
@@ -534,45 +495,36 @@ export async function getProductById(id) {
 
 export async function getOffers() {
   if (!shouldUseBridgeProducts()) return [];
-
   const data = await requestJson("/api/offers");
   return Array.isArray(data) ? data.map(normalizeOffer) : [];
 }
 
 export async function getActiveOffers() {
   if (!shouldUseBridgeProducts()) return [];
-
   const data = await requestJson("/api/offers/active");
   return Array.isArray(data) ? data.map(normalizeOffer) : [];
 }
 
 export async function getOfferProducts(params = {}) {
   const res = await getProducts(params);
-
-  return {
-    ...res,
-    items: (res.items || []).filter((p) => p.hasOffer),
-  };
+  return { ...res, items: (res.items || []).filter((p) => p.hasOffer) };
 }
 
-// Admin Local JSON via localStorage مؤقتًا
-// لاحقًا ننقلها لـ Backend API يحفظ في ملف/قاعدة بيانات
-export function getLocalAdminProducts() {
-  return getLocalSourceProducts().map((x, i) =>
-    normalizeProduct(x, i, "local"),
+export function getLocalAdminProducts(market = DEFAULT_MARKET) {
+  return getRawLocalProducts(market).map((x, i) =>
+    normalizeProduct(x, i, "local", market),
   );
 }
 
-export function saveLocalAdminProducts(products) {
-  writeLocalStorageProducts(products);
-  return getLocalAdminProducts();
+export function saveLocalAdminProducts(products, market = DEFAULT_MARKET) {
+  saveRawLocalProducts(market, products);
+  return getLocalAdminProducts(market);
 }
 
-export function upsertLocalAdminProduct(product) {
-  const current = getLocalSourceProducts();
-  const normalized = normalizeProduct(product, 0, "local");
+export function upsertLocalAdminProduct(product, market = DEFAULT_MARKET) {
+  const current = getRawLocalProducts(market);
+  const rawId = String(product.rawId || product.id || Date.now());
 
-  const rawId = String(normalized.rawId || normalized.id);
   const index = current.findIndex((p) =>
     [p.id, p.productID, p.productId, p.rawId, p.barcode, p.legacyProductId]
       .filter(Boolean)
@@ -581,9 +533,11 @@ export function upsertLocalAdminProduct(product) {
 
   const saved = {
     ...product,
+    rawId,
     id: rawId,
     productID: rawId,
     productId: rawId,
+    market,
     source: "local",
   };
 
@@ -592,15 +546,15 @@ export function upsertLocalAdminProduct(product) {
       ? current.map((p, i) => (i === index ? { ...p, ...saved } : p))
       : [saved, ...current];
 
-  writeLocalStorageProducts(next);
-  return normalizeProduct(saved, 0, "local");
+  saveRawLocalProducts(market, next);
+  return normalizeProduct(saved, 0, "local", market);
 }
 
-export function deleteLocalAdminProduct(id) {
+export function deleteLocalAdminProduct(id, market = DEFAULT_MARKET) {
   const value = String(id);
 
-  const next = getLocalSourceProducts().filter((p) => {
-    const normalized = normalizeProduct(p, 0, "local");
+  const next = getRawLocalProducts(market).filter((p) => {
+    const normalized = normalizeProduct(p, 0, "local", market);
 
     return ![
       normalized.id,
@@ -611,8 +565,8 @@ export function deleteLocalAdminProduct(id) {
     ].some((x) => String(x) === value);
   });
 
-  writeLocalStorageProducts(next);
-  return getLocalAdminProducts();
+  saveRawLocalProducts(market, next);
+  return getLocalAdminProducts(market);
 }
 
 const productService = {
