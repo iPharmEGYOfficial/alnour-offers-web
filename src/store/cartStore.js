@@ -1,44 +1,65 @@
 ﻿import { create } from "zustand";
 
-const STORAGE_KEY = "alnour_cart";
+const USER_STORAGE_KEY = "alnour_user";
 
-function safeParse(raw) {
+function safeParse(raw, fallback = null) {
   try {
-    const parsed = JSON.parse(raw);
+    return JSON.parse(raw) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function getCurrentCustomerId() {
+  const user = safeParse(localStorage.getItem(USER_STORAGE_KEY));
+  return user?.id || "guest";
+}
+
+function getCartKey(customerId = getCurrentCustomerId()) {
+  return `alnour_cart_${customerId}`;
+}
+
+function readCart(customerId = getCurrentCustomerId()) {
+  try {
+    const raw = localStorage.getItem(getCartKey(customerId));
+    const parsed = JSON.parse(raw || "[]");
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
 }
 
-function readCart() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? safeParse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
 const useCartStore = create((set, get) => ({
+  customerId: getCurrentCustomerId(),
   items: readCart(),
 
+  setCustomer(customerId) {
+    const id = customerId || getCurrentCustomerId();
+    set({
+      customerId: id,
+      items: readCart(id),
+    });
+  },
+
   persist() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(get().items));
+    localStorage.setItem(getCartKey(get().customerId), JSON.stringify(get().items));
   },
 
   addToCart(product) {
     const items = [...get().items];
-    const index = items.findIndex((x) => x.productID === product.productID);
-    const stock = Number(product.stockQty || 0);
+    const productID = product.productID || product.productId || product.id;
+    const index = items.findIndex((x) => String(x.productID) === String(productID));
+    const stock = Number(product.stockQty ?? product.stock ?? 999999);
 
     if (index > -1) {
-      if (items[index].qty < stock) {
+      if (stock <= 0 || items[index].qty < stock) {
         items[index].qty += 1;
       }
     } else {
       items.push({
         ...product,
+        productID,
+        productId: productID,
         qty: 1,
         stockQty: stock,
       });
@@ -48,16 +69,15 @@ const useCartStore = create((set, get) => ({
     get().persist();
   },
 
-  // ✅ alias للتوافق مع أي ملفات قديمة
   addItem(product) {
     get().addToCart(product);
   },
 
   increaseQty(productID) {
     const items = get().items.map((item) => {
-      const stock = Number(item.stockQty || 0);
+      const stock = Number(item.stockQty || 999999);
 
-      if (item.productID === productID && item.qty < stock) {
+      if (String(item.productID) === String(productID) && item.qty < stock) {
         return { ...item, qty: item.qty + 1 };
       }
 
@@ -71,7 +91,9 @@ const useCartStore = create((set, get) => ({
   decreaseQty(productID) {
     const items = get()
       .items.map((item) =>
-        item.productID === productID ? { ...item, qty: item.qty - 1 } : item,
+        String(item.productID) === String(productID)
+          ? { ...item, qty: item.qty - 1 }
+          : item,
       )
       .filter((item) => item.qty > 0);
 
@@ -80,14 +102,16 @@ const useCartStore = create((set, get) => ({
   },
 
   removeItem(productID) {
-    const items = get().items.filter((item) => item.productID !== productID);
+    const items = get().items.filter(
+      (item) => String(item.productID) !== String(productID),
+    );
     set({ items });
     get().persist();
   },
 
   clearCart() {
     set({ items: [] });
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(getCartKey(get().customerId));
   },
 
   getCartCount() {
@@ -103,13 +127,3 @@ const useCartStore = create((set, get) => ({
 }));
 
 export default useCartStore;
-
-
-
-
-
-
-
-
-
-

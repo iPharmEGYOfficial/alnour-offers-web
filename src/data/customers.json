@@ -1,0 +1,52 @@
+[
+  {
+    "id": "CUS-001",
+    "name": "هيثم أسامة",
+    "phone": "0535272372",
+    "country": "SA",
+    "city": "مكة المكرمة",
+    "welcomeMessage": "أهلاً هيثم، نورت صيدلية النور",
+    "addresses": [
+      {
+        "id": "ADDR-SA-001",
+        "label": "المنزل",
+        "fullName": "هيثم أسامة",
+        "phone": "0535272372",
+        "country": "SA",
+        "city": "مكة المكرمة",
+        "district": "الخزمة",
+        "street": "طريق الملك فهد",
+        "buildingNo": "101",
+        "floor": "",
+        "apartment": "",
+        "notes": "",
+        "isDefault": true
+      }
+    ]
+  },
+  {
+    "id": "CUS-002",
+    "name": "عميل مصر التجريبي",
+    "phone": "01000000000",
+    "country": "EG",
+    "city": "القاهرة",
+    "welcomeMessage": "أهلاً بك في صيدلية النور",
+    "addresses": [
+      {
+        "id": "ADDR-EG-001",
+        "label": "المنزل",
+        "fullName": "عميل مصر التجريبي",
+        "phone": "01000000000",
+        "country": "EG",
+        "city": "القاهرة",
+        "district": "مدينة نصر",
+        "street": "شارع تجريبي",
+        "buildingNo": "12",
+        "floor": "3",
+        "apartment": "8",
+        "notes": "",
+        "isDefault": true
+      }
+    ]
+  }
+]

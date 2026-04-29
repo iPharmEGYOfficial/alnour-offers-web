@@ -9,11 +9,11 @@ export default function Receipt({ data }) {
   return (
     <div className="receipt" dir="rtl">
 
-      <h2 style={{ textAlign: "center" }}>ØµÙŠØ¯Ù„ÙŠØ© Ø§Ù„Ù†ÙˆØ±</h2>
+      <h2 style={{ textAlign: "center" }}>صيدلية النور</h2>
 
       <div>
-        <p>Ø±Ù‚Ù… Ø§Ù„ÙØ§ØªÙˆØ±Ø©: {data.invoiceNo}</p>
-        <p>Ø§Ù„ØªØ§Ø±ÙŠØ®: {data.dateText}</p>
+        <p>رقم الفاتورة: {data.invoiceNo}</p>
+        <p>التاريخ: {data.dateText}</p>
       </div>
 
       <hr />
@@ -21,10 +21,10 @@ export default function Receipt({ data }) {
       <table className="receipt-table">
         <thead>
           <tr>
-            <th>Ø§Ù„ØµÙ†Ù</th>
-            <th>Ø§Ù„ÙƒÙ…ÙŠØ©</th>
-            <th>Ø§Ù„Ø³Ø¹Ø±</th>
-            <th>Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ</th>
+            <th>الصنف</th>
+            <th>الكمية</th>
+            <th>السعر</th>
+            <th>الإجمالي</th>
           </tr>
         </thead>
 
@@ -43,17 +43,18 @@ export default function Receipt({ data }) {
       <hr />
 
       <div className="receipt-total-box">
-        Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ: {formatCurrency(summary.finalTotal || data.total)}
+        الإجمالي: {formatCurrency(summary.finalTotal || data.total)}
       </div>
 
       <TaxQrBlock data={data.qr} />
 
       <p className="receipt-footer">
-        Ø´ÙƒØ±Ø§Ù‹ Ù„ØªØ³ÙˆÙ‚ÙƒÙ… Ù…Ù† ØµÙŠØ¯Ù„ÙŠØ© Ø§Ù„Ù†ÙˆØ± ðŸŒ¹
+        شكراً لتسوقكم من صيدلية النور 🌹
       </p>
     </div>
   );
 }
+
 
 
 

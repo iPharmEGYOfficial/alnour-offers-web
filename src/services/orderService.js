@@ -1,8 +1,21 @@
-﻿const STORAGE_KEY = "alnour_orders";
+const ORDERS_KEY = "alnour_orders";
+const USER_STORAGE_KEY = "alnour_user";
+
+function safeParse(raw, fallback = null) {
+  try {
+    return JSON.parse(raw) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function getCurrentUser() {
+  return safeParse(localStorage.getItem(USER_STORAGE_KEY), null);
+}
 
 function readOrders() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(ORDERS_KEY);
     const parsed = JSON.parse(raw || "[]");
     return Array.isArray(parsed) ? parsed : [];
   } catch {
@@ -11,7 +24,7 @@ function readOrders() {
 }
 
 function saveOrders(orders) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+  localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
 }
 
 export async function applyCoupon(payload) {
@@ -23,12 +36,26 @@ export async function applyPoints(payload) {
 }
 
 export async function confirmOrder(payload) {
+  const user = getCurrentUser();
+  const orderNo = payload.orderNo || `AN-${Date.now()}`;
+
   const order = {
     ...payload,
-    orderNo: payload.orderNo || `AN-${Date.now()}`,
-    id: payload.orderNo || `AN-${Date.now()}`,
-    status: "new",
-    createdAt: new Date().toISOString(),
+    orderNo,
+    id: payload.id || orderNo,
+    customerId: payload.customerId || user?.id || "guest",
+    customerName: payload.customerName || user?.name || payload.address?.fullName || "عميل",
+    customerPhone: payload.customerPhone || user?.phone || payload.address?.phone || "",
+    status: payload.status || "new",
+    stepStatus: {
+      cart: true,
+      address: true,
+      country: true,
+      payment: true,
+      review: true,
+      success: true,
+    },
+    createdAt: payload.createdAt || new Date().toISOString(),
   };
 
   const orders = readOrders();
@@ -38,11 +65,20 @@ export async function confirmOrder(payload) {
 }
 
 export async function getCustomerOrders() {
-  return readOrders();
+  const user = getCurrentUser();
+  const orders = readOrders();
+
+  if (!user?.id) return orders.filter((order) => !order.customerId || order.customerId === "guest");
+
+  return orders.filter((order) => String(order.customerId) === String(user.id));
 }
 
 export async function getOrderDetails(orderId) {
-  return readOrders().find((x) => String(x.orderNo) === String(orderId) || String(x.id) === String(orderId)) || null;
+  return (
+    readOrders().find(
+      (x) => String(x.orderNo) === String(orderId) || String(x.id) === String(orderId),
+    ) || null
+  );
 }
 
 export async function createPaymentSession(payload) {
@@ -62,8 +98,8 @@ export async function getAdminOrders() {
 export async function updateAdminOrderStatus(orderId, status) {
   const orders = readOrders().map((order) =>
     String(order.orderNo) === String(orderId) || String(order.id) === String(orderId)
-      ? { ...order, status }
-      : order
+      ? { ...order, status, updatedAt: new Date().toISOString() }
+      : order,
   );
 
   saveOrders(orders);
@@ -73,9 +109,9 @@ export async function updateAdminOrderStatus(orderId, status) {
 
 export async function submitRating(payload) {
   const orders = readOrders().map((order) =>
-    String(order.orderNo) === String(payload.orderNo)
-      ? { ...order, ratingSubmitted: true, rating: payload }
-      : order
+    String(order.orderNo) === String(payload.orderNo) || String(order.id) === String(payload.orderNo)
+      ? { ...order, ratingSubmitted: true, rating: payload, ratedAt: new Date().toISOString() }
+      : order,
   );
 
   saveOrders(orders);

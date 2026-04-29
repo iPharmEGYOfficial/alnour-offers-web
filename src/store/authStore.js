@@ -1,4 +1,4 @@
-﻿import { create } from "zustand";
+import { create } from "zustand";
 
 const STORAGE_KEY = "alnour_user";
 
@@ -16,12 +16,16 @@ const useAuthStore = create((set) => ({
   user: storedUser,
   isAuthenticated: Boolean(storedUser),
 
-  login: ({ phone = "", name = "عميل صيدلية النور" } = {}) => {
+  login: (customer = {}) => {
     const user = {
-      id: `LOCAL-${Date.now()}`,
-      name,
-      phone,
-      role: "customer",
+      id: customer.id || `LOCAL-${Date.now()}`,
+      name: customer.name || "عميل صيدلية النور",
+      phone: customer.phone || "",
+      country: customer.country || "SA",
+      city: customer.city || "",
+      role: customer.role || "customer",
+      welcomeMessage: customer.welcomeMessage || "",
+      loggedInAt: new Date().toISOString(),
     };
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user));

@@ -1,0 +1,19 @@
+{
+  "SA": [
+    { "id": "cash", "label": "الدفع عند الاستلام", "description": "ادفع عند استلام الطلب", "type": "offline" },
+    { "id": "mada", "label": "مدى", "description": "بطاقة مدى السعودية", "type": "card" },
+    { "id": "visa_master", "label": "فيزا / ماستر كارد", "description": "دفع آمن بالبطاقة", "type": "card" },
+    { "id": "stc_pay", "label": "STC Pay", "description": "محفظة STC Pay", "type": "wallet" },
+    { "id": "apple_pay", "label": "Apple Pay", "description": "دفع سريع عبر Apple Pay", "type": "wallet" },
+    { "id": "tamara", "label": "تمارا", "description": "اشتر الآن وادفع لاحقاً", "type": "bnpl" },
+    { "id": "tabby", "label": "تابي", "description": "قسّط مشترياتك", "type": "bnpl" }
+  ],
+  "EG": [
+    { "id": "cash", "label": "الدفع عند الاستلام", "description": "ادفع عند استلام الطلب", "type": "offline" },
+    { "id": "visa_master", "label": "فيزا / ماستر كارد", "description": "دفع آمن بالبطاقة", "type": "card" },
+    { "id": "fawry", "label": "فوري", "description": "ادفع عبر فوري", "type": "cash_network" },
+    { "id": "vodafone_cash", "label": "فودافون كاش", "description": "تحويل عبر محفظة فودافون كاش", "type": "wallet" },
+    { "id": "instapay", "label": "إنستا باي", "description": "تحويل لحظي عبر InstaPay", "type": "wallet" },
+    { "id": "meeza", "label": "ميزة", "description": "بطاقة ميزة المحلية", "type": "card" }
+  ]
+}

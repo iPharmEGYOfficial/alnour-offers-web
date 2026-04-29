@@ -1,25 +1,50 @@
-﻿import { useMemo, useRef, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+﻿import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import AddressForm from "../components/account/AddressForm";
+import AddressCard from "../components/account/AddressCard";
+import CheckoutStepper from "../components/checkout/CheckoutStepper";
+import useAuthStore from "../store/authStore";
 import useCartStore from "../store/cartStore";
 import useAccountStore from "../store/accountStore";
 import formatCurrency from "../utils/formatCurrency";
-import Tesseract from "tesseract.js";
+import orderService from "../services/orderService";
+import {
+  buildPaymentInfo,
+  getPaymentMethods,
+  normalizeCountry,
+} from "../services/paymentService";
+
+const steps = [
+  { key: "cart", label: "السلة" },
+  { key: "address", label: "العنوان" },
+  { key: "country", label: "الدولة" },
+  { key: "payment", label: "الدفع" },
+  { key: "review", label: "المراجعة" },
+  { key: "success", label: "تم الطلب" },
+];
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
 
   const items = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
 
   const addresses = useAccountStore((s) => s.addresses);
   const addAddress = useAccountStore((s) => s.addAddress);
+  const updateAddress = useAccountStore((s) => s.updateAddress);
+  const deleteAddress = useAccountStore((s) => s.deleteAddress);
+  const setDefaultAddress = useAccountStore((s) => s.setDefaultAddress);
 
+  const [step, setStep] = useState(0);
   const [selectedAddressId, setSelectedAddressId] = useState(
-    addresses.find((x) => x.isDefault)?.id || addresses[0]?.id || ""
+    addresses.find((x) => x.isDefault)?.id || addresses[0]?.id || "",
   );
   const [creatingAddress, setCreatingAddress] = useState(addresses.length === 0);
-
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [country, setCountry] = useState(
+    normalizeCountry(addresses[0]?.country || user?.country || "SA"),
+  );
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [cardForm, setCardForm] = useState({
     cardName: "",
@@ -27,21 +52,24 @@ export default function CheckoutPage() {
     expiry: "",
     cvv: "",
   });
+  const [submitting, setSubmitting] = useState(false);
 
-  const [paymentStatus, setPaymentStatus] = useState("idle");
-  const [paymentMessage, setPaymentMessage] = useState("");
-  const [showScanner, setShowScanner] = useState(false);
-  const [scannerStream, setScannerStream] = useState(null);
-  const [scannerError, setScannerError] = useState("");
-  const [ocrLoading, setOcrLoading] = useState(false);
-  const videoRef = useRef(null);
+  useEffect(() => {
+    if (!selectedAddressId && addresses.length) {
+      const next = addresses.find((x) => x.isDefault) || addresses[0];
+      setSelectedAddressId(next.id);
+      setCountry(normalizeCountry(next.country || country));
+    }
+  }, [addresses, selectedAddressId, country]);
 
-  const total = useMemo(() => {
-    return items.reduce(
-      (sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0),
-      0
-    );
-  }, [items]);
+  const total = useMemo(
+    () =>
+      items.reduce(
+        (sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0),
+        0,
+      ),
+    [items],
+  );
 
   const selectedAddress =
     addresses.find((x) => x.id === selectedAddressId) ||
@@ -49,145 +77,88 @@ export default function CheckoutPage() {
     addresses[0] ||
     null;
 
-  function handleSaveAddress(data) {
-    addAddress(data);
+  const paymentMethods = useMemo(() => getPaymentMethods(country), [country]);
 
-    setTimeout(() => {
-      const raw = JSON.parse(localStorage.getItem("alnour_addresses") || "[]");
-      const latest = raw[0];
-      if (latest?.id) setSelectedAddressId(latest.id);
+  function handleSaveAddress(data) {
+    if (editingAddress) {
+      updateAddress(editingAddress.id, { ...data, country: data.country || country });
+      setSelectedAddressId(editingAddress.id);
+      setEditingAddress(null);
+    } else {
+      const saved = addAddress({ ...data, country: data.country || country });
+      if (saved?.id) setSelectedAddressId(saved.id);
+    }
+
+    setCreatingAddress(false);
+  }
+
+  function startAddAddress() {
+    setEditingAddress(null);
+    setCreatingAddress(true);
+  }
+
+  function startEditAddress(address) {
+    setEditingAddress(address);
+    setCreatingAddress(true);
+  }
+
+  function cancelAddressForm() {
+    setEditingAddress(null);
+    setCreatingAddress(false);
+  }
+
+  function handleDeleteAddress(id) {
+    deleteAddress(id);
+
+    const remaining = addresses.filter((x) => x.id !== id);
+    if (selectedAddressId === id) {
+      const next = remaining.find((x) => x.isDefault) || remaining[0] || null;
+      setSelectedAddressId(next?.id || "");
+      if (next?.country) setCountry(normalizeCountry(next.country));
+    }
+
+    if (editingAddress?.id === id) {
+      setEditingAddress(null);
       setCreatingAddress(false);
-    }, 50);
+    }
+
+    if (!remaining.length) {
+      setCreatingAddress(true);
+    }
+  }
+
+  function handleSelectAddress(address) {
+    setSelectedAddressId(address.id);
+    setCountry(normalizeCountry(address.country || country));
+  }
+
+  function canGoNext() {
+    if (step === 0) return items.length > 0;
+    if (step === 1) return Boolean(selectedAddress) && !creatingAddress;
+    if (step === 2) return Boolean(country);
+    if (step === 3) return Boolean(paymentMethod);
+    return true;
+  }
+
+  function nextStep() {
+    if (!canGoNext()) {
+      if (step === 0) alert("السلة فارغة");
+      if (step === 1) alert("اختر أو أضف عنوان التوصيل أولاً");
+      if (step === 2) alert("اختر الدولة");
+      if (step === 3) alert("اختر طريقة الدفع");
+      return;
+    }
+
+    setStep((value) => Math.min(value + 1, steps.length - 2));
+  }
+
+  function prevStep() {
+    setStep((value) => Math.max(value - 1, 0));
   }
 
   function handleCardChange(e) {
     const { name, value } = e.target;
     setCardForm((prev) => ({ ...prev, [name]: value }));
-  }
-
-  function isValidCard() {
-    return (
-      cardForm.cardName.trim() &&
-      cardForm.cardNumber.replace(/\s/g, "").length >= 12 &&
-      cardForm.expiry.trim().length >= 4 &&
-      cardForm.cvv.trim().length >= 3
-    );
-  }
-
-  async function openCardScanner() {
-    setShowScanner(true);
-    setScannerError("");
-
-    try {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        setScannerError("الكاميرا غير مدعومة في هذا المتصفح");
-        return;
-      }
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-        audio: false,
-      });
-
-      setScannerStream(stream);
-
-      setTimeout(() => {
-        const video = videoRef.current;
-        if (video) {
-          video.srcObject = stream;
-          video.play();
-        }
-      }, 100);
-    } catch {
-      setScannerError("تعذر تشغيل الكاميرا. اسمح للمتصفح باستخدام الكاميرا.");
-    }
-  }
-
-  function closeCardScanner() {
-    if (scannerStream) {
-      scannerStream.getTracks().forEach((track) => track.stop());
-    }
-
-    setScannerStream(null);
-    setShowScanner(false);
-  }
-
-  async function captureMockCard() {
-    const video = videoRef.current;
-
-    if (!video) {
-      setScannerError("الكاميرا غير جاهزة بعد");
-      return;
-    }
-
-    try {
-      setOcrLoading(true);
-      setScannerError("");
-
-      const canvas = document.createElement("canvas");
-      canvas.width = video.videoWidth || 1280;
-      canvas.height = video.videoHeight || 720;
-
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      const imageData = canvas.toDataURL("image/png");
-
-      const result = await Tesseract.recognize(imageData, "eng", {
-        logger: () => {}
-      });
-
-      const text = result?.data?.text || "";
-      const digits = text.replace(/\D/g, "");
-
-      const possibleCard =
-        digits.match(/\d{16}/)?.[0] ||
-        digits.match(/\d{15}/)?.[0] ||
-        digits.match(/\d{14}/)?.[0] ||
-        "";
-
-      if (!possibleCard) {
-        setScannerError("لم أتمكن من قراءة رقم البطاقة. قرّب البطاقة واجعل الأرقام واضحة ثم أعد المحاولة.");
-        return;
-      }
-
-      const formatted = possibleCard.replace(/(.{4})/g, "$1 ").trim();
-
-      setCardForm((prev) => ({
-        ...prev,
-        cardNumber: formatted,
-        expiry: prev.expiry || "",
-        cvv: prev.cvv || "",
-      }));
-
-      closeCardScanner();
-    } catch {
-      setScannerError("حدث خطأ أثناء قراءة البطاقة بالكاميرا.");
-    } finally {
-      setOcrLoading(false);
-    }
-  }
-
-  function simulateCardPayment() {
-    return new Promise((resolve) => {
-      setPaymentStatus("processing");
-      setPaymentMessage("جاري الاتصال بالبنك ومعالجة العملية...");
-
-      setTimeout(() => {
-        const cleanNumber = cardForm.cardNumber.replace(/\s/g, "");
-        const failed = cleanNumber.endsWith("0000");
-
-        if (failed) {
-          setPaymentStatus("failed");
-          setPaymentMessage("تم رفض العملية. جرّب بطاقة أخرى أو اختر الدفع عند الاستلام.");
-          resolve(false);
-        } else {
-          setPaymentStatus("success");
-          setPaymentMessage(`تمت الموافقة على الدفع. البطاقة المنتهية بـ ${cleanNumber.slice(-4)}`);
-          resolve(true);
-        }
-      }, 1800);
-    });
   }
 
   async function handleConfirmOrder() {
@@ -196,62 +167,52 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!selectedAddress && !creatingAddress) {
-      alert("من فضلك اختر أو أضف عنوان التوصيل");
+    if (!selectedAddress) {
+      alert("من فضلك اختر عنوان التوصيل");
       return;
     }
 
-    if (creatingAddress) {
-      alert("احفظ العنوان أولاً قبل تأكيد الطلب");
-      return;
-    }
+    try {
+      setSubmitting(true);
 
-    if (paymentMethod === "card") {
-      if (!isValidCard()) {
-        alert("من فضلك أدخل بيانات البطاقة بشكل صحيح");
-        return;
-      }
+      const paymentInfo = buildPaymentInfo({
+        country,
+        methodId: paymentMethod,
+        cardForm,
+      });
 
-      const paid = await simulateCardPayment();
-      if (!paid) return;
-    }
-
-    const orderNo = `AN-${Date.now()}`;
-
-    clearCart();
-
-    navigate("/order-success", {
-      state: {
-        orderNo,
+      const res = await orderService.confirmOrder({
+        country,
         total,
         paymentMethod,
-        paymentInfo:
-          paymentMethod === "card"
-            ? {
-                status: "paid",
-                provider: "Local Mock Gateway",
-                cardLast4: cardForm.cardNumber.replace(/\s/g, "").slice(-4),
-              }
-            : {
-                status: "cash_on_delivery",
-                provider: "COD",
-              },
-        address: selectedAddress,
+        paymentInfo,
+        address: { ...selectedAddress, country },
         items,
-      },
-    });
+      });
+
+      clearCart();
+      setStep(5);
+
+      navigate("/order-success", {
+        replace: true,
+        state: {
+          orderNo: res.order.orderNo,
+          total,
+          paymentMethod,
+          paymentInfo,
+          address: selectedAddress,
+          items,
+        },
+      });
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (!items.length) {
     return (
       <section className="catalog-section" dir="rtl">
-        <div className="catalog-section__head">
-          <div>
-            <h2>إتمام الطلب</h2>
-            <p>السلة فارغة حالياً</p>
-          </div>
-        </div>
-
+        <CheckoutStepper steps={steps} currentStep={0} />
         <div className="catalog-message">
           لا توجد منتجات في السلة.
           <div style={{ marginTop: 12 }}>
@@ -267,236 +228,238 @@ export default function CheckoutPage() {
       <div className="catalog-section__head">
         <div>
           <h2>إتمام الطلب</h2>
-          <p>راجع المنتجات واختر عنوان التوصيل وطريقة الدفع</p>
+          <p>خطوات منظمة لإتمام الشراء بدون استخدام زر الرجوع في المتصفح</p>
         </div>
       </div>
+
+      <CheckoutStepper steps={steps} currentStep={step} />
 
       <div style={{ display: "grid", gap: 16 }}>
-        <div style={cardStyle}>
-          <h3 style={{ marginTop: 0 }}>المنتجات</h3>
-
-          <div style={{ display: "grid", gap: 12 }}>
-            {items.map((item) => (
-              <div key={item.productID || item.id} style={innerCardStyle}>
-                <div style={{ fontWeight: 800 }}>
-                  {item.productName || item.name || "منتج"}
-                </div>
-                <div style={muted}>الكمية: {item.qty}</div>
-                <div style={muted}>سعر الوحدة: {formatCurrency(item.price)}</div>
-                <div style={{ fontWeight: 900, marginTop: 6 }}>
-                  الإجمالي الفرعي:{" "}
-                  {formatCurrency(Number(item.price || 0) * Number(item.qty || 0))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={cardStyle}>
-          <div style={sectionHead}>
-            <h3 style={{ margin: 0 }}>العنوان</h3>
-
-            <button
-              type="button"
-              onClick={() => setCreatingAddress((v) => !v)}
-              style={secondaryBtn}
-            >
-              {creatingAddress ? "إلغاء" : "إضافة عنوان جديد بالخريطة"}
-            </button>
-          </div>
-
-          {creatingAddress ? (
-            <AddressForm
-              onSave={handleSaveAddress}
-              onCancel={() => setCreatingAddress(false)}
-            />
-          ) : addresses.length ? (
-            <div style={{ display: "grid", gap: 10 }}>
-              {addresses.map((address) => (
-                <label
-                  key={address.id}
-                  style={{
-                    display: "block",
-                    border:
-                      selectedAddressId === address.id
-                        ? "2px solid #2563eb"
-                        : "1px solid #e5e7eb",
-                    borderRadius: 14,
-                    padding: 14,
-                    cursor: "pointer",
-                    background:
-                      selectedAddressId === address.id ? "#eff6ff" : "#fff",
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="selectedAddress"
-                    checked={selectedAddressId === address.id}
-                    onChange={() => setSelectedAddressId(address.id)}
-                    style={{ marginLeft: 8 }}
-                  />
-
-                  <strong>{address.label || "عنوان"}</strong> -{" "}
-                  {address.fullName || "-"}
-                  <div style={muted}>
-                    {address.city || "-"} - {address.district || "-"} -{" "}
-                    {address.street || "-"}
+        {step === 0 && (
+          <div style={cardStyle}>
+            <h3 style={{ marginTop: 0 }}>السلة</h3>
+            <div style={{ display: "grid", gap: 12 }}>
+              {items.map((item) => (
+                <div key={item.productID || item.id} style={innerCardStyle}>
+                  <div style={{ fontWeight: 900 }}>
+                    {item.productName || item.name || "منتج"}
                   </div>
-                  <div style={muted}>{address.phone || "-"}</div>
-                </label>
+                  <div style={muted}>الكمية: {item.qty}</div>
+                  <div style={muted}>سعر الوحدة: {formatCurrency(item.price)}</div>
+                  <div style={{ fontWeight: 900, marginTop: 6 }}>
+                    الإجمالي الفرعي:{" "}
+                    {formatCurrency(Number(item.price || 0) * Number(item.qty || 0))}
+                  </div>
+                </div>
               ))}
             </div>
-          ) : (
-            <div className="catalog-message">
-              لا يوجد عنوان محفوظ. اضغط إضافة عنوان جديد بالخريطة.
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        <div style={cardStyle}>
-          <h3 style={{ marginTop: 0 }}>طريقة الدفع</h3>
-
-          <div style={{ display: "grid", gap: 10 }}>
-            <label style={radioCard(paymentMethod === "cash")}>
-              <input
-                type="radio"
-                name="paymentMethod"
-                checked={paymentMethod === "cash"}
-                onChange={() => setPaymentMethod("cash")}
-                style={{ marginLeft: 8 }}
-              />
-              الدفع عند الاستلام
-            </label>
-
-            <label style={radioCard(paymentMethod === "card")}>
-              <input
-                type="radio"
-                name="paymentMethod"
-                checked={paymentMethod === "card"}
-                onChange={() => setPaymentMethod("card")}
-                style={{ marginLeft: 8 }}
-              />
-              بطاقة مدى / فيزا
-            </label>
-
-            {paymentMethod === "card" && (
-              <div style={cardPaymentBox}>
-                <h4 style={{ margin: 0 }}>بيانات البطاقة - تجربة محلية</h4>
-
-                <button type="button" onClick={openCardScanner} style={scanBtn}>
-                  📷 Scan البطاقة
+        {step === 1 && (
+          <div style={cardStyle}>
+            <div style={sectionHead}>
+              <h3 style={{ margin: 0 }}>العنوان</h3>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <Link to="/account/addresses" style={secondaryLink}>
+                  إدارة العناوين
+                </Link>
+                <button type="button" onClick={startAddAddress} style={secondaryBtn}>
+                  + إضافة عنوان جديد
                 </button>
+              </div>
+            </div>
 
-                <input
-                  name="cardName"
-                  value={cardForm.cardName}
-                  onChange={handleCardChange}
-                  placeholder="اسم حامل البطاقة"
-                  style={inputStyle}
+            {creatingAddress && (
+              <div style={formBox}>
+                <h4 style={{ marginTop: 0 }}>
+                  {editingAddress ? "تعديل العنوان" : "إضافة عنوان جديد"}
+                </h4>
+                <AddressForm
+                  initialValues={editingAddress || undefined}
+                  onSave={handleSaveAddress}
+                  onCancel={cancelAddressForm}
                 />
-
-                <input
-                  name="cardNumber"
-                  value={cardForm.cardNumber}
-                  onChange={handleCardChange}
-                  placeholder="رقم البطاقة"
-                  inputMode="numeric"
-                  maxLength={19}
-                  style={inputStyle}
-                />
-
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  <input
-                    name="expiry"
-                    value={cardForm.expiry}
-                    onChange={handleCardChange}
-                    placeholder="MM/YY"
-                    maxLength={5}
-                    style={inputStyle}
-                  />
-
-                  <input
-                    name="cvv"
-                    value={cardForm.cvv}
-                    onChange={handleCardChange}
-                    placeholder="CVV"
-                    inputMode="numeric"
-                    maxLength={4}
-                    style={inputStyle}
-                  />
-                </div>
-
-                <div style={{ color: "#64748b", fontSize: 13 }}>
-                  هذه واجهة دفع تجريبية محلية فقط ولا يتم إرسال أو حفظ بيانات البطاقة.
-                </div>
-
-                {paymentStatus !== "idle" && (
-                  <div style={paymentStatusBox(paymentStatus)}>
-                    {paymentStatus === "processing"
-                      ? "⏳ "
-                      : paymentStatus === "success"
-                      ? "✅ "
-                      : "❌ "}
-                    {paymentMessage}
-                  </div>
-                )}
               </div>
             )}
-          </div>
-        </div>
 
-        <div style={cardStyle}>
-          <div style={{ fontWeight: 900, fontSize: 22, marginBottom: 12 }}>
-            الإجمالي: {formatCurrency(total)}
+            {addresses.length ? (
+              <div style={{ display: "grid", gap: 12 }}>
+                {addresses.map((address) => (
+                  <AddressCard
+                    key={address.id}
+                    item={address}
+                    selectable
+                    selected={selectedAddressId === address.id}
+                    onSelect={handleSelectAddress}
+                    onEdit={startEditAddress}
+                    onDelete={handleDeleteAddress}
+                    onSetDefault={(id) => {
+                      setDefaultAddress(id);
+                      setSelectedAddressId(id);
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              !creatingAddress && (
+                <div className="catalog-message">لا يوجد عنوان محفوظ.</div>
+              )
+            )}
           </div>
+        )}
 
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <button
-              type="button"
-              onClick={handleConfirmOrder}
-              style={primaryBtn}
-              disabled={paymentStatus === "processing"}
-            >
-              {paymentStatus === "processing" ? "جاري الدفع..." : "تأكيد الطلب"}
+        {step === 2 && (
+          <div style={cardStyle}>
+            <h3 style={{ marginTop: 0 }}>الدولة</h3>
+            <p style={muted}>اختيار الدولة يحدد وسائل الدفع المناسبة للسوق المحلي.</p>
+
+            <div style={{ display: "grid", gap: 10 }}>
+              <label style={radioCard(country === "SA")}>
+                <input
+                  type="radio"
+                  name="country"
+                  checked={country === "SA"}
+                  onChange={() => {
+                    setCountry("SA");
+                    setPaymentMethod("cash");
+                  }}
+                  style={{ marginLeft: 8 }}
+                />
+                السعودية
+              </label>
+
+              <label style={radioCard(country === "EG")}>
+                <input
+                  type="radio"
+                  name="country"
+                  checked={country === "EG"}
+                  onChange={() => {
+                    setCountry("EG");
+                    setPaymentMethod("cash");
+                  }}
+                  style={{ marginLeft: 8 }}
+                />
+                مصر
+              </label>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div style={cardStyle}>
+            <h3 style={{ marginTop: 0 }}>طريقة الدفع</h3>
+
+            <div style={{ display: "grid", gap: 10 }}>
+              {paymentMethods.map((method) => (
+                <label key={method.id} style={radioCard(paymentMethod === method.id)}>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    checked={paymentMethod === method.id}
+                    onChange={() => setPaymentMethod(method.id)}
+                    style={{ marginLeft: 8 }}
+                  />
+                  <strong>{method.label}</strong>
+                  <div style={muted}>{method.description}</div>
+                </label>
+              ))}
+
+              {["mada", "visa_master", "meeza"].includes(paymentMethod) && (
+                <div style={cardPaymentBox}>
+                  <h4 style={{ margin: 0 }}>بيانات البطاقة - تجربة محلية</h4>
+                  <input
+                    name="cardName"
+                    value={cardForm.cardName}
+                    onChange={handleCardChange}
+                    placeholder="اسم حامل البطاقة"
+                    style={inputStyle}
+                  />
+                  <input
+                    name="cardNumber"
+                    value={cardForm.cardNumber}
+                    onChange={handleCardChange}
+                    placeholder="رقم البطاقة"
+                    inputMode="numeric"
+                    maxLength={19}
+                    style={inputStyle}
+                  />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <input
+                      name="expiry"
+                      value={cardForm.expiry}
+                      onChange={handleCardChange}
+                      placeholder="MM/YY"
+                      maxLength={5}
+                      style={inputStyle}
+                    />
+                    <input
+                      name="cvv"
+                      value={cardForm.cvv}
+                      onChange={handleCardChange}
+                      placeholder="CVV"
+                      inputMode="numeric"
+                      maxLength={4}
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div style={muted}>لا يتم إرسال أو حفظ بيانات البطاقة. هذه تجربة محلية فقط.</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div style={cardStyle}>
+            <h3 style={{ marginTop: 0 }}>مراجعة الطلب</h3>
+            <div style={reviewGrid}>
+              <div>
+                <strong>العميل</strong>
+                <div style={muted}>{user?.name || selectedAddress?.fullName || "-"}</div>
+                <div style={muted}>{user?.phone || selectedAddress?.phone || "-"}</div>
+              </div>
+              <div>
+                <strong>العنوان</strong>
+                <div style={muted}>
+                  {selectedAddress?.city || "-"} - {selectedAddress?.district || "-"} -{" "}
+                  {selectedAddress?.street || "-"}
+                </div>
+              </div>
+              <div>
+                <strong>الدولة</strong>
+                <div style={muted}>{country === "EG" ? "مصر" : "السعودية"}</div>
+              </div>
+              <div>
+                <strong>الدفع</strong>
+                <div style={muted}>
+                  {paymentMethods.find((x) => x.id === paymentMethod)?.label || paymentMethod}
+                </div>
+              </div>
+            </div>
+
+            <div style={totalBox}>الإجمالي: {formatCurrency(total)}</div>
+          </div>
+        )}
+
+        <div style={footerBar}>
+          <button type="button" onClick={prevStep} style={secondaryBtn} disabled={step === 0}>
+            السابق
+          </button>
+
+          <div style={{ flex: 1 }} />
+
+          {step < 4 ? (
+            <button type="button" onClick={nextStep} style={primaryBtn}>
+              التالي
             </button>
-
-            <Link to="/cart" style={secondaryLink}>
-              العودة إلى السلة
-            </Link>
-          </div>
+          ) : (
+            <button type="button" onClick={handleConfirmOrder} style={primaryBtn} disabled={submitting}>
+              {submitting ? "جاري تأكيد الطلب..." : "تأكيد الطلب"}
+            </button>
+          )}
         </div>
       </div>
-
-      {showScanner && (
-        <div style={scannerOverlay}>
-          <div style={scannerModal}>
-            <h3>📷 مسح البطاقة</h3>
-
-            <div style={videoBox}>
-              <video ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-              <div style={scanFrame} />
-              <div style={scanText}>ضع البطاقة داخل الإطار</div>
-            </div>
-
-            {scannerError && <div style={scannerErrorStyle}>{scannerError}</div>}
-
-            <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-              <button type="button" onClick={captureMockCard} style={captureBtn} disabled={ocrLoading}>
-                {ocrLoading ? "جاري قراءة البطاقة..." : "قراءة البطاقة OCR"}
-              </button>
-
-              <button type="button" onClick={closeCardScanner} style={cancelBtn}>
-                إلغاء
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }
@@ -504,8 +467,9 @@ export default function CheckoutPage() {
 const cardStyle = {
   background: "#fff",
   border: "1px solid #e5e7eb",
-  borderRadius: 16,
+  borderRadius: 18,
   padding: 18,
+  boxShadow: "0 10px 24px rgba(15,23,42,0.06)",
 };
 
 const innerCardStyle = {
@@ -526,6 +490,27 @@ const sectionHead = {
   gap: 12,
   flexWrap: "wrap",
   marginBottom: 14,
+};
+
+const footerBar = {
+  display: "flex",
+  gap: 10,
+  alignItems: "center",
+  padding: 14,
+  borderRadius: 18,
+  background: "#fff",
+  border: "1px solid #e5e7eb",
+  position: "sticky",
+  bottom: 12,
+  zIndex: 10,
+};
+
+const formBox = {
+  marginBottom: 16,
+  padding: 14,
+  borderRadius: 16,
+  background: "#f8fafc",
+  border: "1px solid #e2e8f0",
 };
 
 const primaryBtn = {
@@ -549,14 +534,9 @@ const secondaryBtn = {
 };
 
 const secondaryLink = {
+  ...secondaryBtn,
   display: "inline-block",
-  padding: "12px 18px",
-  borderRadius: 12,
-  border: "1px solid #d1d5db",
-  background: "#fff",
-  color: "#111827",
   textDecoration: "none",
-  fontWeight: 800,
 };
 
 const inputStyle = {
@@ -578,17 +558,6 @@ const cardPaymentBox = {
   gap: 10,
 };
 
-const scanBtn = {
-  padding: "12px 16px",
-  borderRadius: 14,
-  border: "none",
-  background: "linear-gradient(135deg,#2563eb,#1d4ed8)",
-  color: "#fff",
-  fontWeight: 900,
-  cursor: "pointer",
-  boxShadow: "0 8px 20px rgba(37,99,235,0.3)",
-};
-
 function radioCard(active) {
   return {
     display: "block",
@@ -600,90 +569,17 @@ function radioCard(active) {
   };
 }
 
-function paymentStatusBox(status) {
-  return {
-    padding: 12,
-    borderRadius: 12,
-    fontWeight: 800,
-    background:
-      status === "processing" ? "#fef3c7" : status === "success" ? "#dcfce7" : "#fee2e2",
-    color:
-      status === "processing" ? "#92400e" : status === "success" ? "#166534" : "#991b1b",
-  };
-}
-
-const scannerOverlay = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(0,0,0,0.72)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  zIndex: 9999,
+const reviewGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: 14,
 };
 
-const scannerModal = {
-  width: 390,
-  maxWidth: "92vw",
-  background: "#fff",
-  borderRadius: 22,
-  padding: 20,
-  textAlign: "center",
-};
-
-const videoBox = {
-  height: 230,
-  borderRadius: 18,
-  background: "#111",
-  marginBottom: 14,
-  overflow: "hidden",
-  position: "relative",
-  border: "3px solid #2563eb",
-};
-
-const scanFrame = {
-  position: "absolute",
-  inset: 22,
-  border: "2px dashed #22c55e",
+const totalBox = {
+  marginTop: 16,
+  padding: 16,
   borderRadius: 16,
-  pointerEvents: "none",
-};
-
-const scanText = {
-  position: "absolute",
-  left: 0,
-  right: 0,
-  bottom: 12,
-  color: "#fff",
-  fontWeight: 800,
-  fontSize: 13,
-  textShadow: "0 1px 4px #000",
-};
-
-const scannerErrorStyle = {
-  background: "#fee2e2",
-  color: "#991b1b",
-  borderRadius: 12,
-  padding: 10,
-  marginBottom: 12,
-  fontWeight: 800,
-};
-
-const captureBtn = {
-  padding: "12px 18px",
-  borderRadius: 12,
-  border: "none",
-  background: "#22c55e",
-  color: "#fff",
+  border: "2px solid #2563eb",
   fontWeight: 900,
-  cursor: "pointer",
+  fontSize: 22,
 };
-
-const cancelBtn = {
-  padding: "10px 16px",
-  borderRadius: 12,
-  border: "1px solid #ccc",
-  background: "#fff",
-  cursor: "pointer",
-};
-

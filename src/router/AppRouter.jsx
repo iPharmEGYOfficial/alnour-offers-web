@@ -14,10 +14,13 @@ import OrderSuccessPage from "../pages/OrderSuccessPage";
 import AccountPage from "../pages/AccountPage";
 import AddressesPage from "../pages/AddressesPage";
 import LoginPage from "../pages/LoginPage";
+
 import AdminOrdersPage from "../pages/AdminOrdersPage";
 import AdminOrderDetailsPage from "../pages/AdminOrderDetailsPage";
 import AdminBannersPage from "../pages/AdminBannersPage";
 import AdminDataTubePage from "../pages/AdminDataTubePage";
+import AdminProductsPage from "../pages/AdminProductsPage";
+
 import InvoicePage from "../pages/InvoicePage";
 import InvoicePrintPage from "../pages/InvoicePrintPage";
 import RateOrderPage from "../pages/RateOrderPage";
@@ -67,6 +70,9 @@ export default function AppRouter() {
           <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
           <Route path="/admin/banners" element={<AdminBannersPage />} />
           <Route path="/admin/data-tube" element={<AdminDataTubePage />} />
+
+          {/* إدارة المنتجات المحلية */}
+          <Route path="/admin/products" element={<AdminProductsPage />} />
         </Route>
 
         <Route
