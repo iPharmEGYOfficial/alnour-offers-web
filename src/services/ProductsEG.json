@@ -8,17 +8,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/01/1+.jpeg",
+    "imageUrl": "/uploads/products/eg/01/front.jpeg",
     "images": [
-      "/uploads/products/eg/01/1+.jpeg",
-      "/uploads/products/eg/01/1.jpeg"
+      "/uploads/products/eg/01/barcode.jpeg",
+      "/uploads/products/eg/01/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-01",
     "productID": "EG-01",
-    "rawId": "01"
+    "rawId": "01",
+    "productId": "EG-01"
   },
   {
     "folderNo": 2,
@@ -29,17 +30,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/02/2+.jpeg",
+    "imageUrl": "/uploads/products/eg/02/front.jpeg",
     "images": [
-      "/uploads/products/eg/02/2+.jpeg",
-      "/uploads/products/eg/02/2.jpeg"
+      "/uploads/products/eg/02/barcode.jpeg",
+      "/uploads/products/eg/02/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-02",
     "productID": "EG-02",
-    "rawId": "02"
+    "rawId": "02",
+    "productId": "EG-02"
   },
   {
     "folderNo": 3,
@@ -50,17 +52,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/03/3+.jpeg",
+    "imageUrl": "/uploads/products/eg/03/front.jpeg",
     "images": [
-      "/uploads/products/eg/03/3+.jpeg",
-      "/uploads/products/eg/03/3.jpeg"
+      "/uploads/products/eg/03/barcode.jpeg",
+      "/uploads/products/eg/03/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-03",
     "productID": "EG-03",
-    "rawId": "03"
+    "rawId": "03",
+    "productId": "EG-03"
   },
   {
     "folderNo": 4,
@@ -71,17 +74,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/04/4+.jpeg",
+    "imageUrl": "/uploads/products/eg/04/front.jpeg",
     "images": [
-      "/uploads/products/eg/04/4+.jpeg",
-      "/uploads/products/eg/04/4.jpeg"
+      "/uploads/products/eg/04/barcode.jpeg",
+      "/uploads/products/eg/04/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-04",
     "productID": "EG-04",
-    "rawId": "04"
+    "rawId": "04",
+    "productId": "EG-04"
   },
   {
     "folderNo": 5,
@@ -92,17 +96,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/05/5+.jpeg",
+    "imageUrl": "/uploads/products/eg/05/front.jpeg",
     "images": [
-      "/uploads/products/eg/05/5+.jpeg",
-      "/uploads/products/eg/05/5.jpeg"
+      "/uploads/products/eg/05/barcode.jpeg",
+      "/uploads/products/eg/05/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-05",
     "productID": "EG-05",
-    "rawId": "05"
+    "rawId": "05",
+    "productId": "EG-05"
   },
   {
     "folderNo": 6,
@@ -113,17 +118,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/06/6+.jpeg",
+    "imageUrl": "/uploads/products/eg/06/front.jpeg",
     "images": [
-      "/uploads/products/eg/06/6+.jpeg",
-      "/uploads/products/eg/06/6.jpeg"
+      "/uploads/products/eg/06/barcode.jpeg",
+      "/uploads/products/eg/06/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-06",
     "productID": "EG-06",
-    "rawId": "06"
+    "rawId": "06",
+    "productId": "EG-06"
   },
   {
     "folderNo": 7,
@@ -134,17 +140,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/07/7+.jpeg",
+    "imageUrl": "/uploads/products/eg/07/front.jpeg",
     "images": [
-      "/uploads/products/eg/07/7+.jpeg",
-      "/uploads/products/eg/07/7.jpeg"
+      "/uploads/products/eg/07/barcode.jpeg",
+      "/uploads/products/eg/07/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-07",
     "productID": "EG-07",
-    "rawId": "07"
+    "rawId": "07",
+    "productId": "EG-07"
   },
   {
     "folderNo": 8,
@@ -155,17 +162,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/08/8+.jpeg",
+    "imageUrl": "/uploads/products/eg/08/front.jpeg",
     "images": [
-      "/uploads/products/eg/08/8+.jpeg",
-      "/uploads/products/eg/08/8.jpeg"
+      "/uploads/products/eg/08/barcode.jpeg",
+      "/uploads/products/eg/08/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-08",
     "productID": "EG-08",
-    "rawId": "08"
+    "rawId": "08",
+    "productId": "EG-08"
   },
   {
     "folderNo": 9,
@@ -176,17 +184,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/09/9+.jpeg",
+    "imageUrl": "/uploads/products/eg/09/front.jpeg",
     "images": [
-      "/uploads/products/eg/09/9+.jpeg",
-      "/uploads/products/eg/09/9.jpeg"
+      "/uploads/products/eg/09/barcode.jpeg",
+      "/uploads/products/eg/09/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-09",
     "productID": "EG-09",
-    "rawId": "09"
+    "rawId": "09",
+    "productId": "EG-09"
   },
   {
     "folderNo": 10,
@@ -197,17 +206,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/10/10+.jpeg",
+    "imageUrl": "/uploads/products/eg/10/front.jpeg",
     "images": [
-      "/uploads/products/eg/10/10+.jpeg",
-      "/uploads/products/eg/10/10.jpeg"
+      "/uploads/products/eg/10/barcode.jpeg",
+      "/uploads/products/eg/10/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-10",
     "productID": "EG-10",
-    "rawId": "10"
+    "rawId": "10",
+    "productId": "EG-10"
   },
   {
     "folderNo": 11,
@@ -218,17 +228,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/11/11+.jpeg",
+    "imageUrl": "/uploads/products/eg/11/front.jpeg",
     "images": [
-      "/uploads/products/eg/11/11+.jpeg",
-      "/uploads/products/eg/11/11.jpeg"
+      "/uploads/products/eg/11/barcode.jpeg",
+      "/uploads/products/eg/11/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-11",
     "productID": "EG-11",
-    "rawId": "11"
+    "rawId": "11",
+    "productId": "EG-11"
   },
   {
     "folderNo": 12,
@@ -239,17 +250,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/12/12+.jpeg",
+    "imageUrl": "/uploads/products/eg/12/front.jpeg",
     "images": [
-      "/uploads/products/eg/12/12+.jpeg",
-      "/uploads/products/eg/12/12.jpeg"
+      "/uploads/products/eg/12/barcode.jpeg",
+      "/uploads/products/eg/12/front.jpeg"
     ],
     "reviewStatus": "needs_review",
     "market": "EG",
     "country": "EG",
     "id": "EG-12",
     "productID": "EG-12",
-    "rawId": "12"
+    "rawId": "12",
+    "productId": "EG-12"
   },
   {
     "folderNo": 13,
@@ -260,17 +272,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/13/13+.jpeg",
+    "imageUrl": "/uploads/products/eg/13/front.jpeg",
     "images": [
-      "/uploads/products/eg/13/13+.jpeg",
-      "/uploads/products/eg/13/13.jpeg"
+      "/uploads/products/eg/13/barcode.jpeg",
+      "/uploads/products/eg/13/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-13",
     "productID": "EG-13",
-    "rawId": "13"
+    "rawId": "13",
+    "productId": "EG-13"
   },
   {
     "folderNo": 14,
@@ -288,7 +301,8 @@
     "country": "EG",
     "id": "EG-14",
     "productID": "EG-14",
-    "rawId": "14"
+    "rawId": "14",
+    "productId": "EG-14"
   },
   {
     "folderNo": 15,
@@ -299,17 +313,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/15/15+.jpeg",
+    "imageUrl": "/uploads/products/eg/15/front.jpeg",
     "images": [
-      "/uploads/products/eg/15/15+.jpeg",
-      "/uploads/products/eg/15/15.jpeg"
+      "/uploads/products/eg/15/barcode.jpeg",
+      "/uploads/products/eg/15/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-15",
     "productID": "EG-15",
-    "rawId": "15"
+    "rawId": "15",
+    "productId": "EG-15"
   },
   {
     "folderNo": 16,
@@ -320,17 +335,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/16/16+.jpeg",
+    "imageUrl": "/uploads/products/eg/16/front.jpeg",
     "images": [
-      "/uploads/products/eg/16/16+.jpeg",
-      "/uploads/products/eg/16/16.jpeg"
+      "/uploads/products/eg/16/barcode.jpeg",
+      "/uploads/products/eg/16/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-16",
     "productID": "EG-16",
-    "rawId": "16"
+    "rawId": "16",
+    "productId": "EG-16"
   },
   {
     "folderNo": 17,
@@ -341,17 +357,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/17/17+.jpeg",
+    "imageUrl": "/uploads/products/eg/17/front.jpeg",
     "images": [
-      "/uploads/products/eg/17/17+.jpeg",
-      "/uploads/products/eg/17/17.jpeg"
+      "/uploads/products/eg/17/barcode.jpeg",
+      "/uploads/products/eg/17/front.jpeg"
     ],
     "reviewStatus": "needs_review",
     "market": "EG",
     "country": "EG",
     "id": "EG-17",
     "productID": "EG-17",
-    "rawId": "17"
+    "rawId": "17",
+    "productId": "EG-17"
   },
   {
     "folderNo": 18,
@@ -362,17 +379,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/18/18+.jpeg",
+    "imageUrl": "/uploads/products/eg/18/front.jpeg",
     "images": [
-      "/uploads/products/eg/18/18+.jpeg",
-      "/uploads/products/eg/18/18.jpeg"
+      "/uploads/products/eg/18/barcode.jpeg",
+      "/uploads/products/eg/18/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-18",
     "productID": "EG-18",
-    "rawId": "18"
+    "rawId": "18",
+    "productId": "EG-18"
   },
   {
     "folderNo": 19,
@@ -383,18 +401,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/19/19+.jpeg",
+    "imageUrl": "/uploads/products/eg/19/front.jpeg",
     "images": [
-      "/uploads/products/eg/19/19+.jpeg",
-      "/uploads/products/eg/19/19.jpeg",
-      "/uploads/products/eg/19/19.jpeg"
+      "/uploads/products/eg/19/barcode.jpeg",
+      "/uploads/products/eg/19/front.jpeg"
     ],
     "reviewStatus": "needs_review",
     "market": "EG",
     "country": "EG",
     "id": "EG-19",
     "productID": "EG-19",
-    "rawId": "19"
+    "rawId": "19",
+    "productId": "EG-19"
   },
   {
     "folderNo": 20,
@@ -405,17 +423,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/20/20+.jpeg",
+    "imageUrl": "/uploads/products/eg/20/front.jpeg",
     "images": [
-      "/uploads/products/eg/20/20+.jpeg",
-      "/uploads/products/eg/20/20.jpeg"
+      "/uploads/products/eg/20/barcode.jpeg",
+      "/uploads/products/eg/20/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-20",
     "productID": "EG-20",
-    "rawId": "20"
+    "rawId": "20",
+    "productId": "EG-20"
   },
   {
     "folderNo": 21,
@@ -426,17 +445,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/21/21+.jpeg",
+    "imageUrl": "/uploads/products/eg/21/front.jpeg",
     "images": [
-      "/uploads/products/eg/21/21+.jpeg",
-      "/uploads/products/eg/21/21.jpeg"
+      "/uploads/products/eg/21/barcode.jpeg",
+      "/uploads/products/eg/21/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-21",
     "productID": "EG-21",
-    "rawId": "21"
+    "rawId": "21",
+    "productId": "EG-21"
   },
   {
     "folderNo": 22,
@@ -447,17 +467,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/22/22+.jpeg",
+    "imageUrl": "/uploads/products/eg/22/front.jpeg",
     "images": [
-      "/uploads/products/eg/22/22+.jpeg",
-      "/uploads/products/eg/22/22.jpeg"
+      "/uploads/products/eg/22/barcode.jpeg",
+      "/uploads/products/eg/22/front.jpeg"
     ],
     "reviewStatus": "needs_review",
     "market": "EG",
     "country": "EG",
     "id": "EG-22",
     "productID": "EG-22",
-    "rawId": "22"
+    "rawId": "22",
+    "productId": "EG-22"
   },
   {
     "folderNo": 23,
@@ -468,17 +489,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/23/23+.jpeg",
+    "imageUrl": "/uploads/products/eg/23/front.jpeg",
     "images": [
-      "/uploads/products/eg/23/23+.jpeg",
-      "/uploads/products/eg/23/23.jpeg"
+      "/uploads/products/eg/23/barcode.jpeg",
+      "/uploads/products/eg/23/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-23",
     "productID": "EG-23",
-    "rawId": "23"
+    "rawId": "23",
+    "productId": "EG-23"
   },
   {
     "folderNo": 24,
@@ -489,17 +511,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/24/24+.jpeg",
+    "imageUrl": "/uploads/products/eg/24/front.jpeg",
     "images": [
-      "/uploads/products/eg/24/24+.jpeg",
-      "/uploads/products/eg/24/24.jpeg"
+      "/uploads/products/eg/24/barcode.jpeg",
+      "/uploads/products/eg/24/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-24",
     "productID": "EG-24",
-    "rawId": "24"
+    "rawId": "24",
+    "productId": "EG-24"
   },
   {
     "folderNo": 25,
@@ -510,17 +533,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/25/25+.jpeg",
+    "imageUrl": "/uploads/products/eg/25/front.jpeg",
     "images": [
-      "/uploads/products/eg/25/25+.jpeg",
-      "/uploads/products/eg/25/25.jpeg"
+      "/uploads/products/eg/25/barcode.jpeg",
+      "/uploads/products/eg/25/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-25",
     "productID": "EG-25",
-    "rawId": "25"
+    "rawId": "25",
+    "productId": "EG-25"
   },
   {
     "folderNo": 26,
@@ -531,17 +555,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/26/26+.jpeg",
+    "imageUrl": "/uploads/products/eg/26/front.jpeg",
     "images": [
-      "/uploads/products/eg/26/26+.jpeg",
-      "/uploads/products/eg/26/26.jpeg"
+      "/uploads/products/eg/26/barcode.jpeg",
+      "/uploads/products/eg/26/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-26",
     "productID": "EG-26",
-    "rawId": "26"
+    "rawId": "26",
+    "productId": "EG-26"
   },
   {
     "folderNo": 27,
@@ -552,17 +577,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/27/27+.jpeg",
+    "imageUrl": "/uploads/products/eg/27/front.jpeg",
     "images": [
-      "/uploads/products/eg/27/27+.jpeg",
-      "/uploads/products/eg/27/27.jpeg"
+      "/uploads/products/eg/27/barcode.jpeg",
+      "/uploads/products/eg/27/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-27",
     "productID": "EG-27",
-    "rawId": "27"
+    "rawId": "27",
+    "productId": "EG-27"
   },
   {
     "folderNo": 28,
@@ -573,17 +599,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/28/28+.jpeg",
+    "imageUrl": "/uploads/products/eg/28/front.jpeg",
     "images": [
-      "/uploads/products/eg/28/28+.jpeg",
-      "/uploads/products/eg/28/28.jpeg"
+      "/uploads/products/eg/28/barcode.jpeg",
+      "/uploads/products/eg/28/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-28",
     "productID": "EG-28",
-    "rawId": "28"
+    "rawId": "28",
+    "productId": "EG-28"
   },
   {
     "folderNo": 29,
@@ -594,16 +621,15 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/29/29.jpeg",
-    "images": [
-      "/uploads/products/eg/29/29.jpeg"
-    ],
+    "imageUrl": "/uploads/products/eg/29/front.jpeg",
+    "images": ["/uploads/products/eg/29/front.jpeg"],
     "reviewStatus": "needs_review",
     "market": "EG",
     "country": "EG",
     "id": "EG-29",
     "productID": "EG-29",
-    "rawId": "29"
+    "rawId": "29",
+    "productId": "EG-29"
   },
   {
     "folderNo": 30,
@@ -614,17 +640,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/30/30+.jpeg",
+    "imageUrl": "/uploads/products/eg/30/front.jpeg",
     "images": [
-      "/uploads/products/eg/30/30+.jpeg",
-      "/uploads/products/eg/30/30.jpeg"
+      "/uploads/products/eg/30/barcode.jpeg",
+      "/uploads/products/eg/30/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-30",
     "productID": "EG-30",
-    "rawId": "30"
+    "rawId": "30",
+    "productId": "EG-30"
   },
   {
     "folderNo": 31,
@@ -635,17 +662,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/31/31+.jpeg",
+    "imageUrl": "/uploads/products/eg/31/front.jpeg",
     "images": [
-      "/uploads/products/eg/31/31+.jpeg",
-      "/uploads/products/eg/31/31.jpeg"
+      "/uploads/products/eg/31/barcode.jpeg",
+      "/uploads/products/eg/31/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-31",
     "productID": "EG-31",
-    "rawId": "31"
+    "rawId": "31",
+    "productId": "EG-31"
   },
   {
     "folderNo": 32,
@@ -656,17 +684,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/32/32+.jpeg",
+    "imageUrl": "/uploads/products/eg/32/front.jpeg",
     "images": [
-      "/uploads/products/eg/32/32+.jpeg",
-      "/uploads/products/eg/32/32.jpeg"
+      "/uploads/products/eg/32/barcode.jpeg",
+      "/uploads/products/eg/32/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-32",
     "productID": "EG-32",
-    "rawId": "32"
+    "rawId": "32",
+    "productId": "EG-32"
   },
   {
     "folderNo": 33,
@@ -677,17 +706,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/33/33+.jpeg",
+    "imageUrl": "/uploads/products/eg/33/front.jpeg",
     "images": [
-      "/uploads/products/eg/33/33+.jpeg",
-      "/uploads/products/eg/33/33.jpeg"
+      "/uploads/products/eg/33/barcode.jpeg",
+      "/uploads/products/eg/33/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-33",
     "productID": "EG-33",
-    "rawId": "33"
+    "rawId": "33",
+    "productId": "EG-33"
   },
   {
     "folderNo": 34,
@@ -698,17 +728,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/34/34+.jpeg",
+    "imageUrl": "/uploads/products/eg/34/front.jpeg",
     "images": [
-      "/uploads/products/eg/34/34+.jpeg",
-      "/uploads/products/eg/34/34.jpeg"
+      "/uploads/products/eg/34/barcode.jpeg",
+      "/uploads/products/eg/34/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-34",
     "productID": "EG-34",
-    "rawId": "34"
+    "rawId": "34",
+    "productId": "EG-34"
   },
   {
     "folderNo": 35,
@@ -719,17 +750,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/35/35+.jpeg",
+    "imageUrl": "/uploads/products/eg/35/front.jpeg",
     "images": [
-      "/uploads/products/eg/35/35+.jpeg",
-      "/uploads/products/eg/35/35.jpeg"
+      "/uploads/products/eg/35/barcode.jpeg",
+      "/uploads/products/eg/35/front.jpeg"
     ],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-35",
     "productID": "EG-35",
-    "rawId": "35"
+    "rawId": "35",
+    "productId": "EG-35"
   },
   {
     "folderNo": 36,
@@ -740,17 +772,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/36/36+.jpeg",
+    "imageUrl": "/uploads/products/eg/36/front.jpeg",
     "images": [
-      "/uploads/products/eg/36/36+.jpeg",
-      "/uploads/products/eg/36/36.jpeg"
+      "/uploads/products/eg/36/barcode.jpeg",
+      "/uploads/products/eg/36/front.jpeg"
     ],
     "reviewStatus": "needs_review",
     "market": "EG",
     "country": "EG",
     "id": "EG-36",
     "productID": "EG-36",
-    "rawId": "36"
+    "rawId": "36",
+    "productId": "EG-36"
   },
   {
     "folderNo": 37,
@@ -761,17 +794,18 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/37/37+.jpeg",
+    "imageUrl": "/uploads/products/eg/37/front.jpeg",
     "images": [
-      "/uploads/products/eg/37/37+.jpeg",
-      "/uploads/products/eg/37/37.jpeg"
+      "/uploads/products/eg/37/barcode.jpeg",
+      "/uploads/products/eg/37/front.jpeg"
     ],
     "reviewStatus": "needs_review",
     "market": "EG",
     "country": "EG",
     "id": "EG-37",
     "productID": "EG-37",
-    "rawId": "37"
+    "rawId": "37",
+    "productId": "EG-37"
   },
   {
     "folderNo": 38,
@@ -782,16 +816,15 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/38/38.jpeg",
-    "images": [
-      "/uploads/products/eg/38/38.jpeg"
-    ],
+    "imageUrl": "/uploads/products/eg/38/front.jpeg",
+    "images": ["/uploads/products/eg/38/front.jpeg"],
     "reviewStatus": "needs_review",
     "market": "EG",
     "country": "EG",
     "id": "EG-38",
     "productID": "EG-38",
-    "rawId": "38"
+    "rawId": "38",
+    "productId": "EG-38"
   },
   {
     "folderNo": 39,
@@ -802,15 +835,14 @@
     "price": "",
     "stockQty": 1,
     "source": "eg",
-    "imageUrl": "/uploads/products/eg/39/39.jpeg",
-    "images": [
-      "/uploads/products/eg/39/39.jpeg"
-    ],
+    "imageUrl": "/uploads/products/eg/39/front.jpeg",
+    "images": ["/uploads/products/eg/39/front.jpeg"],
     "reviewStatus": "ok",
     "market": "EG",
     "country": "EG",
     "id": "EG-39",
     "productID": "EG-39",
-    "rawId": "39"
+    "rawId": "39",
+    "productId": "EG-39"
   }
 ]
