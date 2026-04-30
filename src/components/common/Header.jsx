@@ -11,7 +11,7 @@ export default function Header() {
   const logout = useAuthStore((state) => state.logout);
 
   const cartCount = useCartStore((state) =>
-    state.items.reduce((sum, item) => sum + Number(item.qty || 0), 0)
+    state.items.reduce((sum, item) => sum + Number(item.qty || 0), 0),
   );
 
   const onLogout = () => {
@@ -28,7 +28,7 @@ export default function Header() {
         borderBottom: "1px solid #e5e7eb",
         position: "sticky",
         top: 0,
-        zIndex: 50
+        zIndex: 50,
       }}
     >
       <div
@@ -39,7 +39,7 @@ export default function Header() {
           justifyContent: "space-between",
           gap: "16px",
           padding: "12px 16px",
-          flexWrap: "wrap"
+          flexWrap: "wrap",
         }}
       >
         <Link
@@ -49,7 +49,7 @@ export default function Header() {
             alignItems: "center",
             gap: "12px",
             textDecoration: "none",
-            color: "#111827"
+            color: "#111827",
           }}
         >
           <img
@@ -60,11 +60,13 @@ export default function Header() {
               height: "48px",
               objectFit: "contain",
               borderRadius: "12px",
-              background: "#f8fafc"
+              background: "#f8fafc",
             }}
           />
           <div>
-            <div style={{ fontWeight: 800, fontSize: "18px" }}>صيدلية النور</div>
+            <div style={{ fontWeight: 800, fontSize: "18px" }}>
+              صيدلية النور
+            </div>
             <div style={{ fontSize: "12px", color: "#6b7280" }}>
               Al-Nour Offers
             </div>
@@ -76,11 +78,15 @@ export default function Header() {
             display: "flex",
             alignItems: "center",
             gap: "10px",
-            flexWrap: "wrap"
+            flexWrap: "wrap",
           }}
         >
-          <Link to="/" style={navStyle(isActive("/"))}>الرئيسية</Link>
-          <Link to="/offers" style={navStyle(isActive("/offers"))}>المنتجات</Link>
+          <Link to="/" style={navStyle(isActive("/"))}>
+            الرئيسية
+          </Link>
+          <Link to="/offers" style={navStyle(isActive("/offers"))}>
+            المنتجات
+          </Link>
           <Link to="/cart" style={navStyle(isActive("/cart"))}>
             السلة
             <span
@@ -91,14 +97,18 @@ export default function Header() {
                 borderRadius: "999px",
                 padding: "2px 8px",
                 fontSize: "12px",
-                fontWeight: 700
+                fontWeight: 700,
               }}
             >
               {cartCount}
             </span>
           </Link>
-          <Link to="/orders" style={navStyle(isActive("/orders"))}>طلباتي</Link>
-          <Link to="/account" style={navStyle(isActive("/account"))}>حسابي</Link>
+          <Link to="/orders" style={navStyle(isActive("/orders"))}>
+            طلباتي
+          </Link>
+          <Link to="/account" style={navStyle(isActive("/account"))}>
+            حسابي
+          </Link>
         </nav>
 
         <div
@@ -106,7 +116,7 @@ export default function Header() {
             display: "flex",
             alignItems: "center",
             gap: "10px",
-            flexWrap: "wrap"
+            flexWrap: "wrap",
           }}
         >
           {isAuthenticated ? (
@@ -117,7 +127,7 @@ export default function Header() {
                   borderRadius: "999px",
                   padding: "8px 12px",
                   fontSize: "13px",
-                  color: "#111827"
+                  color: "#111827",
                 }}
               >
                 {user?.fullName || user?.customerName || "مستخدم"}
@@ -135,7 +145,7 @@ export default function Header() {
               to="/login"
               style={{
                 ...buttonStyle("#2563eb", "#ffffff", "#2563eb"),
-                textDecoration: "none"
+                textDecoration: "none",
               }}
             >
               تسجيل الدخول
@@ -155,7 +165,7 @@ function navStyle(active) {
     background: active ? "#eff6ff" : "transparent",
     borderRadius: "10px",
     padding: "8px 12px",
-    transition: "0.2s ease"
+    transition: "0.2s ease",
   };
 }
 
@@ -168,15 +178,6 @@ function buttonStyle(bg, color, borderColor) {
     padding: "9px 14px",
     fontSize: "14px",
     fontWeight: 700,
-    cursor: "pointer"
+    cursor: "pointer",
   };
 }
-
-
-
-
-
-
-
-
-

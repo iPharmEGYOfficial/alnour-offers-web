@@ -19,12 +19,15 @@ export default function AdminProductsPage() {
   const [market, setMarket] = useState("SA");
   const [products, setProducts] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [search, setSearch] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
 
   const [form, setForm] = useState({
     productName: "",
     price: "",
     stockQty: "",
-    imageUrl: "",
+    frontImage: "",
+    barcodeImage: "",
     barcode: "",
     brandName: "",
     categoryName: "",
@@ -32,8 +35,8 @@ export default function AdminProductsPage() {
 
   const pageBg =
     market === "SA"
-      ? "linear-gradient(135deg, #006c35 0%, #006c35 40%, #ffffff 40%, #ffffff 60%, #006c35 60%, #006c35 100%)"
-      : "linear-gradient(180deg, #ce1126 0%, #ce1126 33%, #ffffff 33%, #ffffff 66%, #000000 66%, #000000 100%)";
+      ? "linear-gradient(135deg,#006c35 0%,#006c35 40%,#fff 40%,#fff 60%,#006c35 60%)"
+      : "linear-gradient(180deg,#ce1126 0%,#ce1126 33%,#fff 33%,#fff 66%,#000 66%)";
 
   useEffect(() => {
     loadProducts();
@@ -48,7 +51,7 @@ export default function AdminProductsPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleImageUpload(e) {
+  function handleImageUpload(e, type) {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -56,7 +59,7 @@ export default function AdminProductsPage() {
     reader.onloadend = () => {
       setForm((prev) => ({
         ...prev,
-        imageUrl: reader.result,
+        [type]: reader.result,
       }));
     };
 
@@ -66,11 +69,17 @@ export default function AdminProductsPage() {
   function handleSubmit(e) {
     e.preventDefault();
 
+    if (!form.productName || !form.price) {
+      alert("❌ الاسم والسعر إجباري");
+      return;
+    }
+
     const payload = {
       ...form,
-      id: editingId || `${market}-${Date.now()}`,
+      imageUrl: form.frontImage,
       price: Number(form.price),
       stockQty: Number(form.stockQty),
+      id: editingId || `${market}-${Date.now()}`,
       market,
       source: "local",
     };
@@ -86,7 +95,8 @@ export default function AdminProductsPage() {
       productName: p.productName || "",
       price: p.price || "",
       stockQty: p.stockQty || "",
-      imageUrl: p.imageUrl || "",
+      frontImage: p.imageUrl || "",
+      barcodeImage: p.barcodeImage || "",
       barcode: p.barcode || "",
       brandName: p.brandName || "",
       categoryName: p.categoryName || "",
@@ -97,7 +107,6 @@ export default function AdminProductsPage() {
 
   function handleDelete(id) {
     if (!confirm("هل تريد حذف المنتج؟")) return;
-
     productService.deleteLocalAdminProduct(id, market);
     loadProducts();
   }
@@ -107,7 +116,8 @@ export default function AdminProductsPage() {
       productName: "",
       price: "",
       stockQty: "",
-      imageUrl: "",
+      frontImage: "",
+      barcodeImage: "",
       barcode: "",
       brandName: "",
       categoryName: "",
@@ -115,59 +125,64 @@ export default function AdminProductsPage() {
     setEditingId(null);
   }
 
+  const filteredProducts = products.filter((p) => {
+    return (
+      (!search ||
+        p.productName?.toLowerCase().includes(search.toLowerCase())) &&
+      (!filterCategory || p.categoryName === filterCategory)
+    );
+  });
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        padding: 24,
-        background: pageBg,
-        backgroundAttachment: "fixed",
-      }}
-    >
+    <div style={{ minHeight: "100vh", padding: 24, background: pageBg }}>
       <div
         style={{
-          background: "rgba(255,255,255,0.94)",
-          borderRadius: 22,
-          padding: 22,
-          boxShadow: "0 12px 35px rgba(0,0,0,0.22)",
+          background: "#fff",
+          borderRadius: 20,
+          padding: 20,
+          boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
         }}
       >
-        <h2 style={{ marginBottom: 12 }}>
-          🎛️ إدارة المنتجات — {market === "SA" ? "السعودية 🇸🇦" : "مصر 🇪🇬"}
-        </h2>
+        <h2>🎛️ إدارة المنتجات — {market}</h2>
 
+        {/* اختيار الدولة */}
         <select
           value={market}
           onChange={(e) => {
             setMarket(e.target.value);
             resetForm();
           }}
-          style={{
-            padding: "10px 14px",
-            borderRadius: 12,
-            fontWeight: 800,
-            marginBottom: 18,
-          }}
         >
-          <option value="SA">🇸🇦 واجهة السعودية</option>
-          <option value="EG">🇪🇬 واجهة مصر</option>
+          <option value="SA">🇸🇦 السعودية</option>
+          <option value="EG">🇪🇬 مصر</option>
         </select>
 
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            marginBottom: 20,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: 10,
-          }}
-        >
+        {/* البحث + الفلترة */}
+        <div style={{ marginTop: 10, display: "flex", gap: 10 }}>
+          <input
+            placeholder="🔍 بحث"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
+          <select
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
+            <option value="">كل التصنيفات</option>
+            {categories.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* الفورم */}
+        <form onSubmit={handleSubmit} style={{ marginTop: 15 }}>
           <input
             name="productName"
             placeholder="اسم المنتج"
             value={form.productName}
             onChange={handleChange}
-            required
           />
           <input
             name="price"
@@ -175,7 +190,6 @@ export default function AdminProductsPage() {
             placeholder="السعر"
             value={form.price}
             onChange={handleChange}
-            required
           />
           <input
             name="stockQty"
@@ -183,7 +197,6 @@ export default function AdminProductsPage() {
             placeholder="الكمية"
             value={form.stockQty}
             onChange={handleChange}
-            required
           />
           <input
             name="barcode"
@@ -203,35 +216,43 @@ export default function AdminProductsPage() {
             value={form.categoryName}
             onChange={handleChange}
           >
-            <option value="">اختر التصنيف</option>
+            <option value="">التصنيف</option>
             {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
+              <option key={c}>{c}</option>
             ))}
           </select>
 
-          <input type="file" accept="image/*" onChange={handleImageUpload} />
-
-          <div style={{ display: "flex", gap: 10 }}>
-            <button type="submit">{editingId ? "✏ تحديث" : "➕ إضافة"}</button>
-            {editingId && (
-              <button type="button" onClick={resetForm}>
-                ❌ إلغاء
-              </button>
-            )}
+          <div>
+            <label>📷 صورة المنتج</label>
+            <input
+              type="file"
+              onChange={(e) => handleImageUpload(e, "frontImage")}
+            />
           </div>
+
+          <div>
+            <label>🔳 صورة الباركود</label>
+            <input
+              type="file"
+              onChange={(e) => handleImageUpload(e, "barcodeImage")}
+            />
+          </div>
+
+          <button type="submit">{editingId ? "✏ تحديث" : "➕ إضافة"}</button>
+
+          {editingId && (
+            <button type="button" onClick={resetForm}>
+              ❌ إلغاء
+            </button>
+          )}
         </form>
 
-        {form.imageUrl && <img src={form.imageUrl} width="90" alt="preview" />}
-
-        <table border="1" width="100%">
+        {/* عرض المنتجات */}
+        <table border="1" width="100%" style={{ marginTop: 20 }}>
           <thead>
             <tr>
-              <th>الصورة</th>
+              <th>صورة</th>
               <th>الاسم</th>
-              <th>التصنيف</th>
-              <th>الماركة</th>
               <th>السعر</th>
               <th>الكمية</th>
               <th>تحكم</th>
@@ -239,14 +260,12 @@ export default function AdminProductsPage() {
           </thead>
 
           <tbody>
-            {products.map((p) => (
+            {filteredProducts.map((p) => (
               <tr key={p.id}>
                 <td>
                   <img src={p.imageUrl || "/no-image.svg"} width="50" alt="" />
                 </td>
                 <td>{p.productName}</td>
-                <td>{p.categoryName}</td>
-                <td>{p.brandName}</td>
                 <td>{p.price}</td>
                 <td>{p.stockQty}</td>
                 <td>

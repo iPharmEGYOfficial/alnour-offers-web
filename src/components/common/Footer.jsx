@@ -58,12 +58,3 @@ const footerLinkStyle = {
   textDecoration: "none",
   fontWeight: 600,
 };
-
-
-
-
-
-
-
-
-

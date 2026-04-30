@@ -52,13 +52,3 @@ export default function HomePage() {
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-

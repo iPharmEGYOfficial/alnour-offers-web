@@ -26,6 +26,37 @@ import InvoicePrintPage from "../pages/InvoicePrintPage";
 import RateOrderPage from "../pages/RateOrderPage";
 import RatingSuccessPage from "../pages/RatingSuccessPage";
 
+function AdminComingSoon({ title, desc }) {
+  return (
+    <section dir="rtl" style={{ padding: 24 }}>
+      <div
+        style={{
+          background: "#fff",
+          border: "1px solid #e5e7eb",
+          borderRadius: 20,
+          padding: 24,
+          boxShadow: "0 10px 28px rgba(15,23,42,0.08)",
+        }}
+      >
+        <h2 style={{ marginTop: 0 }}>{title}</h2>
+        <p style={{ color: "#64748b", fontWeight: 700 }}>{desc}</p>
+        <div
+          style={{
+            marginTop: 16,
+            padding: 14,
+            borderRadius: 14,
+            background: "#f8fafc",
+            color: "#334155",
+            fontWeight: 700,
+          }}
+        >
+          هذه الصفحة سيتم بناؤها في المرحلة التالية ضمن لوحة الإدارة الكاملة.
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -66,13 +97,55 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         >
-          <Route path="/admin/orders" element={<AdminOrdersPage />} />
-          <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
-          <Route path="/admin/banners" element={<AdminBannersPage />} />
+          <Route path="/admin" element={<AdminDataTubePage />} />
           <Route path="/admin/data-tube" element={<AdminDataTubePage />} />
 
-          {/* إدارة المنتجات المحلية */}
           <Route path="/admin/products" element={<AdminProductsPage />} />
+
+          <Route path="/admin/orders" element={<AdminOrdersPage />} />
+          <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
+
+          <Route path="/admin/banners" element={<AdminBannersPage />} />
+
+          <Route
+            path="/admin/customers"
+            element={
+              <AdminComingSoon
+                title="👥 العملاء"
+                desc="إدارة العملاء وربطهم لاحقًا ببيانات الشامل والفواتير القديمة."
+              />
+            }
+          />
+
+          <Route
+            path="/admin/customer-history"
+            element={
+              <AdminComingSoon
+                title="🧾 تاريخ العميل"
+                desc="عرض فواتير ومشتريات العميل السابقة داخل التطبيق."
+              />
+            }
+          />
+
+          <Route
+            path="/admin/live"
+            element={
+              <AdminComingSoon
+                title="🔗 الشامل Live"
+                desc="عرض منتجات وأسعار وأرصدة الشامل من قاعدة البيانات."
+              />
+            }
+          />
+
+          <Route
+            path="/admin/settings"
+            element={
+              <AdminComingSoon
+                title="⚙️ الإعدادات"
+                desc="إعدادات الأسواق والربط وطرق الدفع والواجهة."
+              />
+            }
+          />
         </Route>
 
         <Route
